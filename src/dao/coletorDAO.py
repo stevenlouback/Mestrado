@@ -1,5 +1,5 @@
 
-#importa a classe DAO PRINCIPAÇ
+#importa a classe DAO PRINCIPAL
 import daoPrincipal
 
 print("\n Teste..\n")
