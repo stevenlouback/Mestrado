@@ -1,7 +1,6 @@
 #importa o módulo de conexão
 import sys
 
-
 sys.path.append("D:\Mestrado\Dissertacao\Mestrado\Mestrado\src\conexaoBanco")
 
 import conexao as con

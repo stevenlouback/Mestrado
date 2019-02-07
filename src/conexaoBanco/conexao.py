@@ -12,7 +12,7 @@ class Connect:
         #conexão com banco de dados
         try:
             conn = psycopg2.connect("\
-                    dbname='trabalho'\
+                    dbname='MESTRADO'\
                     user='postgres'\
                     host='localhost'\
                     password='postgres'\
