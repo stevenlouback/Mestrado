@@ -1,36 +1,24 @@
 from tkinter import *
-
-
+from amostra import Amostra
 
 
 class TelaPrincipal(Frame):
-    def __init__(self, *args, **kwargs):
-        Frame.__init__(self, master=None)
+    def __init__(self, toplevel):
+        Frame.__init__(self, toplevel)
 
-        # Configuração da janela principal
-        self.master.title('Tela Principal')
-        self.master.geometry('800X600')
-        self.configure(borderwidth=4)
-        self.configure(background='white')
+        self.fr1 = Frame(toplevel)
+        self.fr1.pack()
+        self.botao = Button(self.fr1, text='Abrir!', background='green')
+        self.botao.bind("<Button-1>", self.abre)
+        self.botao.pack()
 
-        for name in ("Amostras", "Modelos", "Análise"):
-            self.button = Button(self, text=name)
-            self.button.bind("<Button-1>", self.handle_event)
-            self.button.pack(side='left', fill='x', expand=True)
+    def abre(self, event):
+        r = Tk()
+        amostra = Amostra()
+        amostra.Amostra(r)
+        r.mainloop()
 
-        # Empacotamos o frame principal
-        self.pack(fill='both', expand=True)
-
-
-
-        def handle_event(self, event):
-            btn_name = event.widget.cget('text')
-            if btn_name.endswith('Amostras'):
-                #window = a
-               # window.mainloop()
-
-
-
-mainWindow = TelaPrincipal()
-mainWindow.mainloop()
+raiz = Tk()
+TelaPrincipal(raiz)
+raiz.mainloop()
 
