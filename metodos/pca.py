@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt # NOTE: This was tested with matplotlib v. 2.1.0
 
 class PCA(object):
     def testePCA(self, mat):
+
         data = pd.DataFrame(index=mat)
         # retorna os dados da matriz
         print(data.head())

@@ -1,12 +1,12 @@
 import sys
 
-sys.path.append("D:\Mestrado\Dissertacao\Mestrado\Mestrado\src\dao")
+sys.path.append("..\dao")
 
 from DAOamostra import Amostra
 from tkinter import *
 
 
-class Application:
+class FrmAmostra:
     def __init__(self, toplevel):
         self.fonte = ("Verdana", "8")
 
@@ -197,5 +197,5 @@ class Application:
 
 
 root = Tk()
-Application(root)
+FrmAmostra(root)
 root.mainloop()

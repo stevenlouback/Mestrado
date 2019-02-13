@@ -1,7 +1,7 @@
 import sys
 
-sys.path.append("D:\Mestrado\Dissertacao\Mestrado\Mestrado\src\dao")
-sys.path.append("D:\Mestrado\Dissertacao\Mestrado\Mestrado\src\metodos")
+sys.path.append("..\dao")
+sys.path.append("..\metodos")
 
 from DAOmatrizx import Matrizx
 from pca import PCA
@@ -9,7 +9,7 @@ from tkinter import *
 
 matrizPrincipal = []
 
-class Matriz:
+class FrmMatrizX:
     def __init__(self, toplevel):
         self.fonte = ("Verdana", "8")
 
@@ -70,5 +70,5 @@ class Matriz:
 
 
 root = Tk()
-Matriz(root)
+FrmMatrizX(root)
 root.mainloop()

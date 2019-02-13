@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append("D:\Mestrado\Dissertacao\Mestrado\Mestrado\src\conexaoBanco")
+sys.path.append("..\conexaoBanco")
 
 from banco import Banco
 
