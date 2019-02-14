@@ -2,6 +2,9 @@
 
 # Form implementation generated from reading ui file 'testeHJ.ui'
 #
+
+
+
 # Created by: PyQt5 UI code generator 5.12
 #
 # WARNING! All changes made in this file will be lost!
