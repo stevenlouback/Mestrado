@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QApplication,  QMainWindow
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 
-#from FrmAmostra import FrmAmostra
-#from FrmMatrizX import FrmMatrizX
+from FrmAmostra import FrmAmostra
+from FrmMatrizX import FrmMatrizX
 from FrmAluguel import FrmAluguel
 from teste import Example
 
@@ -132,7 +132,7 @@ class TelaPrincipal(object):
     # BTNMATRIZX.CLICK
     def FrmMatrizX_Click(self):
         self.frmMatrizX = QMainWindow()
-        self.ui = FrmAluguel()
+        self.ui = FrmMatrizX()
         self.ui.setupUi(self.frmMatrizX)
         self.frmMatrizX.show()
 

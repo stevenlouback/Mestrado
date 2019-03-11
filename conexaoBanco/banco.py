@@ -5,7 +5,7 @@ class Banco():
     def __init__(self):
         try:
             conn = psycopg2.connect("\
-                           dbname='MESTRADO'\
+                           dbname='QUIMIOMETRIA'\
                            user='postgres'\
                            host='localhost'\
                            password='postgres'\

@@ -4,15 +4,15 @@ sys.path.append("..\conexaoBanco")
 
 from banco import Banco
 
-class Matrizx(object):
+class Matrizy(object):
 
-    def __init__(self, idAmostra=0, nrSequencia=0, nrPosicaoLinha=0, nrPosicaoColuna=0, vlLinhaColuna=0):
+    def __init__(self, idAmostra=0, nrSequencia=0, vlReferencia=0, vlResultado=0, idParametroRef=0):
         self.info = {}
         self.idAmostra = idAmostra
         self.nrSequencia = nrSequencia
-        self.nrPosicaoLinha = nrPosicaoLinha
-        self.nrPosicaoColuna = nrPosicaoColuna
-        self.vlLinhaColuna = vlLinhaColuna
+        self.vlReferencia = vlReferencia
+        self.vlResultado = vlResultado
+        self.idParametroRef = idParametroRef
 
     def insert(self):
 
@@ -21,12 +21,12 @@ class Matrizx(object):
 
             c = banco.conexao.cursor()
 
-            c.execute("insert into Matriz_x (idAmostra, nrSequencia, nrPosicaoLinha, nrPosicaoColuna, vlLinhaColuna) values ( " +self.idAmostra+ "," + self.nrSequencia + ", " + self.nrPosicaoLinha + ", " + self.nrPosicaoColuna + ", " + self.vlLinhaColuna + " )")
+            c.execute("insert into Matriz_y (idAmostra, nrSequencia, vlReferencia, vlResultado, idParametroRef) values ( " +self.idAmostra+ "," + self.nrSequencia + ", " + self.vlReferencia + ", " + self.vlResultado + ", " + self.idParametroRef + " )")
 
             banco.conexao.commit()
             c.close()
 
-            return "Linha cadastrada com sucesso!"
+            return "Parametro cadastrado com sucesso!"
         except:
             return "Ocorreu um erro na inserção da Amostra"
 
@@ -36,14 +36,14 @@ class Matrizx(object):
 
             c = banco.conexao.cursor()
 
-            c.execute("select idAmostra, nrSequencia, nrPosicaoLinha, nrPosicaoColuna, vlLinhaColuna from matriz_x where idAmostra = " + idAmostra + "  ")
+            c.execute("select idAmostra, nrSequencia, vlReferencia, vlResultado, idParametroRef from matriz_y where idAmostra = " + idAmostra + "  ")
 
             for linha in c:
                 self.idAmostra = linha[0]
                 self.nrSequencia = linha[1]
-                self.nrPosicaoLinha = linha[2]
-                self.nrPosicaoColuna = linha[3]
-                self.vlLinhaColuna = linha[4]
+                self.vlReferencia = linha[2]
+                self.vlResultado = linha[3]
+                self.idParametroRef = linha[4]
 
             c.close()
 
@@ -51,7 +51,7 @@ class Matrizx(object):
         except:
             return "Ocorreu um erro na busca dos dados"
 
-    def selectMatrizXModelo(self, idModelo):
+    def selectMatrizYModelo(self, idModelo):
         banco = Banco()
         try:
 
@@ -100,26 +100,15 @@ class Matrizx(object):
             print(Exception)
             return "Ocorreu um erro na busca dos dados"
 
-    def selectMatrizXModeloMMM(self, idModelo):
+    def selectMatriyYModeloMMM(self, idModelo):
         banco = Banco()
         try:
 
             c = banco.conexao.cursor()
-            c2 = banco.conexao.cursor()
 
-            #numero de colunas da matriz
-            c.execute("select max(x.nrPosicaoColuna) from matriz_x x inner join amostra a on (a.idAmostra = x.idAmostra) where a.idModelo = " + idModelo + "  ")
+            matrizY = []
 
-            contadorColunas = 0
-
-            for linha in c:
-                contadorColunas = linha[0]
-
-            #Preenchimento da MatrizX
-            matrizX = []
-
-
-            c.execute("select x.idAmostra from matriz_x x inner join amostra a on (a.idAmostra = x.idAmostra) where a.idModelo =  " + str(idModelo) + " group by x.idAmostra order by x.idAmostra asc")
+            c.execute("select y.idAmostra from matriz_y y inner join amostra a on (a.idAmostra = y.idAmostra) order by y.idAmostra asc")
 
             listaAmostras = []
             for regAmostras in c:
@@ -132,43 +121,33 @@ class Matrizx(object):
                 #print(amostra)
                 linhaMatriz = []
 
-                c.execute("select x.idAmostra, x.nrSequencia, x.nrPosicaoLinha, x.nrPosicaoColuna, x.vlLinhaColuna from matriz_x x inner join amostra a on (a.idAmostra = x.idAmostra) where a.idAmostra = " + str(amostra) + "  order by x.nrPosicaoLinha asc, x.nrPosicaoColuna asc")
+                c.execute("select y.idAmostra, y.nrSequencia, y.vlReferencia, y.vlResultado, y.idParametroRef from matriz_y y inner join amostra a on (a.idAmostra = y.idAmostra) where a.idAmostra = " + str(amostra) + "  order by y.idAmostra asc")
 
                 for regDadosAmostra in c:
-                    linhaMatriz.append(regDadosAmostra[4])
+                    linhaMatriz.append(regDadosAmostra[2])
                 #print(linhaMatriz)
-                matrizX += [linhaMatriz]
+                    matrizY += [linhaMatriz]
 
 
-            #print(matrizX)
+            #print(matrizY)
 
             c.close()
 
-            return matrizX
+            return matrizY
         except Exception:
             print(Exception)
             return "Ocorreu um erro na busca dos dados"
 
-    def selectMatrizXModeloNOVO(self, idModelo):
+
+    def selectMatrizyYNOVO(self, idModelo):
         banco = Banco()
         try:
 
             c = banco.conexao.cursor()
-            c2 = banco.conexao.cursor()
 
-            #numero de colunas da matriz
-            c.execute("select max(x.nrcoluna) from matrizamostra x where x.idModelo = " + idModelo + "  ")
+            matrizY = []
 
-            contadorColunas = 0
-
-            for linha in c:
-                contadorColunas = linha[0]
-
-            #Preenchimento da MatrizX
-            matrizX = []
-
-
-            c.execute("select x.idamostratestes from matrizamostra x where x.idamostratestes >= 10 and x.idModelo =  " + str(idModelo) + " group by x.idamostratestes order by x.idamostratestes asc")
+            c.execute("select y.idamostratestes from amostratestes y where y.idamostratestes > 10 order by y.idamostratestes asc")
 
             listaAmostras = []
             for regAmostras in c:
@@ -180,22 +159,22 @@ class Matrizx(object):
             for amostra in listaAmostras:
                 #print(amostra)
                 linhaMatriz = []
+                print("entrou")
 
-                c.execute("SELECT idamostratestes, vlresultado 	FROM public.matrizamostra where idamostratestes = " + str(amostra) + " order by idamostratestes, nrsequencia, 	nrlinha, nrcoluna, dsidentifica asc")
+                c.execute("select y.idamostratestes, y.vlResultado from amostratestes y  where y.idamostratestes = " + str(amostra) + "  order by y.idamostratestes asc")
 
                 for regDadosAmostra in c:
                     linhaMatriz.append(regDadosAmostra[1])
+                print(amostra)
+                print(linhaMatriz)
+                matrizY += [linhaMatriz]
 
-                #print(amostra)
-                #print(linhaMatriz)
-                matrizX += [linhaMatriz]
 
-
-            #print(matrizX)
+            print(matrizY)
 
             c.close()
 
-            return matrizX
+            return matrizY
         except Exception:
             print(Exception)
             return "Ocorreu um erro na busca dos dados"

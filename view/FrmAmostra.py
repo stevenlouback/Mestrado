@@ -169,7 +169,7 @@ class FrmAmostra(object):
         self.txtIdAmostra.setText('')
         self.txtIdAmostra.setText(str(amostra.idAmostra))
 
-        self.txtDtColetaAmostra.setText('')
+        #self.txtDtColetaAmostra.setText('')
         #self.txtDtColetaAmostra.setDate(strptime())
 
         self.txtTpAmostra.setText('')
@@ -193,4 +193,4 @@ if __name__ == "__main__":
     ui = FrmAmostra()
     ui.setupUi(tela)
     tela.show()
-    sys.exit(app.exec_())
+    #sys.exit(app.exec_())

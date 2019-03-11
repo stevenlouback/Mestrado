@@ -14,6 +14,7 @@ class Example(QMainWindow):
 
     def initUI(self):
 
+
         self.statusbar = self.statusBar()
         self.statusbar.showMessage('Ready')
 
