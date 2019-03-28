@@ -34,8 +34,7 @@ class PLS1(RegressionBase):
         b (ndarray m x n): Resulting regression matrix
     """
 
-    def __init__(self, X, Y, g,
-                 epsilon=DEFAULT_EPSILON, ignore_failures=False):
+    def __init__(self, X, Y, g, epsilon, ignore_failures=False):
 
         Xc, Yc = super()._prepare_data(X, Y)
 

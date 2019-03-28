@@ -8,9 +8,6 @@ sys.path.append("..\metodos")
 
 from DAOmatrizy import Matrizy
 from DAOmatrizx import Matrizx
-from pls import PLS1
-from pca import PCA
-from tkinter import *
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -72,8 +69,6 @@ class FrmMatrizX(object):
         YY = matrizY.selectMatrizyYNOVO(idModelo)
 
         XX = matrizX.selectMatrizXModeloNOVO(idModelo)
-
-        pls_1 = PLS1(X=XX, Y=YY, g=1, epsilon=DEFAULT_EPSILON, ignore_failures=False)
 
 
 if __name__ == "__main__":

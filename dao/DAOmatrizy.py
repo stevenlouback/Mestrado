@@ -147,30 +147,37 @@ class Matrizy(object):
 
             matrizY = []
 
-            c.execute("select y.idamostratestes from amostratestes y where y.idamostratestes > 10 order by y.idamostratestes asc")
+            c.execute("select y.idamostratestes from amostratestes y where y.idamostratestes < 90 and y.vlResultado > 0 order by y.idamostratestes asc")
 
             listaAmostras = []
+            cont = 0
             for regAmostras in c:
                 listaAmostras.append(regAmostras[0])
+                cont = cont + 1
 
 
-            print(listaAmostras)
+            #print(listaAmostras)
+            print('Qtde de Amostras - Matriz Y')
+            print(cont)
 
             for amostra in listaAmostras:
                 #print(amostra)
                 linhaMatriz = []
-                print("entrou")
 
-                c.execute("select y.idamostratestes, y.vlResultado from amostratestes y  where y.idamostratestes = " + str(amostra) + "  order by y.idamostratestes asc")
+                c.execute("select y.idamostratestes, y.vlResultado from amostratestes y  where y.idamostratestes = " + str(amostra) + " order by y.idamostratestes asc")
 
                 for regDadosAmostra in c:
-                    linhaMatriz.append(regDadosAmostra[1])
-                print(amostra)
-                print(linhaMatriz)
+                    if  regDadosAmostra[1] == 0E-8 :
+                        linhaMatriz.append('0')
+                    else:
+                        linhaMatriz.append(regDadosAmostra[1])
+
+                #print(amostra)
+                #print(linhaMatriz)
                 matrizY += [linhaMatriz]
 
-
-            print(matrizY)
+            #print('MATRIZ - Y')
+            #print(matrizY)
 
             c.close()
 

@@ -157,7 +157,7 @@ class Matrizx(object):
             c2 = banco.conexao.cursor()
 
             #numero de colunas da matriz
-            c.execute("select max(x.nrcoluna) from matrizamostra x where x.idModelo = " + idModelo + "  ")
+            c.execute("select max(x.nrcoluna) from matrizamostra x where x.idModelo = " + str(idModelo) + "  ")
 
             contadorColunas = 0
 
@@ -168,14 +168,16 @@ class Matrizx(object):
             matrizX = []
 
 
-            c.execute("select x.idamostratestes from matrizamostra x where x.idamostratestes >= 10 and x.idModelo =  " + str(idModelo) + " group by x.idamostratestes order by x.idamostratestes asc")
+            c.execute("select x.idamostratestes from matrizamostra x  inner join amostratestes y on (y.idamostratestes = x.idamostratestes and y.vlResultado > 0 )  where x.idamostratestes < 90 and x.idModelo =  " + str(idModelo) + " group by x.idamostratestes order by x.idamostratestes asc")
 
+            cont = 0
             listaAmostras = []
             for regAmostras in c:
                 listaAmostras.append(regAmostras[0])
+                cont = cont + 1
 
-
-            print(listaAmostras)
+            print('Qtde de Amostras - Matriz X')
+            print(cont)
 
             for amostra in listaAmostras:
                 #print(amostra)
@@ -184,13 +186,69 @@ class Matrizx(object):
                 c.execute("SELECT idamostratestes, vlresultado 	FROM public.matrizamostra where idamostratestes = " + str(amostra) + " order by idamostratestes, nrsequencia, 	nrlinha, nrcoluna, dsidentifica asc")
 
                 for regDadosAmostra in c:
-                    linhaMatriz.append(regDadosAmostra[1])
+                    if  regDadosAmostra[1] == 0E-8 :
+                        linhaMatriz.append('0')
+                    else:
+                        linhaMatriz.append(regDadosAmostra[1])
 
-                #print(amostra)
-                #print(linhaMatriz)
+                print(amostra)
+                print(linhaMatriz)
                 matrizX += [linhaMatriz]
 
+            #print('MATRIZ - X')
+            #print(matrizX)
 
+            c.close()
+
+            return matrizX
+        except Exception:
+            print(Exception)
+            return "Ocorreu um erro na busca dos dados"
+
+    def selectAmostra(self, idAmostra):
+        banco = Banco()
+        try:
+
+            c = banco.conexao.cursor()
+            c2 = banco.conexao.cursor()
+
+            #numero de colunas da matriz
+            c.execute("select max(x.nrcoluna) from matrizamostra x where x.idamostratestes = " + str(idAmostra) + "  ")
+
+            contadorColunas = 0
+
+            for linha in c:
+                contadorColunas = linha[0]
+
+            #Preenchimento da MatrizX
+            matrizX = []
+
+
+            c.execute("select x.idamostratestes from matrizamostra x where x.idamostratestes =  " + str(idAmostra) + " group by x.idamostratestes order by x.idamostratestes asc")
+
+            listaAmostras = []
+            for regAmostras in c:
+                listaAmostras.append(regAmostras[0])
+
+            #print(listaAmostras)
+
+            for amostra in listaAmostras:
+                #print(amostra)
+                linhaMatriz = []
+
+                c.execute("SELECT idamostratestes, vlresultado 	FROM public.matrizamostra where idamostratestes = " + str(amostra) + " order by idamostratestes, nrsequencia, 	nrlinha, nrcoluna, dsidentifica asc")
+
+                for regDadosAmostra in c:
+                    if  regDadosAmostra[1] == 0E-8 :
+                        linhaMatriz.append('0')
+                    else:
+                        linhaMatriz.append(regDadosAmostra[1])
+
+                print(amostra)
+                print(linhaMatriz)
+                matrizX += [linhaMatriz]
+
+            #print('MATRIZ - X')
             #print(matrizX)
 
             c.close()
