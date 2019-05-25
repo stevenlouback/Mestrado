@@ -13,7 +13,7 @@ matrizY = Matrizy()
 
 idModelo = 1
 
-idAmostraTestes = 97
+idAmostraTestes = 292
 
 Y = matrizY.selectMatrizyYNOVO(idModelo)
 
@@ -36,9 +36,16 @@ Y_pred = pls2.predict(amostraPredicao)
 print('Valor Predito:')
 print(Y_pred)
 
+
+#quantos que é explicado no modelo R2
 print('R2 do modelo PLS')
 print(pls2.score(X,Y,sample_weight=None))
 
 
 #print('R2 do modelo')
 #print(r2_score(pls2.predict(X), Y))
+
+print('Loadings:')
+print(P)
+print('Score:')
+print(T)

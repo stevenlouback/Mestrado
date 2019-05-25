@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 
 sys.path.append("..\conexaoBanco")
 
@@ -157,7 +158,8 @@ class Matrizx(object):
             c2 = banco.conexao.cursor()
 
             #numero de colunas da matriz
-            c.execute("select max(x.nrcoluna) from matrizamostra x where x.idModelo = " + str(idModelo) + "  ")
+            #c.execute("select max(x.nrcoluna) from matrizamostra x where x.idModelo = " + str(idModelo) + "  ")
+            c.execute("select max(x.nrcoluna) from matrizamostra x inner join amostratestes y on (y.idamostratestes = x.idamostratestes) where y.tipoamostra = 'CALIBRA' ")
 
             contadorColunas = 0
 
@@ -168,7 +170,7 @@ class Matrizx(object):
             matrizX = []
 
 
-            c.execute("select x.idamostratestes from matrizamostra x  inner join amostratestes y on (y.idamostratestes = x.idamostratestes and y.vlResultado > 0 )  where x.idamostratestes < 90 and x.idModelo =  " + str(idModelo) + " group by x.idamostratestes order by x.idamostratestes asc")
+            c.execute("select x.idamostratestes from matrizamostra x  inner join amostratestes y on (y.idamostratestes = x.idamostratestes)  where x.idamostratestes > 100000 and y.tipoamostra = 'CALIBRA'  group by x.idamostratestes order by x.idamostratestes asc ")
 
             cont = 0
             listaAmostras = []
@@ -189,10 +191,10 @@ class Matrizx(object):
                     if  regDadosAmostra[1] == 0E-8 :
                         linhaMatriz.append('0')
                     else:
-                        linhaMatriz.append(regDadosAmostra[1])
+                        linhaMatriz.append(np.double(regDadosAmostra[1]))
 
-                print(amostra)
-                print(linhaMatriz)
+                #print(amostra)
+                #print(linhaMatriz)
                 matrizX += [linhaMatriz]
 
             #print('MATRIZ - X')

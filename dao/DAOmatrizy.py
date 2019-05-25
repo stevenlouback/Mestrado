@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 
 sys.path.append("..\conexaoBanco")
 
@@ -147,7 +148,7 @@ class Matrizy(object):
 
             matrizY = []
 
-            c.execute("select y.idamostratestes from amostratestes y where y.idamostratestes < 90 and y.vlResultado > 0 order by y.idamostratestes asc")
+            c.execute(" select y.idamostratestes from amostratestes y where y.idamostratestes > 100000 and y.tipoamostra = 'CALIBRA' order by y.idamostratestes asc ")
 
             listaAmostras = []
             cont = 0
@@ -170,7 +171,7 @@ class Matrizy(object):
                     if  regDadosAmostra[1] == 0E-8 :
                         linhaMatriz.append('0')
                     else:
-                        linhaMatriz.append(regDadosAmostra[1])
+                        linhaMatriz.append(np.double(regDadosAmostra[1]))
 
                 #print(amostra)
                 #print(linhaMatriz)
