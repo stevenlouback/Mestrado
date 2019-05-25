@@ -1,0 +1,14 @@
+#Inicia o projeto - na maquina virtual
+python manage.py runserver
+
+#Seta variavel de ambiente no Windows
+set DATABASE_URL=postgresql://postgres:postgres@localhost:5432/Quimiometria
+
+#Para movimentar o Banco de Dados
+python manage.py db init
+python manage.py db migrate
+
+#instala o requerimento
+pip install -r requirements.txt
+
+http://127.0.0.1:5000/add?nmModelo=CLOROFILA%20SOJA&nmmetodoreferencia=Stephenie%20Meyer&tpinstrumento=1&dsModelo=TesteImplementacao&dtCriacao=22-05-2019
