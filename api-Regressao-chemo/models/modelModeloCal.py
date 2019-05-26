@@ -1,3 +1,5 @@
+from sqlalchemy.ext.orderinglist import ordering_list
+
 from app import db
 
 
@@ -11,6 +13,11 @@ class ModeloCalibracao(db.Model):
     dsmodelo = db.Column(db.String(), nullable=True)
     dtcriacao = db.Column(db.DateTime, nullable=False)
 
+    amostra   = db.relationship('Amostra', cascade='all,delete', backref='ModeloCalibracao', lazy=True, uselist=True,
+        collection_class=ordering_list("idamostra", count_from=1))
+    parametros = db.relationship('Parametro', cascade='all,delete', backref='ModeloCalibracao', lazy=True, uselist=True,
+        collection_class=ordering_list("idparametroref", count_from=1))
+
     def __init__(self, nmmodelo, nmmetodoreferencia, tpinstrumento, dsmodelo, dtcriacao):
         self.nmmodelo = nmmodelo
         self.nmmetodoreferencia = nmmetodoreferencia
@@ -19,7 +26,7 @@ class ModeloCalibracao(db.Model):
         self.dtcriacao = dtcriacao
 
     def __repr__(self):
-        return '<id {}>'.format(self.idmodelo)
+        return '<idmodelo {}>'.format(self.idmodelo)
 
     def serialize(self):
         return {

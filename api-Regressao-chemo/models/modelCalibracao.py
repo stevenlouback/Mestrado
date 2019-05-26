@@ -1,7 +1,7 @@
 from app import db
 
 
-class AmostraCalibracao(db.Model):
+class Calibracao(db.Model):
     __tablename__ = 'calibracao'
 
     idmodelo = db.Column(db.Integer, primary_key=True)
@@ -9,11 +9,12 @@ class AmostraCalibracao(db.Model):
     inativo = db.Column(db.String(), nullable=True)
     dtcalibracao = db.Column(db.DateTime, nullable=False)
 
-    def __init__(self, idmodelo, tpamostra, dsobservacoes, dtcoletaamostra):
+    # amostra_calibracao = db.relationship('amostra_calibracao', backref='Calibracao', lazy=True)
+
+    def __init__(self, idmodelo, inativo, dtcalibracao):
         self.idmodelo = idmodelo
-        self.tpamostra = tpamostra
-        self.dsobservacoes = dsobservacoes
-        self.dtcoletaamostra = dtcoletaamostra
+        self.inativo = inativo
+        self.dtcalibracao = dtcalibracao
 
     def __repr__(self):
         return {

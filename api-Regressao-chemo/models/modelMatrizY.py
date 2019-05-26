@@ -1,15 +1,17 @@
 from app import db
 
 
-class ModeloCalibracao(db.Model):
+class MatrizY(db.Model):
     __tablename__ = 'matrizY'
 
-    idmodelo        = db.Column(db.Integer, primary_key=True)
-    idamostra       = db.Column(db.Integer, primary_key=True)
+    # idmodelo        = db.Column(db.Integer, db.ForeignKey('amostra.idmodelo'), db.ForeignKey('parametro.idmodelo'), primary_key=True)
+    # idamostra       = db.Column(db.Integer, db.ForeignKey('amostra.idamostra'), primary_key=True)
+    idmodelo = db.Column(db.Integer,primary_key=True)
+    idamostra = db.Column(db.Integer, primary_key=True)
     idparametroref  = db.Column(db.Integer, primary_key=True)
-    idcalibracao    = db.Column(db.Integer, required=False)
-    vlresultado    = db.Column(db.Numeric, required=False)
-    vlreferencia    = db.Column(db.Numeric, required=False)
+    idcalibracao    = db.Column(db.Integer, nullable=False)
+    vlresultado    = db.Column(db.Numeric, nullable=False)
+    vlreferencia    = db.Column(db.Numeric, nullable=False)
     dtpredicao = db.Column(db.DateTime, nullable=False)
 
 

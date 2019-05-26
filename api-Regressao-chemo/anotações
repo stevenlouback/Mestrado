@@ -7,8 +7,12 @@ set DATABASE_URL=postgresql://postgres:postgres@localhost:5432/Quimiometria
 #Para movimentar o Banco de Dados
 python manage.py db init
 python manage.py db migrate
+python manage.py db upgrade
 
 #instala o requerimento
 pip install -r requirements.txt
 
-http://127.0.0.1:5000/add?nmModelo=CLOROFILA%20SOJA&nmmetodoreferencia=Stephenie%20Meyer&tpinstrumento=1&dsModelo=TesteImplementacao&dtCriacao=22-05-2019
+#Teste Parametros
+http://127.0.0.1:5000/modelo/add?param={"nmmodelo":"CLOROFILA SOJA","nmmetodoreferencia":"OOCS","tpinstrumento":"1","dsmodelo":"TesteImplementacao","dtcriacao":"22-05-2019"}
+http://127.0.0.1:5000/parametros/add?param={"idmodelo":"1","nmparametroref":"Clorofila"}
+http://127.0.0.1:5000/amostra/add?param={"idmodelo":"1","tpamostra":"C","dsobservacoes":"1505","dtcoletaamostra":"25-05-2019"}

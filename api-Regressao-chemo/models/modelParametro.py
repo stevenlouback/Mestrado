@@ -1,23 +1,26 @@
+import uuid
+
 from app import db
 
 
-class ModeloCalibracao(db.Model):
-    __tablename__ = 'modelo'
+class Parametro(db.Model):
+    __tablename__ = 'parametro'
 
-    idmodelo = db.Column(db.Integer, primary_key=True)
+    idmodelo = db.Column(db.Integer, db.ForeignKey('modelo.idmodelo'), primary_key=True)
     idparametroref = db.Column(db.Integer, primary_key=True)
     nmparametroref = db.Column(db.String(), unique=True, nullable=False)
 
+    # matrizesY = db.relationship('MatrizY', backref='Parametro', lazy=True)
 
-    def __init__(self, nmmodelo, nmmetodoreferencia, tpinstrumento, dsmodelo, dtcriacao):
-        self.nmmodelo = nmmodelo
-        self.nmmetodoreferencia = nmmetodoreferencia
-        self.tpinstrumento = tpinstrumento
-        self.dsmodelo = dsmodelo
-        self.dtcriacao = dtcriacao
+    def __init__(self, idparametroref,idmodelo, nmparametroref):
+        self.idparametroref = idparametroref
+        self.idmodelo = idmodelo
+        self.nmparametroref = nmparametroref
 
     def __repr__(self):
-        return '<id {}>'.format(self.idmodelo)
+        return {
+            '<Parametro {}>'.format(self.idmodelo,self.idparametroref)
+        }
 
     def serialize(self):
         return {

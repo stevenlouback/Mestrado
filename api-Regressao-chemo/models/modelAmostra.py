@@ -4,23 +4,26 @@ from app import db
 class Amostra(db.Model):
     __tablename__ = 'amostra'
 
-    idmodelo = db.Column(db.Integer, primary_key=True)
-    idamostra = db.Column(db.Integer, ,primary_key=True)
+    idmodelo = db.Column(db.Integer, db.ForeignKey('modelo.idmodelo'), primary_key=True)
+    idamostra = db.Column(db.Integer, primary_key=True,autoincrement=True)
     tpamostra = db.Column(db.String(), nullable=False)
     dsobservacoes = db.Column(db.String(), nullable=True)
     dtcoletaamostra = db.Column(db.DateTime, nullable=False)
 
-    def __init__(self, idmodelo, tpamostra, dsobservacoes, dtcoletaamostra):
+    # matrizesX = db.relationship('MatrizX', backref='Amostra', lazy=True)
+    # matrizesY = db.relationship('MatrizY', backref='Amostra', lazy=True)
+    # amostrascalibracao = db.relationship('AmostraCalibracao', backref='Amostra', lazy=True)
+
+    def __init__(self, idmodelo,idamostra, tpamostra, dsobservacoes, dtcoletaamostra):
         self.idmodelo = idmodelo
+        self.idamostra = idamostra
         self.tpamostra = tpamostra
         self.dsobservacoes = dsobservacoes
         self.dtcoletaamostra = dtcoletaamostra
 
     def __repr__(self):
-        return {
-            '<idmodelo {}>'.format(self.idmodelo),
-            '<idamostra{}'.format(self.idamostra)
-        }
+        return "<Amostras(%s, %s)>" % (
+            self.idmodelo, self.idamostra)
 
     def serialize(self):
         return {
