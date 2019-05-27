@@ -18,7 +18,8 @@ class ModeloCalibracao(db.Model):
     parametros = db.relationship('Parametro', cascade='all,delete', backref='ModeloCalibracao', lazy=True, uselist=True,
         collection_class=ordering_list("idparametroref", count_from=1))
 
-    def __init__(self, nmmodelo, nmmetodoreferencia, tpinstrumento, dsmodelo, dtcriacao):
+    def __init__(self, idmodelo, nmmodelo, nmmetodoreferencia, tpinstrumento, dsmodelo, dtcriacao):
+        self.idmodelo = idmodelo
         self.nmmodelo = nmmodelo
         self.nmmetodoreferencia = nmmetodoreferencia
         self.tpinstrumento = tpinstrumento

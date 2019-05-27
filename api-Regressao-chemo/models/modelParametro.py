@@ -8,7 +8,7 @@ class Parametro(db.Model):
 
     idmodelo = db.Column(db.Integer, db.ForeignKey('modelo.idmodelo'), primary_key=True)
     idparametroref = db.Column(db.Integer, primary_key=True)
-    nmparametroref = db.Column(db.String(), unique=True, nullable=False)
+    nmparametroref = db.Column(db.String(), nullable=False)
 
     # matrizesY = db.relationship('MatrizY', backref='Parametro', lazy=True)
 
@@ -25,9 +25,6 @@ class Parametro(db.Model):
     def serialize(self):
         return {
             'idmodelo': self.idmodelo,
-            'nmmodelo': self.nmmodelo,
-            'nmmetodoreferencia': self.nmmetodoreferencia,
-            'tpinstrumento': self.tpinstrumento,
-            'dsmodelo': self.dsmodelo,
-            'dtcriacao': self.dtcriacao
+            'idparametroref': self.idparametroref,
+            'nmparametroref': self.nmparametroref
         }

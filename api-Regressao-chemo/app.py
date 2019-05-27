@@ -21,31 +21,18 @@ def hello():
 ########################################
 
 from models.modelModeloCal import ModeloCalibracao
+from controller.controllerModelo import geraModelo
 
 @app.route("/modelo/add")
 def add_modelo():
     param = request.args.get('param')
     objeto = json.loads(param)
 
-    nmmodelo= objeto['nmmodelo']
-    nmmetodoreferencia=objeto['nmmetodoreferencia']
-    tpinstrumento=objeto['tpinstrumento']
-    dsmodelo = objeto['dsmodelo']
-    dtcriacao = objeto['dtcriacao']
+    msg = geraModelo(db,objeto)
 
-    try:
-        modelo=ModeloCalibracao(
-            nmmodelo=nmmodelo,
-            nmmetodoreferencia=nmmetodoreferencia,
-            tpinstrumento=tpinstrumento,
-            dsmodelo=dsmodelo,
-            dtcriacao=dtcriacao
-        )
-        db.session.add(modelo)
-        db.session.commit()
-        return "Modelo Adicionado. idmodelo={}".format(modelo.idmodelo)
-    except Exception as e:
-	      return(str(e))
+    db.session.commit()
+
+    return msg
 
 @app.route("/modelo/getall")
 def get_all():
@@ -68,33 +55,18 @@ def get_by_id(id_):
 ########################################
 
 from models.modelAmostra import Amostra
+from controller.controllerAmostra import geraAmostra
 
 @app.route("/amostra/add")
 def add_amostra():
     param = request.args.get('param')
     objeto = json.loads(param)
 
-    idmodelo= objeto['idmodelo']
-    tpamostra=objeto['tpamostra']
-    dsobservacoes=objeto['dsobservacoes']
-    dtcoletaamostra = objeto['dtcoletaamostra']
+    msg = geraAmostra(db, objeto)
 
-    #Pega a ultima sequencia para gravar no banco
-    idamostra = (db.session.query(func.max(Amostra.idamostra)).filter_by(idmodelo=idmodelo).scalar() or 0) + 1
+    db.session.commit()
 
-    try:
-        modelo=Amostra(
-            idmodelo=idmodelo,
-            idamostra=idamostra,
-            tpamostra=tpamostra,
-            dsobservacoes=dsobservacoes,
-            dtcoletaamostra=dtcoletaamostra
-        )
-        db.session.add(modelo)
-        db.session.commit()
-        return "Amostra Adicionada. idmodelo={}".format(modelo.idmodelo)+" idAmostra={}".format(modelo.idamostra)
-    except Exception as e:
-	      return(str(e))
+    return msg
 
 @app.route("/amostra/getall")
 def get_allAmostra():
@@ -118,27 +90,18 @@ def get_by_idAmostra(idmodelo_,idamostra_):
 ########################################
 
 from models.modelAmostraCalibracao import AmostraCalibracao
+from controller.controllerAmostraCalibracao import geraAmostraCalibracao
 
 @app.route("/amostracalibracao/add")
 def add_amostraCalibracao():
     param = request.args.get('param')
     objeto = json.loads(param)
 
-    idmodelo= objeto['idmodelo']
-    idamostra=objeto['idamostra']
-    idcalibracao=objeto['idcalibracao']
+    msg = geraAmostraCalibracao(db, objeto)
 
-    try:
-        modelo=AmostraCalibracao(
-            idmodelo=idmodelo,
-            idamostra=idamostra,
-            idcalibracao=idcalibracao
-        )
-        db.session.add(modelo)
-        db.session.commit()
-        return "Amostra da Calibração Adicionada."
-    except Exception as e:
-	      return(str(e))
+    db.session.commit()
+
+    return msg
 
 @app.route("/amostracalibracao/getall")
 def get_allAmostraCalibracao():
@@ -162,27 +125,18 @@ def get_by_idAmostraCalibracao(idmodelo_,idamostra_,idcalibracao_):
 ########################################
 
 from models.modelCalibracao import Calibracao
+from controller.controllerCalibracao import geraCalibracao
 
 @app.route("/calibracao/add")
 def add_calibracao():
     param = request.args.get('param')
     objeto = json.loads(param)
 
-    idmodelo= objeto['idmodelo']
-    inativo=objeto['inativo']
-    dtcalibracao=objeto['dtcalibracao']
+    msg = geraCalibracao(db, objeto)
 
-    try:
-        modelo=Calibracao(
-            idmodelo=idmodelo,
-            inativo=inativo,
-            dtcalibracao=dtcalibracao
-        )
-        db.session.add(modelo)
-        db.session.commit()
-        return "Calibração Registrada."
-    except Exception as e:
-	      return(str(e))
+    db.session.commit()
+
+    return msg
 
 @app.route("/calibracao/getall")
 def get_allCalibracao():
