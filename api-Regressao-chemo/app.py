@@ -160,31 +160,19 @@ def get_by_idCalibracao(idmodelo_,idcalibracao_):
 ########################################
 
 from models.modelMatrizX import MatrizX
+from controller.controllerMatrizX import geraMatrizX
 
 @app.route("/matrizx/add")
 def add_matrizx():
     param = request.args.get('param')
     objeto = json.loads(param)
 
-    idmodelo= objeto['idmodelo']
-    idamostra=objeto['idamostra']
-    nrposicaolinha=objeto['nrposicaolinha']
-    nrposicaocoluna=objeto['nrposicaocoluna']
-    vllinhacoluna=objeto['vllinhacoluna']
+    msg = geraMatrizX(db, objeto)
 
-    try:
-        modelo=MatrizX(
-            idmodelo=idmodelo,
-            idamostra=idamostra,
-            nrposicaolinha=nrposicaolinha,
-            nrposicaocoluna = nrposicaocoluna,
-            vllinhacoluna = vllinhacoluna
-        )
-        db.session.add(modelo)
-        db.session.commit()
-        return "Matriz X Registrada."
-    except Exception as e:
-	      return(str(e))
+    db.session.commit()
+
+    return msg
+
 
 @app.route("/matrizx/getall")
 def get_allmatrizx():
@@ -214,30 +202,7 @@ def add_matrizy():
     param = request.args.get('param')
     objeto = json.loads(param)
 
-    idmodelo= objeto['idmodelo']
-    idamostra=objeto['idamostra']
-    idparametroref=objeto['idparametroref']
-    idcalibracao=objeto['idcalibracao']
-    vlresultado=objeto['vlresultado']
-    vlreferencia = objeto['vlreferencia']
-    dtpredicao = objeto['dtpredicao']
 
-
-    try:
-        modelo=MatrizY(
-            idmodelo=idmodelo,
-            idamostra=idamostra,
-            idparametroref=idparametroref,
-            idcalibracao = idcalibracao,
-            vlresultado = vlresultado,
-            vlreferencia=vlreferencia,
-            dtpredicao=dtpredicao
-        )
-        db.session.add(modelo)
-        db.session.commit()
-        return "Matriz Y Registrada."
-    except Exception as e:
-	      return(str(e))
 
 @app.route("/matrizy/getall")
 def get_allmatrizy():
@@ -260,30 +225,17 @@ def get_by_idmatrizy(idmodelo_,idamostra_,idparametroref_):
 ########################################
 
 from models.modelParametro import Parametro
+from controller.controllerParametro import geraParametro
 
 @app.route("/parametros/add")
 def add_parametros():
     param = request.args.get('param')
     objeto = json.loads(param)
 
-    idmodelo= objeto['idmodelo']
-    nmparametroref=objeto['nmparametroref']
+    msg = geraParametro(db, objeto)
 
-    # Pega a ultima sequencia para gravar no banco
-    idparametroref = (db.session.query(func.max(Parametro.idparametroref)).filter_by(idmodelo=idmodelo).scalar() or 0) + 1
+    return msg
 
-    try:
-        modelo=Parametro(
-
-            idparametroref =idparametroref,
-            idmodelo=idmodelo,
-            nmparametroref=nmparametroref
-        )
-        db.session.add(modelo)
-        db.session.commit()
-        return "Parametros Registrado."
-    except Exception as e:
-	      return(str(e))
 
 @app.route("/parametros/getall")
 def get_allparametros():

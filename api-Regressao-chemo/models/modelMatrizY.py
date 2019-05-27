@@ -15,9 +15,10 @@ class MatrizY(db.Model):
     dtpredicao = db.Column(db.DateTime, nullable=False)
 
 
-    def __init__(self, idmodelo,idamostra,idparametroref,idcalibracao,vlresultado,vlreferencia,dtpredicao):
+    def __init__(self, idmodelo,idamostra,nrsequencia,idparametroref,idcalibracao,vlresultado,vlreferencia,dtpredicao):
         self.idmodelo = idmodelo
         self.idamostra = idamostra
+        self.nrsequencia = nrsequencia
         self.idparametroref = idparametroref
         self.idcalibracao = idcalibracao
         self.vlresultado = vlresultado
@@ -25,16 +26,13 @@ class MatrizY(db.Model):
         self.dtpredicao = dtpredicao
 
     def __repr__(self):
-        return {
-            '<idmodelo {}>'.format(self.idmodelo),
-            '<idamostra{}'.format(self.idamostra),
-            '<idparametroref{}'.format(self.idparametroref)
-    }
+        return '<matrizY{}'.format(self.nrsequencia,self.idmodelo,self.idamostra)
 
     def serialize(self):
         return {
             'idmodelo': self.idmodelo,
             'idamostra': self.idamostra,
+            'nrsequencia': self.nrsequencia,
             'idparametroref': self.idparametroref,
             'idcalibracao': self.idcalibracao,
             'vlresultado': self.vlresultado,

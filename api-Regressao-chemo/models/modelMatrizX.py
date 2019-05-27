@@ -13,9 +13,10 @@ class MatrizX(db.Model):
     nrposicaocoluna = db.Column(db.Integer, nullable=False)
     vllinhacoluna   = db.Column(db.Numeric, nullable=False)
 
-    def __init__(self, idmodelo, idamostra, nrposicaolinha, nrposicaocoluna, vllinhacoluna):
+    def __init__(self, idmodelo, idamostra,nrsequencia, nrposicaolinha, nrposicaocoluna, vllinhacoluna):
         self.idmodelo = idmodelo
         self.idamostra = idamostra
+        self.nrsequencia=nrsequencia
         self.nrposicaolinha = nrposicaolinha
         self.nrposicaocoluna = nrposicaocoluna
         self.vllinhacoluna = vllinhacoluna
