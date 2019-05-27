@@ -1,6 +1,6 @@
 from sqlalchemy import func
 
-from models.modelMatrizX import MatrizX
+from models.model import MatrizX
 
 def geraMatrizX(db, objeto):
   idmodelo = objeto['idmodelo']

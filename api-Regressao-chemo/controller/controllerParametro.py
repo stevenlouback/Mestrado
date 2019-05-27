@@ -1,6 +1,6 @@
 from sqlalchemy import func
 
-from models.modelParametro import Parametro
+from models.model import Parametro
 
 def geraParametro(db, objeto):
   idmodelo = objeto['idmodelo']
