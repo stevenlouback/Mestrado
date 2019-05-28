@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: b78405c746e5
+Revision ID: 2ca437b9b88b
 Revises: 
-Create Date: 2019-05-26 14:20:02.730862
+Create Date: 2019-05-27 18:38:40.932048
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b78405c746e5'
+revision = '2ca437b9b88b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -62,7 +62,7 @@ def upgrade():
     )
     op.create_table('amostra',
     sa.Column('idmodelo', sa.Integer(), nullable=False),
-    sa.Column('idamostra', sa.Integer(), nullable=False),
+    sa.Column('idamostra', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('tpamostra', sa.String(), nullable=False),
     sa.Column('dsobservacoes', sa.String(), nullable=True),
     sa.Column('dtcoletaamostra', sa.DateTime(), nullable=False),
@@ -74,8 +74,7 @@ def upgrade():
     sa.Column('idparametroref', sa.Integer(), nullable=False),
     sa.Column('nmparametroref', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['idmodelo'], ['modelo.idmodelo'], ),
-    sa.PrimaryKeyConstraint('idmodelo', 'idparametroref'),
-    sa.UniqueConstraint('nmparametroref')
+    sa.PrimaryKeyConstraint('idmodelo', 'idparametroref')
     )
     # ### end Alembic commands ###
 

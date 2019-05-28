@@ -39,5 +39,5 @@ class MatrizY(db.Model):
             'idcalibracao': self.idcalibracao,
             'vlresultado': self.vlresultado,
             'vlreferencia': self.vlreferencia,
-            'dtpredicao': self.dtpredicao
+            'dtpredicao': self.dtpredicao.strftime("%d/%m/%Y")
         }

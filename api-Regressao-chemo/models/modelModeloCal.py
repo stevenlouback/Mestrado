@@ -30,11 +30,12 @@ class ModeloCalibracao(db.Model):
         return '<idmodelo {}>'.format(self.idmodelo)
 
     def serialize(self):
+
         return {
             'idmodelo': self.idmodelo,
             'nmmodelo': self.nmmodelo,
             'nmmetodoreferencia': self.nmmetodoreferencia,
             'tpinstrumento': self.tpinstrumento,
             'dsmodelo': self.dsmodelo,
-            'dtcriacao': self.dtcriacao
+            'dtcriacao': self.dtcriacao.strftime("%d/%m/%Y")
         }

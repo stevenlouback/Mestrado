@@ -10,6 +10,8 @@ def geraModelo(db, objeto):
   dsmodelo = objeto['dsmodelo']
   dtcriacao = objeto['dtcriacao']
 
+
+
   # Pega a ultima sequencia para gravar no banco
   idmodelo = (db.session.query(func.max(ModeloCalibracao.idmodelo)).scalar() or 0) + 1
 

@@ -1,6 +1,5 @@
 from app import db
 
-
 class Amostra(db.Model):
     __tablename__ = 'amostra'
 
@@ -31,7 +30,7 @@ class Amostra(db.Model):
             'idamostra': self.idamostra,
             'tpamostra': self.tpamostra,
             'dsobservacoes': self.dsobservacoes,
-            'dtcoletaamostra': self.dtcoletaamostra
+            'dtcoletaamostra': self.dtcoletaamostra.strftime("%d/%m/%Y")
         }
 
     def save(self):
