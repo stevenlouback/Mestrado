@@ -2,23 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="72e0783e-10fa-436e-90d7-19d8c4fa00b0" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/models/model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/controllerAmostra.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller/controllerAmostra.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/controllerAmostraCalibracao.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller/controllerAmostraCalibracao.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/controllerCalibracao.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller/controllerCalibracao.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/controllerMatrizX.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller/controllerMatrizX.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/controllerMatrizY.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller/controllerMatrizY.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/controllerModelo.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller/controllerModelo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/controllerParametro.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller/controllerParametro.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/modelAmostra.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/modelAmostraCalibracao.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/modelCalibracao.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/modelMatrizX.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/modelMatrizY.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/modelModeloCal.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/modelParametro.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/README" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/alembic.ini" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/env.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/script.py.mako" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/b78405c746e5_.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/model.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -45,8 +35,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/models/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="5" column="15" lean-forward="true" selection-start-line="5" selection-start-column="15" selection-end-line="5" selection-end-column="15" />
+            <state relative-caret-position="288">
+              <caret line="249" lean-forward="true" selection-start-line="249" selection-end-line="249" />
               <folding>
                 <element signature="e#0#53#0" expanded="true" />
               </folding>
@@ -133,6 +123,11 @@
             <path>
               <item name="api-Regressao-chemo" type="b2602c69:ProjectViewProjectNode" />
               <item name="api-Regressao-chemo" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="api-Regressao-chemo" type="b2602c69:ProjectViewProjectNode" />
+              <item name="api-Regressao-chemo" type="462c0819:PsiDirectoryNode" />
+              <item name="migrations" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="api-Regressao-chemo" type="b2602c69:ProjectViewProjectNode" />
@@ -234,12 +229,12 @@
       <workItem from="1558785082704" duration="30379000" />
       <workItem from="1558874734841" duration="14990000" />
       <workItem from="1558911445403" duration="3088000" />
-      <workItem from="1558945297595" duration="6515000" />
+      <workItem from="1558945297595" duration="9403000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="70587000" />
+    <option name="totallyTimeSpent" value="73475000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -530,8 +525,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/models/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="15" lean-forward="true" selection-start-line="5" selection-start-column="15" selection-end-line="5" selection-end-column="15" />
+        <state relative-caret-position="288">
+          <caret line="249" lean-forward="true" selection-start-line="249" selection-end-line="249" />
           <folding>
             <element signature="e#0#53#0" expanded="true" />
           </folding>
