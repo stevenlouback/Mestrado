@@ -1,6 +1,6 @@
 from sqlalchemy import func
 
-from models.model import ModeloCalibracao
+from models.modelModeloCal import ModeloCalibracao
 
 def geraModelo(db, objeto):
 
@@ -9,6 +9,8 @@ def geraModelo(db, objeto):
   tpinstrumento = objeto['tpinstrumento']
   dsmodelo = objeto['dsmodelo']
   dtcriacao = objeto['dtcriacao']
+
+
 
   # Pega a ultima sequencia para gravar no banco
   idmodelo = (db.session.query(func.max(ModeloCalibracao.idmodelo)).scalar() or 0) + 1

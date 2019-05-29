@@ -1,4 +1,4 @@
-from models.model import AmostraCalibracao
+from models.modelAmostraCalibracao import AmostraCalibracao
 
 
 def geraAmostraCalibracao (db, objeto):

@@ -2,6 +2,7 @@ import json
 
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import engine, func
 
 app = Flask(__name__)
 
@@ -19,7 +20,7 @@ def hello():
 #Rotas da Tabela Modelo
 ########################################
 
-from models.model import ModeloCalibracao
+from models.modelModeloCal import ModeloCalibracao
 from controller.controllerModelo import geraModelo
 
 @app.route("/modelo/add")
@@ -53,7 +54,7 @@ def get_by_id(id_):
 #Rotas da Tabela AMOSTRA
 ########################################
 
-from models.model import Amostra
+from models.modelAmostra import Amostra
 from controller.controllerAmostra import geraAmostra
 
 @app.route("/amostra/add")
@@ -88,7 +89,7 @@ def get_by_idAmostra(idmodelo_,idamostra_):
 #Rotas da Tabela Amostra_Calibracao
 ########################################
 
-from models.model import AmostraCalibracao
+from models.modelAmostraCalibracao import AmostraCalibracao
 from controller.controllerAmostraCalibracao import geraAmostraCalibracao
 
 @app.route("/amostracalibracao/add")
@@ -123,7 +124,7 @@ def get_by_idAmostraCalibracao(idmodelo_,idamostra_,idcalibracao_):
 #Rotas da Tabela CALIBRACAO
 ########################################
 
-from models.model import Calibracao
+from models.modelCalibracao import Calibracao
 from controller.controllerCalibracao import geraCalibracao
 
 @app.route("/calibracao/add")
@@ -158,20 +159,32 @@ def get_by_idCalibracao(idmodelo_,idcalibracao_):
 #Rotas da Tabela MATRIZ_X
 ########################################
 
-from models.model import MatrizX
-from controller.controllerMatrizX import geraMatrizX
+from models.modelMatrizX import MatrizX
 
 @app.route("/matrizx/add")
 def add_matrizx():
     param = request.args.get('param')
     objeto = json.loads(param)
 
-    msg = geraMatrizX(db, objeto)
+    idmodelo= objeto['idmodelo']
+    idamostra=objeto['idamostra']
+    nrposicaolinha=objeto['nrposicaolinha']
+    nrposicaocoluna=objeto['nrposicaocoluna']
+    vllinhacoluna=objeto['vllinhacoluna']
 
-    db.session.commit()
-
-    return msg
-
+    try:
+        modelo=MatrizX(
+            idmodelo=idmodelo,
+            idamostra=idamostra,
+            nrposicaolinha=nrposicaolinha,
+            nrposicaocoluna = nrposicaocoluna,
+            vllinhacoluna = vllinhacoluna
+        )
+        db.session.add(modelo)
+        db.session.commit()
+        return "Matriz X Registrada."
+    except Exception as e:
+	      return(str(e))
 
 @app.route("/matrizx/getall")
 def get_allmatrizx():
@@ -194,14 +207,37 @@ def get_by_idmatrizx(idmodelo_,idamostra_,nrsequencia_):
 #Rotas da Tabela MATRIZ_Y
 ########################################
 
-from models.model import MatrizY
+from models.modelMatrizY import MatrizY
 
 @app.route("/matrizy/add")
 def add_matrizy():
     param = request.args.get('param')
     objeto = json.loads(param)
 
+    idmodelo= objeto['idmodelo']
+    idamostra=objeto['idamostra']
+    idparametroref=objeto['idparametroref']
+    idcalibracao=objeto['idcalibracao']
+    vlresultado=objeto['vlresultado']
+    vlreferencia = objeto['vlreferencia']
+    dtpredicao = objeto['dtpredicao']
 
+
+    try:
+        modelo=MatrizY(
+            idmodelo=idmodelo,
+            idamostra=idamostra,
+            idparametroref=idparametroref,
+            idcalibracao = idcalibracao,
+            vlresultado = vlresultado,
+            vlreferencia=vlreferencia,
+            dtpredicao=dtpredicao
+        )
+        db.session.add(modelo)
+        db.session.commit()
+        return "Matriz Y Registrada."
+    except Exception as e:
+	      return(str(e))
 
 @app.route("/matrizy/getall")
 def get_allmatrizy():
@@ -223,18 +259,31 @@ def get_by_idmatrizy(idmodelo_,idamostra_,idparametroref_):
 #Rotas da Tabela PARAMETROS
 ########################################
 
-from models.model import Parametro
-from controller.controllerParametro import geraParametro
+from models.modelParametro import Parametro
 
 @app.route("/parametros/add")
 def add_parametros():
     param = request.args.get('param')
     objeto = json.loads(param)
 
-    msg = geraParametro(db, objeto)
+    idmodelo= objeto['idmodelo']
+    nmparametroref=objeto['nmparametroref']
 
-    return msg
+    # Pega a ultima sequencia para gravar no banco
+    idparametroref = (db.session.query(func.max(Parametro.idparametroref)).filter_by(idmodelo=idmodelo).scalar() or 0) + 1
 
+    try:
+        modelo=Parametro(
+
+            idparametroref =idparametroref,
+            idmodelo=idmodelo,
+            nmparametroref=nmparametroref
+        )
+        db.session.add(modelo)
+        db.session.commit()
+        return "Parametros Registrado."
+    except Exception as e:
+	      return(str(e))
 
 @app.route("/parametros/getall")
 def get_allparametros():
@@ -252,18 +301,6 @@ def get_by_idparametros(idmodelo_,idparametroref_):
     except Exception as e:
 	      return(str(e))
 
-@app.route("/teste")
-def get_sql():
-    try:
-
-        rs = db.execute('SELECT * FROM MATRYZX')
-
-        for row in rs:
-            print(row)
-        return "FUNCIONOU"
-        # jsonify(modelo.serialize())
-    except Exception as e:
-	      return(str(e))
 
 if __name__ == '__main__':
     app.run()
