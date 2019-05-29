@@ -15,9 +15,9 @@ class Amostra(db.Model):
     dsobservacoes = db.Column(db.String(), nullable=True)
     dtcoletaamostra = db.Column(db.DateTime, nullable=False)
 
-    matrizesX = db.relationship('MatrizX', backref='Amostra', lazy=True)
-    matrizesY = db.relationship('MatrizY', backref='Amostra', lazy=True)
-    amostrascalibracao = db.relationship('AmostraCalibracao', backref='Amostra', lazy=True)
+    # matrizesX = db.relationship('MatrizX', backref='Amostra', lazy=True)
+    # matrizesY = db.relationship('MatrizY', backref='Amostra', lazy=True)
+    # amostrascalibracao = db.relationship('AmostraCalibracao', backref='Amostra', lazy=True)
 
     def __init__(self, idmodelo,idamostra, tpamostra, dsobservacoes, dtcoletaamostra):
         self.idmodelo = idmodelo
@@ -151,10 +151,10 @@ class MatrizY(db.Model):
     idmodelo = db.Column(db.Integer, primary_key=True)
     idamostra = db.Column(db.Integer, primary_key=True)
     idparametroref = db.Column(db.Integer, primary_key=True)
-    idcalibracao = db.Column(db.Integer, nullable=False)
-    vlresultado = db.Column(db.Numeric, nullable=False)
-    vlreferencia = db.Column(db.Numeric, nullable=False)
-    dtpredicao = db.Column(db.DateTime, nullable=False)
+    idcalibracao = db.Column(db.Integer, nullable=True)
+    vlresultado = db.Column(db.Numeric, nullable=True)
+    vlreferencia = db.Column(db.Numeric, nullable=True)
+    dtpredicao = db.Column(db.DateTime, nullable=True)
 
     def __init__(self, idmodelo, idamostra, nrsequencia, idparametroref, idcalibracao, vlresultado, vlreferencia,
                  dtpredicao):
@@ -229,7 +229,7 @@ class Parametro(db.Model):
     idparametroref = db.Column(db.Integer, primary_key=True)
     nmparametroref = db.Column(db.String(), nullable=False)
 
-    matrizesY = db.relationship('MatrizY', backref='Parametro', lazy=True)
+    # matrizesY = db.relationship('MatrizY', backref='Parametro', lazy=True)
 
     def __init__(self, idparametroref, idmodelo, nmparametroref):
       self.idparametroref = idparametroref

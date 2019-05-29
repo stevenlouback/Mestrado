@@ -7,7 +7,6 @@
       <change beforePath="$PROJECT_DIR$/migrations/alembic.ini" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/migrations/env.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/migrations/script.py.mako" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/versions/b78405c746e5_.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/models/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/model.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -35,11 +34,20 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/models/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="249" lean-forward="true" selection-start-line="249" selection-end-line="249" />
+            <state relative-caret-position="216">
+              <caret line="156" column="53" selection-start-line="156" selection-start-column="53" selection-end-line="156" selection-end-column="53" />
               <folding>
                 <element signature="e#0#53#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/anotações">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="7" selection-start-line="7" selection-end-line="7" selection-end-column="24" />
             </state>
           </provider>
         </entry>
@@ -67,6 +75,8 @@
       <find>amostra</find>
       <find>amostrac</find>
       <find>calibr</find>
+      <find>foreig</find>
+      <find>rela</find>
     </findStrings>
     <dirStrings>
       <dir>E:\Mestrado\Matérias\Desenvolvimento do Artigo\api-Regressao-chemo</dir>
@@ -106,7 +116,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="676" />
     <option name="width" value="697" />
     <option name="height" value="735" />
@@ -123,11 +133,6 @@
             <path>
               <item name="api-Regressao-chemo" type="b2602c69:ProjectViewProjectNode" />
               <item name="api-Regressao-chemo" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="api-Regressao-chemo" type="b2602c69:ProjectViewProjectNode" />
-              <item name="api-Regressao-chemo" type="462c0819:PsiDirectoryNode" />
-              <item name="migrations" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="api-Regressao-chemo" type="b2602c69:ProjectViewProjectNode" />
@@ -229,12 +234,13 @@
       <workItem from="1558785082704" duration="30379000" />
       <workItem from="1558874734841" duration="14990000" />
       <workItem from="1558911445403" duration="3088000" />
-      <workItem from="1558945297595" duration="9403000" />
+      <workItem from="1558945297595" duration="10364000" />
+      <workItem from="1559084542470" duration="2229000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="73475000" />
+    <option name="totallyTimeSpent" value="76665000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -246,10 +252,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="7" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14220877" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14447807" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -399,71 +405,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/anotações">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" selection-start-line="15" selection-end-line="15" selection-end-column="173" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/modelAmostra.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="62" selection-end-line="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/modelAmostraCalibracao.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="30" column="9" lean-forward="true" selection-start-line="3" selection-end-line="30" selection-end-column="9" />
-          <folding>
-            <element signature="e#60#1114#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/modelCalibracao.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="59" lean-forward="true" selection-start-line="2" selection-end-line="59" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/modelMatrizX.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="34" column="9" lean-forward="true" selection-start-line="3" selection-end-line="34" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/modelMatrizY.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="40" column="9" lean-forward="true" selection-start-line="3" selection-end-line="40" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/modelModeloCal.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="5" column="22" selection-end-line="39" selection-end-column="9" />
-          <folding>
-            <element signature="e#0#53#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/modelParametro.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="29" column="9" lean-forward="true" selection-start-line="5" selection-end-line="29" selection-end-column="9" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/models/modelAmostra.py" />
+    <entry file="file://$PROJECT_DIR$/models/modelAmostraCalibracao.py" />
+    <entry file="file://$PROJECT_DIR$/models/modelCalibracao.py" />
+    <entry file="file://$PROJECT_DIR$/models/modelMatrizX.py" />
+    <entry file="file://$PROJECT_DIR$/models/modelMatrizY.py" />
+    <entry file="file://$PROJECT_DIR$/models/modelModeloCal.py" />
+    <entry file="file://$PROJECT_DIR$/models/modelParametro.py" />
     <entry file="file://$PROJECT_DIR$/app.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-409">
@@ -523,10 +471,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/anotações">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" selection-start-line="7" selection-end-line="7" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/models/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="249" lean-forward="true" selection-start-line="249" selection-end-line="249" />
+        <state relative-caret-position="216">
+          <caret line="156" column="53" selection-start-line="156" selection-start-column="53" selection-end-line="156" selection-end-column="53" />
           <folding>
             <element signature="e#0#53#0" expanded="true" />
           </folding>
