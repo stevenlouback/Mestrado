@@ -36,7 +36,7 @@ class Amostra(db.Model):
             'idamostra': self.idamostra,
             'tpamostra': self.tpamostra,
             'dsobservacoes': self.dsobservacoes,
-            'dtcoletaamostra': self.dtcoletaamostra
+            'dtcoletaamostra': self.dtcoletaamostra.strftime("%d/%m/%Y")
         }
 
 
@@ -103,7 +103,7 @@ class Calibracao(db.Model):
             'idamostra': self.idamostra,
             'tpamostra': self.tpamostra,
             'dsobservacoes': self.dsobservacoes,
-            'dtcoletaamostra': self.dtcoletaamostra
+            'dtcoletaamostra': self.dtcoletaamostra.strftime("%d/%m/%Y")
         }
 
 
@@ -179,7 +179,7 @@ class MatrizY(db.Model):
             'idcalibracao': self.idcalibracao,
             'vlresultado': self.vlresultado,
             'vlreferencia': self.vlreferencia,
-            'dtpredicao': self.dtpredicao
+            'dtpredicao': self.dtpredicao.strftime("%d/%m/%Y")
         }
 
 #######################################################################
@@ -217,7 +217,7 @@ class ModeloCalibracao(db.Model):
             'nmmetodoreferencia': self.nmmetodoreferencia,
             'tpinstrumento': self.tpinstrumento,
             'dsmodelo': self.dsmodelo,
-            'dtcriacao': self.dtcriacao
+            'dtcriacao': self.dtcriacao.strftime("%d/%m/%Y")
         }
 
 ######################################################
