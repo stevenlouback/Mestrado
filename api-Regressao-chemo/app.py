@@ -32,7 +32,11 @@ def add_modelo():
 
     db.session.commit()
 
-    return msg
+    #return msg
+    modelos = ModeloCalibracao.query.all()
+    return jsonify([e.serialize() for e in modelos])
+    # return str(ModeloCalibracao.query.all())
+
 
 @app.route("/modelo/getall")
 def get_all():
