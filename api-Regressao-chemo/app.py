@@ -20,7 +20,7 @@ def hello():
 #Rotas da Tabela Modelo
 ########################################
 
-from models.modelModeloCal import ModeloCalibracao
+from models.model import ModeloCalibracao
 from controller.controllerModelo import geraModelo
 
 @app.route("/modelo/add")
@@ -54,7 +54,7 @@ def get_by_id(id_):
 #Rotas da Tabela AMOSTRA
 ########################################
 
-from models.modelAmostra import Amostra
+from models.model import Amostra
 from controller.controllerAmostra import geraAmostra
 
 @app.route("/amostra/add")
@@ -89,7 +89,7 @@ def get_by_idAmostra(idmodelo_,idamostra_):
 #Rotas da Tabela Amostra_Calibracao
 ########################################
 
-from models.modelAmostraCalibracao import AmostraCalibracao
+from models.model import AmostraCalibracao
 from controller.controllerAmostraCalibracao import geraAmostraCalibracao
 
 @app.route("/amostracalibracao/add")
@@ -124,7 +124,7 @@ def get_by_idAmostraCalibracao(idmodelo_,idamostra_,idcalibracao_):
 #Rotas da Tabela CALIBRACAO
 ########################################
 
-from models.modelCalibracao import Calibracao
+from models.model import Calibracao
 from controller.controllerCalibracao import geraCalibracao
 
 @app.route("/calibracao/add")
@@ -159,7 +159,7 @@ def get_by_idCalibracao(idmodelo_,idcalibracao_):
 #Rotas da Tabela MATRIZ_X
 ########################################
 
-from models.modelMatrizX import MatrizX
+from models.model import MatrizX
 
 @app.route("/matrizx/add")
 def add_matrizx():
@@ -207,7 +207,7 @@ def get_by_idmatrizx(idmodelo_,idamostra_,nrsequencia_):
 #Rotas da Tabela MATRIZ_Y
 ########################################
 
-from models.modelMatrizY import MatrizY
+from models.model import MatrizY
 
 @app.route("/matrizy/add")
 def add_matrizy():
@@ -259,7 +259,7 @@ def get_by_idmatrizy(idmodelo_,idamostra_,idparametroref_):
 #Rotas da Tabela PARAMETROS
 ########################################
 
-from models.modelParametro import Parametro
+from models.model import Parametro
 
 @app.route("/parametros/add")
 def add_parametros():

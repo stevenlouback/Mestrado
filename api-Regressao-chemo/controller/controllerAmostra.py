@@ -1,6 +1,6 @@
 from sqlalchemy import func
 
-from models.modelAmostra import Amostra
+from models.model import Amostra
 
 def geraAmostra(db, objeto):
   idmodelo = objeto['idmodelo']

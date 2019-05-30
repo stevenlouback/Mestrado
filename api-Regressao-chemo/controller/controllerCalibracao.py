@@ -1,6 +1,6 @@
 from sqlalchemy import func
 
-from models.modelCalibracao import Calibracao
+from models.model import Calibracao
 
 def geraCalibracao(db, objeto):
   idmodelo = objeto['idmodelo']
