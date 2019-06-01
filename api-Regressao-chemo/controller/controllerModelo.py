@@ -3,17 +3,19 @@ from sqlalchemy import func
 from models.model import ModeloCalibracao
 
 def geraModelo(db, objeto):
-
   nmmodelo = objeto['nmmodelo']
   nmmetodoreferencia = objeto['nmmetodoreferencia']
   tpinstrumento = objeto['tpinstrumento']
   dsmodelo = objeto['dsmodelo']
   dtcriacao = objeto['dtcriacao']
+  idmodelo = objeto['idmodelo']
 
 
 
   # Pega a ultima sequencia para gravar no banco
-  idmodelo = (db.session.query(func.max(ModeloCalibracao.idmodelo)).scalar() or 0) + 1
+  if idmodelo == "":
+    print('IDMODELO: ', idmodelo)
+    idmodelo = (db.session.query(func.max(ModeloCalibracao.idmodelo)).scalar() or 0) + 1
 
   try:
     modelo = ModeloCalibracao(
@@ -24,7 +26,11 @@ def geraModelo(db, objeto):
       dsmodelo=dsmodelo,
       dtcriacao=dtcriacao
     )
-    db.session.add(modelo)
+    if idmodelo == "":
+      db.session.add(modelo)
+    else:
+      print('merge: ', idmodelo)
+      db.session.merge(modelo)
 
     return "Modelo Adicionado. idmodelo={}".format(modelo.idmodelo)
   except Exception as e:
