@@ -4,11 +4,17 @@ from models.model import ModeloCalibracao
 
 def geraModelo(db, objeto):
   nmmodelo = objeto['nmmodelo']
+  print(nmmodelo)
   nmmetodoreferencia = objeto['nmmetodoreferencia']
+  print(nmmetodoreferencia)
   tpinstrumento = objeto['tpinstrumento']
+  print(tpinstrumento)
   dsmodelo = objeto['dsmodelo']
+  print(dsmodelo)
   dtcriacao = objeto['dtcriacao']
+  print(dtcriacao)
   idmodelo = objeto['idmodelo']
+  print(idmodelo)
 
 
 

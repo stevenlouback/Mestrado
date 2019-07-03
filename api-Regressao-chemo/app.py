@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response, abort
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import engine, func
 
@@ -16,6 +16,10 @@ db = SQLAlchemy(app)
 def hello():
     return "Hello World!"
 
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Não existe.'}), 404)
+
 ########################################
 #Rotas da Tabela Modelo
 ########################################
@@ -23,9 +27,21 @@ def hello():
 from models.model import ModeloCalibracao
 from controller.controllerModelo import geraModelo
 
+@app.route('/modelo/adiciona', methods=['POST'])
+def create_modelo():
+    if not request.json or not 'nmmodelo' in request.json:
+        abort(400)
+
+    objeto = request.json
+
+    msg = geraModelo(db, objeto)
+    db.session.commit()
+    return jsonify({'success': msg}), 201
+
 @app.route("/modelo/add")
 def add_modelo():
     param = request.args.get('param')
+    param = '{'+param+'}'
     objeto = json.loads(param)
 
     msg = geraModelo(db,objeto)
@@ -293,6 +309,14 @@ def add_parametros():
 def get_allparametros():
     try:
         modelos=Parametro.query.all()
+        return  jsonify([e.serialize() for e in modelos])
+    except Exception as e:
+	      return(str(e))
+
+@app.route("/parametros/getallModelo/<idmodelo_>")
+def get_allparametrosModelo(idmodelo_):
+    try:
+        modelos=Parametro.query.filter_by(idmodelo=idmodelo_)
         return  jsonify([e.serialize() for e in modelos])
     except Exception as e:
 	      return(str(e))
