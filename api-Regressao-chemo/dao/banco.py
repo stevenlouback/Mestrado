@@ -7,7 +7,7 @@ class Banco():
             conn = psycopg2.connect("\
                            dbname='QUIMIOMETRIA'\
                            user='postgres'\
-                           host='localhost'\
+                           host='127.0.0.1'\
                            password='postgres'\
                    ")
 

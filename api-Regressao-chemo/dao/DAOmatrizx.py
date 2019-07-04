@@ -1,7 +1,8 @@
 import sys
 import numpy as np
 from sympy import *
-sys.path.append("..\conexaoBanco")
+
+sys.path.append("..\dao")
 
 from banco import Banco
 
@@ -16,22 +17,6 @@ class Matrizx(object):
         self.nrPosicaoColuna = nrPosicaoColuna
         self.vlLinhaColuna = vlLinhaColuna
         self.idModelo = idModelo
-
-   ''' def insert(self):
-
-        banco = Banco()
-        try:
-
-            c = banco.conexao.cursor()
-
-            c.execute("insert into Matrizx (idAmostra, nrSequencia, nrPosicaoLinha, nrPosicaoColuna, vlLinhaColuna) values ( " +self.idAmostra+ "," + self.nrSequencia + ", " + self.nrPosicaoLinha + ", " + self.nrPosicaoColuna + ", " + self.vlLinhaColuna + " )")
-
-            banco.conexao.commit()
-            c.close()
-
-            return "Linha cadastrada com sucesso!"
-        except:
-            return "Ocorreu um erro na inserção da Amostra"'''
 
     def select(self, idAmostra):
         banco = Banco()
@@ -162,37 +147,26 @@ class Matrizx(object):
 
             #numero de colunas da matriz
 #            c.execute("select max(x.nrcoluna) from matrizamostra x where x.idModelo = " + str(idModelo) + "  ")
-            c.execute(" select max(x.nrcoluna) from matrizx "
-                      " inner join matrizy y on (z.idamostratestes = x.idamostratestes and z.tipoAmostra != 'IMAGEM' "
-                      " and y.tipoAmostra = '" + str(conjunto) + "') ")
-                      # "where z.idamostratestes > 1")
+            c.execute(" select max(x.nrposicaocoluna) from matrizx x"
+                      " inner join matrizy y on (x.idamostra = y.idamostra) "
+                      "inner join amostra a on ( a.idamostra = x.idamostra ) "
+                      "where a.tpamostra = '" + str(conjunto) + "' "
+                      " and x.idModelo = " + str(idModelo) + "  ")
 
             contadorColunas = 0
 
             for linha in c:
                 contadorColunas = linha[0]
-
-
-
-            # Obtem a Media dos valores do Modelo
-            c.execute("select avg(x.vlresultado) as media from matrizamostra x "
-                       "inner join amostratestes z on (z.idamostratestes = x.idamostratestes and z.tipoAmostra != 'IMAGEM' "
-                       "and z.tipoAmostra = '" + str(conjunto) + "') ")
-
-            for linha in c:
-                media = linha[0]
-
-
+                print(contadorColunas)
 
             #Preenchimento da MatrizX
             matrizX = []
 
-
-            c.execute("select x.idamostratestes from matrizamostra x  "
-                      "inner join amostratestes y on (y.idamostratestes = x.idamostratestes "
-                      "and y.tipoAmostra = '" + str(conjunto) + "') "
-                      # "where x.idamostratestes > 1"
-                      "group by x.idamostratestes order by x.idamostratestes asc")
+            c.execute("select x.idamostra from matrizx x  "
+                      "inner join matrizy y on (y.idamostra = x.idamostra) "
+                      "inner join amostra a on ( a.idamostra = x.idamostra ) "
+                      "where a.tpamostra = '" + str(conjunto) + "' "
+                      "group by x.idamostra order by x.idamostra asc")
 
             cont = 0
             listaAmostras = []
@@ -207,9 +181,9 @@ class Matrizx(object):
                 #print(amostra)
                 linhaMatriz = []
 
-                c.execute("SELECT idamostratestes, vlresultado 	FROM public.matrizamostra "
-                          "where idamostratestes = " + str(amostra) + ""
-                            "order by idamostratestes, nrsequencia, 	nrlinha, nrcoluna, dsidentifica asc")
+                c.execute("SELECT idamostra, vllinhacoluna 	FROM matrizx x "
+                          "where x.idamostra = " + str(amostra) + ""
+                            "order by x.idamostra, x.nrsequencia, x.nrposicaolinha, x.nrposicaocoluna asc")
 
                 for regDadosAmostra in c:
                     if  regDadosAmostra[1] == 0E-8 :
@@ -227,8 +201,8 @@ class Matrizx(object):
                 #print(linhaMatriz)
                 matrizX += [linhaMatriz]
 
-            #print('MATRIZ - X')
-            #print(matrizX)
+            print('MATRIZ - X')
+            print(matrizX)
 
             c.close()
 
@@ -245,7 +219,7 @@ class Matrizx(object):
             c2 = banco.conexao.cursor()
 
             #numero de colunas da matriz
-            c.execute("select max(x.nrcoluna) from matrizamostra x where x.idamostratestes = " + str(idAmostra) + "  ")
+            c.execute("select max(x.nrposicaocoluna) from matrizx x where x.idamostra = " + str(idAmostra) + "  ")
 
             contadorColunas = 0
 
@@ -256,7 +230,7 @@ class Matrizx(object):
             matrizX = []
 
 
-            c.execute("select x.idamostratestes from matrizamostra x where x.idamostratestes =  " + str(idAmostra) + " group by x.idamostratestes order by x.idamostratestes asc")
+            c.execute("select x.idamostra from matrizx x where x.idamostra =  " + str(idAmostra) + " group by x.idamostra order by x.idamostra asc")
 
             listaAmostras = []
             for regAmostras in c:
@@ -270,7 +244,7 @@ class Matrizx(object):
 
 
 
-                c.execute("SELECT idamostratestes, vlresultado 	FROM public.matrizamostra where idamostratestes = " + str(amostra) + " order by idamostratestes, nrsequencia, 	nrlinha, nrcoluna, dsidentifica asc")
+                c.execute("SELECT x.idamostra, x.vllinhacoluna FROM matrizx x where x.idamostra = " + str(amostra) + " order by x.idamostra, x.nrsequencia, x.nrposicaolinha, x.nrposicaocoluna asc")
 
                 for regDadosAmostra in c:
                     if  regDadosAmostra[1] == 0E-8 :
@@ -294,32 +268,3 @@ class Matrizx(object):
         except Exception:
             print(Exception)
             return "Ocorreu um erro na busca dos dados"
-
-
- '''   def derivada(self, idAmostra):
-        banco = Banco()
-        c = banco.conexao.cursor()
-        c.execute("SELECT idamostratestes, vlresultado 	FROM public.matrizamostra where idamostratestes = " + str(idAmostra) + " order by idamostratestes, nrsequencia, 	nrlinha, nrcoluna, dsidentifica asc")
-
-        for regDadosAmostra in c:
-            if regDadosAmostra[1] == 0E-8:
-                amostrax = '0'
-            else:
-                amostrax = regDadosAmostra[1]
-
-        c.execute("select y.idamostratestes, y.vlResultado from amostratestes y  where "
-                  "y.idamostratestes = " + str(idAmostra) + " order by y.idamostratestes asc")
-
-        for regDadosAmostra in c:
-            if regDadosAmostra[1] == 0E-8:
-                amostray = '0'
-            else:
-                amostray = np.double(regDadosAmostra[1])
-
-
-        x=Symbol('x')
-        difx = diff(amostrax,x)
-        der = difx
-
-
-        return der'''

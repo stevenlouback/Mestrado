@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+
 sys.path.append("..\dao")
 
 from banco import Banco
@@ -15,21 +16,6 @@ class Matrizy(object):
         self.idCalibracao = idCalibracao
         self.dtPredicao = dtPredicao
         self.idModelo = idModelo
-
-'''    def insert(self):
-        banco = Banco()
-        try:
-
-            c = banco.conexao.cursor()
-
-            c.execute("insert into Matrizy (idAmostra, nrSequencia, vlReferencia, vlResultado, idParametroRef) values ( " +self.idAmostra+ "," + self.nrSequencia + ", " + self.vlReferencia + ", " + self.vlResultado + ", " + self.idParametroRef + " )")
-
-            banco.conexao.commit()
-            c.close()
-
-            return "Parametro cadastrado com sucesso!"
-        except:
-            return "Ocorreu um erro na inserção da Amostra"'''
 
     def select(self, idAmostra):
         banco = Banco()
@@ -53,56 +39,6 @@ class Matrizy(object):
             return "Busca feita com sucesso!"
         except:
             return "Ocorreu um erro na busca dos dados"
-
-'''    def selectMatrizYModelo(self, idModelo):
-        banco = Banco()
-        try:
-
-            c = banco.conexao.cursor()
-            c2 = banco.conexao.cursor()
-
-            #numero de colunas da matriz
-            c.execute("select max(x.nrPosicaoColuna) from matriz_x x inner join amostra a on (a.idAmostra = x.idAmostra) where a.idModelo = " + idModelo + "  ")
-
-            contadorColunas = 0
-
-            for linha in c:
-                contadorColunas = linha[0]
-
-            #Preenchimento da MatrizX
-            matrizX = []
-
-
-            c.execute("select x.idAmostra from matriz_x x inner join amostra a on (a.idAmostra = x.idAmostra) where a.idModelo =  " + str(idModelo) + " group by x.idAmostra order by x.idAmostra asc")
-
-            listaAmostras = []
-            for regAmostras in c:
-                listaAmostras.append(regAmostras[0])
-
-
-            print(listaAmostras)
-
-            for amostra in listaAmostras:
-                #print(amostra)
-                linhaMatriz = []
-
-                c.execute("select x.idAmostra, x.nrSequencia, x.nrPosicaoLinha, x.nrPosicaoColuna, abs(x.vlLinhaColuna) from matriz_x x inner join amostra a on (a.idAmostra = x.idAmostra) where a.idAmostra = " + str(amostra) + "  order by x.nrPosicaoLinha asc, x.nrPosicaoColuna asc")
-
-                for regDadosAmostra in c:
-                    linhaMatriz.append(regDadosAmostra[4])
-
-                #print(linhaMatriz)
-                matrizX += [linhaMatriz]
-
-
-            print(matrizX)
-
-            c.close()
-
-            return "Busca feita com sucesso!"
-        except Exception:
-            print(Exception)
-            return "Ocorreu um erro na busca dos dados"'''
 
     def selectMatriyYModeloMMM(self, idModelo):
         banco = Banco()
@@ -151,10 +87,9 @@ class Matrizy(object):
 
             matrizY = []
 
-#            c.execute("select y.idamostratestes from amostratestes y where y.idamostratestes < 90 and y.vlResultado > 0 order by y.idamostratestes asc")
-            c.execute("select y.idamostratestes from amostra y where "
-                      "y.tipoAmostra = '" + str(conjunto) + "' "#and y.idamostratestes > 1"
-                      "order by y.idamostratestes asc")
+            c.execute("select y.idamostra from matrizy y "
+                      "inner join amostra a on (a.idamostra = y.idamostra) where a.tpamostra = '" + str(conjunto) + "' "
+                      "order by y.idamostra asc")
 
             listaAmostras = []
             cont = 0
@@ -171,8 +106,8 @@ class Matrizy(object):
                 #print(amostra)
                 linhaMatriz = []
 
-                c.execute("select y.idamostratestes, y.vlResultado from amostra y  where "
-                          "y.idamostratestes = " + str(amostra) + " order by y.idamostratestes asc")
+                c.execute("select y.idamostra, y.vlreferencia from matrizy y  where "
+                          "y.idamostra = " + str(amostra) + " order by y.idamostra asc")
 
                 for regDadosAmostra in c:
                     if  regDadosAmostra[1] == 0E-8 :

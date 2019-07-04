@@ -16,9 +16,9 @@ matrizY = Matrizy()
 
 idModelo = 1
 
-idAmostraTestes = 351
+idAmostraTestes = 348
 
-conjunto = "CALIBRA"
+conjunto = "NIR"
 
 X = matrizX.selectMatrizXModeloNOVO(idModelo, conjunto)
 Y = matrizY.selectMatrizyYNOVO(idModelo, conjunto)

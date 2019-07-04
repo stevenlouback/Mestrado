@@ -329,6 +329,18 @@ def get_by_idparametros(idmodelo_,idparametroref_):
     except Exception as e:
 	      return(str(e))
 
+########################################
+#Rotas da Predi;áo
+########################################
+
+@app.route("/predicao/get/<idamostra>")
+def get_by_amostra(idamostra):
+    try:
+        modelos=Parametro.query.all()
+        return  jsonify([e.serialize() for e in modelos])
+    except Exception as e:
+	      return(str(e))
+
 
 if __name__ == '__main__':
     app.run()
