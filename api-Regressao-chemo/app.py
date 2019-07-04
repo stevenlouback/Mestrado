@@ -35,7 +35,7 @@ def add_modelo():
     #return msg
     modelos = ModeloCalibracao.query.all()
     return jsonify([e.serialize() for e in modelos])
-    # return str(ModeloCalibracao.query.all())
+    #return str(ModeloCalibracao.query.all())
 
 
 @app.route("/modelo/getall")
