@@ -4,8 +4,7 @@ from sympy import *
 
 sys.path.append("..\dao")
 
-from banco import Banco
-
+from dao.banco import Banco
 
 class Matrizx(object):
 
@@ -17,6 +16,9 @@ class Matrizx(object):
         self.nrPosicaoColuna = nrPosicaoColuna
         self.vlLinhaColuna = vlLinhaColuna
         self.idModelo = idModelo
+
+    def __init__(self):
+        self.info = {}
 
     def select(self, idAmostra):
         banco = Banco()
@@ -138,10 +140,12 @@ class Matrizx(object):
             print(Exception)
             return "Ocorreu um erro na busca dos dados"
 
-    def selectMatrizXModeloNOVO(self, idModelo, conjunto):
-        banco = Banco()
-        try:
 
+    def selectMatrizXModeloNOVO(self, idModelo, conjunto):
+
+        banco = Banco()
+
+        try:
             c = banco.conexao.cursor()
             c2 = banco.conexao.cursor()
 
@@ -152,6 +156,7 @@ class Matrizx(object):
                       "inner join amostra a on ( a.idamostra = x.idamostra ) "
                       "where a.tpamostra = '" + str(conjunto) + "' "
                       " and x.idModelo = " + str(idModelo) + "  ")
+
 
             contadorColunas = 0
 
@@ -212,14 +217,18 @@ class Matrizx(object):
             return "Ocorreu um erro na busca dos dados"
 
     def selectAmostra(self, idAmostra):
+
+        print("antes amostra")
+
         banco = Banco()
+
+        print("depois amostra")
         try:
 
-            c = banco.conexao.cursor()
             c2 = banco.conexao.cursor()
 
             #numero de colunas da matriz
-            c.execute("select max(x.nrposicaocoluna) from matrizx x where x.idamostra = " + str(idAmostra) + "  ")
+            db.execute("select max(x.nrposicaocoluna) from matrizx x where x.idamostra = " + str(idAmostra) + "  ")
 
             contadorColunas = 0
 
@@ -259,12 +268,12 @@ class Matrizx(object):
                 #print(linhaMatriz)
                 matrizX += [linhaMatriz]
 
-            #print('MATRIZ - X')
-            #print(matrizX)
+            print('AMOSTRA SELECIONADA')
+            print(matrizX)
 
             c.close()
 
             return matrizX
         except Exception:
-            print(Exception)
+            #print(Exception)
             return "Ocorreu um erro na busca dos dados"

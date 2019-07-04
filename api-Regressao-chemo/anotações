@@ -17,3 +17,6 @@ http://127.0.0.1:5000/modelo/add?param={"nmmodelo":"CLOROFILA SOJA","nmmetodoref
 http://127.0.0.1:5000/modelo/add?param={"idmodelo":2,"nmmodelo":"cxddsfdsfsdZZ","nmmetodoreferencia":"Z","tpinstrumento":"2","dsmodelo":"ZZ"}
 http://127.0.0.1:5000/parametros/add?param={"idmodelo":"1","nmparametroref":"Clorofila"}
 http://127.0.0.1:5000/amostra/add?param={"idmodelo":"1","tpamostra":"C","dsobservacoes":"1505","dtcoletaamostra":"25-05-2019"}
+
+#Teste da Predicao  1 = modelo / 348 = numero da amostra
+http://localhost:5000/predicao/get/1/348

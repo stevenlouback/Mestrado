@@ -1,17 +1,17 @@
-import psycopg2
+from sqlalchemy import create_engine
+
+
 
 class Banco():
 
     def __init__(self):
         try:
-            conn = psycopg2.connect("\
-                           dbname='QUIMIOMETRIA'\
-                           user='postgres'\
-                           host='127.0.0.1'\
-                           password='postgres'\
-                   ")
+            print("Inicio de Conexao")
+            db_string = "postgresql://postgres:postgres@localhost:5432/Quimiometria"
 
-            self.cur = conn.cursor
-            self.conexao = conn
-        except:
-            print('Erro ao se conectar a base de dados!')
+            db = create_engine(db_string)
+
+            self.cur = db.cursor
+            self.conexao = db
+        except Exception:
+            print(Exception)
