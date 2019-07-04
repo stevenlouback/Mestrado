@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+    
+    <!-- servlet mapping do JSF -->    
+    <servlet>
+        <servlet-name>FacesServlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FacesServlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+    
+    <!--CDI-->
+    <listener>
+        <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
+    </listener>
+    <resource-env-ref>
+        <description>Object factory para o CDI Bean Manager</description>
+        <resource-env-ref-name>BeanManager</resource-env-ref-name>
+        <resource-env-ref-type>javax.enterprise.inject.spi.BeanManager</resource-env-ref-type>
+    </resource-env-ref>
+    
+       
+    <!-- exception filter -->
+    <filter>
+        <filter-name>FacesExceptionFilter</filter-name>
+        <filter-class>org.omnifaces.filter.FacesExceptionFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>FacesExceptionFilter</filter-name>
+        <servlet-name>FacesServlet</servlet-name>
+    </filter-mapping>
+
+    <!-- para comprimir o tamanho das repostas usando gzip -->
+    <filter>
+        <filter-name>gzipResponseFilter</filter-name>
+        <filter-class>org.omnifaces.filter.GzipResponseFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>gzipResponseFilter</filter-name>
+        <servlet-name>facesServlet</servlet-name>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+
+    <!-- o nome do arquivo de welcome do server -->
+    <welcome-file-list>
+        <welcome-file>index.xhtml</welcome-file>
+    </welcome-file-list>
+    
+    <!-- tempo de sessao -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+    
+    <!-- paginas de erro -->
+    <error-page>  
+        <error-code>401</error-code>
+        <location>/home.xhtml</location>
+    </error-page>
+    <error-page>  
+        <error-code>403</error-code>
+        <location>/error/403.xhtml</location>
+    </error-page>
+    <error-page>      
+        <error-code>404</error-code>
+        <location>/error/404.xhtml</location>  
+    </error-page>
+    <error-page>      
+        <error-code>500</error-code>
+        <location>/error/500.xhtml</location>  
+    </error-page>
+    
+    <!-- configuracoes do primefaces -->
+    <context-param>
+        <param-name>primefaces.THEME</param-name>
+        <param-value>bootstrap</param-value>
+    </context-param>
+<!--    <context-param>
+        <param-name>primefaces.UPLOADER</param-name>
+        <param-value>auto|native|commons</param-value>
+    </context-param>-->
+    <context-param>
+        <param-name>primefaces.FONT_AWESOME</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>primefaces.TRANSFORM_METADATA</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <!--Para efetuar validação somente no Cliente-->
+    <context-param>
+        <param-name>primefaces.CLIENT_SIDE_VALIDATION</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <!-- parametros do contexto --> 
+    <context-param>
+        <param-name>javax.faces.PROJECT_STAGE</param-name>
+        <param-value>${jsf.stage}</param-value>
+    </context-param>   
+    <context-param>
+        <param-name>javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.faces.SERIALIZE_SERVER_STATE</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+        <param-value>server</param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.faces.FACELETS_BUFFER_SIZE</param-name>
+        <param-value>65535</param-value> 
+    </context-param>
+    
+    <!-- tipos mime -->
+    <mime-mapping>
+        <extension>ico</extension>
+        <mime-type>image/x-icon</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>woff</extension>
+        <mime-type>application/font-woff</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>woff2</extension>
+        <mime-type>application/font-woff2</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>ttf</extension>
+        <mime-type>application/font-sfnt</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>eot</extension>
+        <mime-type>application/vnd.ms-fontobject</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>otf</extension>
+        <mime-type>font/opentype</mime-type>
+    </mime-mapping>
+    
+    <!-- ############################################# -->
+    <!-- # File upload                                      # -->
+    <!-- ############################################# -->
+
+    <filter>
+        <filter-name>FileUploadFilter</filter-name>
+        <filter-class>org.primefaces.webapp.filter.FileUploadFilter</filter-class>
+        <init-param>
+            <param-name>thresholdSize</param-name>
+            <param-value>10240</param-value>
+        </init-param>
+        <init-param>
+            <param-name>uploadDirectory</param-name>
+            <param-value>/resources/primefaces-bootstrap/images/</param-value>
+        </init-param>
+    </filter>
+
+</web-app>

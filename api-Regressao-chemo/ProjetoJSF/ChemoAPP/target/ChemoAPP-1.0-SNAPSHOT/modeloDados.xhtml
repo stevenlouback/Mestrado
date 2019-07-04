@@ -1,0 +1,115 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                template="/template/mainTemplate.xhtml">
+                    
+    
+    
+    <f:metadata>
+        <!--<f:viewAction action="#{modeloDadosBean.listarTodos()}"/>-->
+        <f:event listener="#{modeloDadosBean.listarTodos}" type="preRenderView" />
+        <!--<f:viewParam name="dummy" />-->
+    </f:metadata>
+
+    <ui:define name="pageTitle">
+        #{messages['model.page-title']}
+    </ui:define>
+
+    <ui:define name="pageDescription">
+        <o:outputFormat value="#{messages['model.page-description']}">
+            <!--<f:param value="#{userBean.user.login}"/>-->
+        </o:outputFormat>
+    </ui:define>
+
+    <ui:define name="breadcrumb">
+    </ui:define>
+
+    <ui:define name="content">
+
+        <pe:blockUI widgetVar="loadingBlock"
+                    target="boxBody" >
+            <p:graphicImage width="32" 
+                            height="32"
+                            library="uploading" 
+                            name="img/loading.gif" />
+        </pe:blockUI> 
+        <div jsf:id="boxBody" class="box-body">
+            <h:form id="modeloForm" prependId="false">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <p:messages id="messages" closable="true" />
+                    </div>
+                </div>
+                            <!--Aqui começa montar a CONSULTA-->
+                <div class="box">
+                    <div class="box-body row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                               <p:dataTable rows="25"
+                                                 var="modelo"
+                                                 paginator="true"
+                                                 sortOrder="ascending"
+                                                 paginatorPosition="bottom"
+                                                 paginatorAlwaysVisible="false"
+                                                 value="#{modeloDadosBean.list_Modelo}"
+                                                 emptyMessage="#{messages['list.empty']}">
+<!--                                   selectionMode="single" 
+                                                 rowKey="#{modelo.idmodelo}"-->
+<!--                                   lazy="true"
+                                                 rowHover="true"-->
+<!--selection="#{modeloDadosBean.modelo}"-->
+s                                        <p:column headerText="#{messages['model.form.id']}" 
+                                                  style="text-center" 
+                                                  width="10%">
+                                            <h:outputText value="#{modelo.idmodelo}" />
+                                        </p:column>
+
+          <!--                                   <p:column headerText="#{messages['model.form.name']}"
+                                                  style="text-center" 
+                                                  width="30%">
+                                            <h:outputText value="#{modelo.nmmodelo}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{messages['model.form.metodo']}"
+                                                  style="text-center" 
+                                                  width="20%">
+                                            <h:outputText value="#{modelo.nmmetodoreferencia}" />
+                                        </p:column>
+
+                                        <p:column width="15%" 
+                                                  styleClass="text-center"
+                                                  headerText="#{messages['list.actions']}">
+                                            oncomplete="PF('chaveDialog').show()" 
+                                            <p:commandButton update="modeloForm" 
+                                                             icon="ui-icon-search" title="#{menu['detail']}">
+                                                <f:setPropertyActionListener 
+                                                    target="#{ModeloBean.modelo}" value="#{modelo}"/>
+                                            </p:commandButton>
+                                            <p:spacer width="5"/>
+                                        </p:column>-->
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+        <!--<h:form prependId="false">-->
+            <!--<p:remoteCommand autoRun="true"-->
+                             <!--name="initializer"-->
+                             <!--update="boxBody"-->
+                             <!--onstart="block('loadingBlock')"-->
+                             <!--oncomplete="unblock('loadingBlock')"/>-->
+                             <!--Ja estava-->
+                             <!--actionListener="#{dashboardBean.initialize()}"-->
+            <!--/>-->
+        <!--</h:form>-->
+    </ui:define>
+</ui:composition>

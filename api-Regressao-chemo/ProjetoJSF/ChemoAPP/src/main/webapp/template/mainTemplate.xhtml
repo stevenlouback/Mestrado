@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:jsf="http://xmlns.jcp.org/jsf"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:of="http://omnifaces.org/functions"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+
+    
+    <h:head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+        <!--<meta http-equiv="refresh" content="${request.session.maxInactiveInterval};url=/logout"/>-->
+
+        <title>Chemo</title>
+
+        <link rel="shortcut icon" type="image/x-icon" href="#{resource[':img/favicon.ico']}"/>
+
+        <h:outputStylesheet library="bootstrap" name="css/bootstrap.min.css"/>
+        <h:outputStylesheet library="ionicons" name="css/ionicons.min.css"/>
+        <h:outputStylesheet library="adminlte" name="css/adminlte.min.css"/>
+        <h:outputStylesheet library="adminlte" name="css/all-skins.min.css"/>
+        <h:outputStylesheet library="uploading" name="css/common.css"/>
+        <h:outputStylesheet library="minicolors" name="css/jquery.minicolors.css"/>
+        <h:outputStylesheet library="primefaces-bootstrap" name="custom.css"/>
+
+        <ui:insert name="head" />
+    </h:head>
+
+    <h:body styleClass="hold-transition sidebar-mini">
+
+        <h:form>
+            <p:remoteCommand autoRun="true"
+                             name="updateMessages" 
+                             />
+        </h:form>
+
+        <div class="wrapper">
+
+            <header class="main-header">
+                <a href="index.xhtml" class="logo wb-font" >
+                    <span class="logo-mini" style="font-size: 32px">
+                        <span class="wb-logo-prefix">C</span><span class="wb-logo-sufix">h</span>
+                    </span>
+                    <span class="wb-logo-prefix" style="font-size: 32px">
+                        Chemo<span class="wb-logo-sufix">APP</span>
+                    </span>
+                </a>
+                <nav class="navbar navbar-static-top" role="navigation">
+                    <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                        <span class="sr-only"></span>
+                    </a>
+                    <div class="navbar-custom-menu">
+
+                    </div>
+                </nav>
+            </header>
+
+            <aside class="main-sidebar">
+                <section class="sidebar">
+                    <ul class="sidebar-menu">
+                        <li class="header">#{menu['model']}</li>
+
+                        <li class="#{activeMenu eq 'users' ? 'active' : ''}"
+                            >
+                            <p:link href="/inserirModelo.xhtml">
+                                <i class="fa fa-bar-chart" aria-hidden="true"></i> 
+                                <span>#{menu['model.modelo']}</span>
+                            </p:link>
+                        </li>  
+
+                        <li class="#{activeMenu eq 'users' ? 'active' : ''}"
+                            >
+                            <p:link href="/inserirParametro.xhtml">
+                                <i class="fa fa-sort-numeric-asc" aria-hidden="true"></i> 
+                                <span>#{menu['model.param']}</span>
+                            </p:link>
+                        </li> 
+
+                        <li class="#{activeMenu eq 'users' ? 'active' : ''}"
+                            >
+                            <p:link href="/cargaIsolada.xhtml">
+                                <i class="fa fa-cube" aria-hidden="true"></i> 
+                                <span>#{menu['model.amostra']}</span>
+                            </p:link>
+                        </li> 
+
+<!--                        <li class="#{activeMenu eq 'users' ? 'active' : ''}"
+                            >
+                            <p:link href="/inserirModelo.xhtml">
+                                <i class="fa fa-cubes" aria-hidden="true"></i> 
+                                <span>#{menu['model.amostras']}</span>
+                            </p:link>
+                        </li> -->
+
+                        <li class="header">#{menu['tools']}</li>
+
+
+                        <li class="#{activeMenu eq 'users' ? 'active' : ''}"
+                            >
+                            <p:link href="/upload.xhtml">
+                                <i class="fa fa-camera" aria-hidden="true"></i> 
+                                <span>#{menu['tools.upload']}</span>
+                            </p:link>
+                        </li>
+
+                        <li class="#{activeMenu eq 'contacts' ? 'active' : ''}">
+                            <p:link href="/capture.xhtml">
+                                <i class="fa fa-video-camera" aria-hidden="true"></i> 
+                                <span>#{menu['tools.capturar']}</span>
+                            </p:link>
+                        </li>
+
+                        <li class="header">#{menu['results']}</li>
+
+
+                        <li class="#{activeMenu eq 'users' ? 'active' : ''}"
+                            >
+                            <p:link href="/upload.xhtml">
+                                <i class="fa fa-pie-chart" aria-hidden="true"></i> 
+                                <span>#{menu['results.amostra']}</span>
+                            </p:link>
+                        </li>
+
+                    </ul>
+                </section>
+            </aside>
+
+            <div class="content-wrapper">
+                <p:ajaxStatus styleClass="ajax-status" >
+                    <f:facet name="start">
+                        <p:graphicImage width="32" 
+                                        height="32"
+                                        library="uploading" 
+                                        name="img/loading.gif" />
+                    </f:facet>
+                    <f:facet name="complete">
+                        <h:outputText value=""/>
+                    </f:facet>
+                    <!--			<f:facet name="start">
+                                                    <h:graphicImage library="uploading" name="img/loading.gif"/>
+                                            </f:facet>
+                                            <f:facet name="complete">
+                                                    <h:outputText value=""/>
+                                            </f:facet>-->
+                </p:ajaxStatus>
+                <section class="content-header">
+                    <h1>
+                        <ui:insert name="pageTitle" />
+                        <small><ui:insert name="pageDescription" /></small>
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li>
+                            <p:link href="/index.xhtml">
+                                <i class="fa fa-home"></i>
+                                Home
+                            </p:link>
+                        </li>
+                        <ui:insert name="breadcrumb" />
+                    </ol>
+                </section>
+                <section class="content">
+                    <ui:insert name="content" />
+                </section>
+            </div>
+
+            <footer class="main-footer">
+                <a target="_blank"
+                   href="http://mf2solucoes.com.br/">
+                    Copyright (C) 2017 - 2018, Marlons Francys dos Santos
+                </a>
+                <div class="pull-right hidden-xs">
+                    <!--<strong>#{dashboardBean.version}</strong>-->
+                </div>
+            </footer>
+        </div>
+
+        <ui:insert name="popups" />
+
+
+        <h:outputScript library="primefaces" name="jquery/jquery.js" />
+        <h:outputScript library="primefaces" name="primefaces-locale.js" />
+        <h:outputScript library="bootstrap" name="js/bootstrap.min.js"/>
+        <h:outputScript library="adminlte" name="js/app.min.js"/>
+        <h:outputScript library="uploading" name="js/chart.min.js"/>
+        <h:outputScript library="minicolors" name="js/jquery.minicolors.js"/>
+        <h:outputScript library="uploading" name="js/helpers.js"/>
+        <h:outputScript library="uploading" name="js/wbcharts.js"/>
+    </h:body>
+</html>

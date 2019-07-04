@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<faces-config xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_3.xsd"
+              version="2.2">
+
+    
+    <render-kit>
+        <renderer>
+            <component-family>org.primefaces.component</component-family>
+            <renderer-type>org.primefaces.component.InputNumberRenderer</renderer-type>
+            <renderer-class>com.mf2solucoes.infraestrutura.primefaces.CustomInputNumberRenderer</renderer-class>
+        </renderer>
+        <renderer>
+            <component-family>org.primefaces.component</component-family>
+            <renderer-type>org.primefaces.component.CalendarRenderer</renderer-type>
+            <renderer-class>com.mf2solucoes.infraestrutura.primefaces.CustomCalendarRenderer</renderer-class>
+        </renderer>
+    </render-kit>
+    
+    <application>
+        <action-listener>org.primefaces.application.DialogActionListener</action-listener>
+        <navigation-handler>org.primefaces.application.DialogNavigationHandler</navigation-handler>
+        <view-handler>org.primefaces.application.DialogViewHandler</view-handler>
+        <!--        <resource-handler>org.omnifaces.resourcehandler.UnmappedResourceHandler</resource-handler>-->
+        <!-- configuracao da locale -->
+        <locale-config>  
+            <default-locale>pt_BR</default-locale>  
+            <!--            <supported-locale>pt_BR</supported-locale>
+            <supported-locale>en_US</supported-locale>-->
+        </locale-config>  
+        
+        <!-- mensagens de validacao -->
+        <resource-bundle>  
+            <base-name>ValidationMessages</base-name>  
+            <var>validation</var>
+        </resource-bundle>  
+        
+        <!-- bundle -->
+        <resource-bundle>  
+            <base-name>i18n.enums</base-name>  
+            <var>enums</var>
+        </resource-bundle>  
+        <resource-bundle>  
+            <base-name>i18n.messages</base-name>  
+            <var>messages</var>
+        </resource-bundle>  
+        <resource-bundle>  
+            <base-name>i18n.menu</base-name>  
+            <var>menu</var>
+        </resource-bundle>  
+        <resource-bundle>  
+            <base-name>i18n.breadcrumb</base-name>  
+            <var>breadcrumb</var>
+        </resource-bundle>  
+        <resource-bundle>  
+            <base-name>i18n.authorizations</base-name>  
+            <var>authorizations</var>
+        </resource-bundle>  
+    </application>
+   
+    <faces-config-extension>
+        <facelets-processing>
+            <file-extension>.xhtml</file-extension>
+            <process-as>xhtml</process-as>
+        </facelets-processing>
+    </faces-config-extension>
+</faces-config>
