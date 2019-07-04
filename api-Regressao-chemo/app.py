@@ -26,6 +26,7 @@ def not_found(error):
 
 from models.model import ModeloCalibracao
 from controller.controllerModelo import geraModelo
+from metodos.pls import PLS
 
 @app.route('/modelo/adiciona', methods=['POST'])
 def create_modelo():
@@ -330,17 +331,19 @@ def get_by_idparametros(idmodelo_,idparametroref_):
 	      return(str(e))
 
 ########################################
-#Rotas da Predi;áo
+#Rotas da Predição
 ########################################
 
-@app.route("/predicao/get/<idamostra>")
-def get_by_amostra(idamostra):
+@app.route("/predicao/get/<idmodelo>/<idamostra>")
+def get_by_amostra(idmodelo, idamostra):
     try:
-        modelos=Parametro.query.all()
-        return  jsonify([e.serialize() for e in modelos])
+        pls = PLS()
+        resultado=pls.predicao(idmodelo=idmodelo,idamostra=idamostra)
+        print(resultado)
+        return  resultado
+        #return jsonify(resultado.serialize())
     except Exception as e:
 	      return(str(e))
-
 
 if __name__ == '__main__':
     app.run()
