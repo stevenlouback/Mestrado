@@ -157,7 +157,7 @@
                         <div class="col-md-12">
                             <div class="row">
                                 <div class="form-group col-md-12">
-                                    <p:dataTable id="cars2" 
+                                    <p:dataTable id="resultados" 
                                                  var="car" 
                                                  value="#{dtEditView.cars2}" 
                                                  editable="true" 
@@ -168,7 +168,7 @@
                                         </f:facet>
 
                                         <p:ajax event="cellEdit"
-                                                update=":form:msgs" />
+                                                update="@this" />
                                         <!--listener="#{dtEditView.onCellEdit}"--> 
 
                                         <p:column headerText="#{messages['parametro.form.name']}"
