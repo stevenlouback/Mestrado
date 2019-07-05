@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json
 from flask import jsonify
+from datetime import datetime
 
 sys.path.append("..\dao")
 
@@ -72,6 +73,10 @@ class PLS(object):
         # print(mean_squared_error(Y,matYPred))
         raizQ = mean_squared_error(Y, matYPred) ** (1 / 2)
         #print(raizQ)
+
+        ##Grava Predicao
+        db.execute(" update matrizy set vlresultado = " + str(1) + " , dtpredicao = '" + str(datetime.now()) + "' where idamostra = 1 and idmodelo = " + str(idmodelo) + "  ")
+        db.execute("commit")
 
 
         ##Contrucao do JSON
@@ -256,6 +261,10 @@ class PLS(object):
         except Exception:
              return "Ocorreu um erro na busca dos dados"
 
+#pls = PLS()
+#pls.predicao(1,348)
+
+
 class NumpyEncoder(json.JSONEncoder):
     """ Special json encoder for numpy types """
     def default(self, obj):
@@ -269,3 +278,34 @@ class NumpyEncoder(json.JSONEncoder):
         elif isinstance(obj,(np.ndarray,)): #### This is the fix
             return obj.tolist()
         return json.JSONEncoder.default(self, obj)
+
+
+
+
+
+
+'''
+
+
+print('Erro absoluto mediano')
+print(median_absolute_error(Y,matYPred))
+
+print('Erro quadrático log Médio')
+print(mean_squared_log_error(Y,matYPred))
+
+print('coverage_error ')
+print(coverage_error(np.array(Y),np.array(pls.y_scores_)))
+
+print('label_ranking_average_precision_score ')
+print(label_ranking_average_precision_score(np.array(Y),np.array(pls.y_scores_)))
+
+print('label_ranking_loss')
+print(label_ranking_loss(np.array(Y),np.array(pls.y_scores_)))
+
+print('explained_variance_score')
+print(explained_variance_score(Y,matYPred))
+
+
+'''
+
+
