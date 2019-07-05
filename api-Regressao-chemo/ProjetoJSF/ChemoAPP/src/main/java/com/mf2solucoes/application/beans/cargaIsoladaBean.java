@@ -22,7 +22,7 @@ import lombok.Setter;
  *
  * @author Marlons
  */
-@Named
+@Named("cargaBean")
 @ViewScoped
 public class cargaIsoladaBean implements Serializable {
 
@@ -50,7 +50,7 @@ public class cargaIsoladaBean implements Serializable {
         limpar();
     }
     
-    public boolean isImagem() {
+    public boolean isIMAGEM() {
         return this.getTpModelo().equals("IMG");
     }
     

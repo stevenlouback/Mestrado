@@ -69,7 +69,6 @@ public class ModeloBean implements Serializable {
         } catch (Exception e) {
             Mensagens msg = new Mensagens();
             msg.addError(String.valueOf(e), modelo);
-            System.out.println(e);
             e.printStackTrace();
         }
     }
@@ -84,13 +83,6 @@ public class ModeloBean implements Serializable {
         return modelos.modeloPorId(modelo);
     }
 
-//    public modelo getModelo() {
-//        return modelo;
-//    }
-//
-//    public void setModelo(modelo modelo) {
-//        this.modelo = modelo;
-//    }
 
     
     
