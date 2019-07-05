@@ -12,7 +12,7 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:pe="http://primefaces.org/ui/extensions">
 
-    
+
     <h:head>
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -89,6 +89,14 @@
                             <p:link href="/cargaIsolada.xhtml">
                                 <i class="fa fa-cube" aria-hidden="true"></i> 
                                 <span>#{menu['model.amostra']}</span>
+                            </p:link>
+                        </li> 
+
+                        <li class="#{activeMenu eq 'users' ? 'active' : ''}"
+                            >
+                            <p:link href="/predicao.xhtml">
+                                <i class="fa fa-home" aria-hidden="true"></i> 
+                                <span>#{menu['model.predicao']}</span>
                             </p:link>
                         </li> 
 
