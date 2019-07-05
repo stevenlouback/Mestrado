@@ -8,6 +8,7 @@ import com.mf2solucoes.application.service.parametroService;
 import com.mf2solucoes.tools.Mensagens;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 //import javax.faces.bean.ManagedBean;
 //import javax.faces.bean.ViewScoped;
@@ -80,7 +81,28 @@ public class ParametroBean implements Serializable {
     @SuppressWarnings("unchecked")
     public void listarTodos() {
         parametros = new parametros();
-        list_Parametro = parametros.findAll();
+        List<parametro> list_AuxParam = new ArrayList<>();
+//        list_Parametro = parametros.findAll();
+        list_AuxParam = parametros.findAll();
+        list_Parametro.clear();//inicializa a lista
+//        Para não mexer no WS resolvi tratar aqui, depois nós vemos o que fazemos
+        for (int i = 0; i < list_AuxParam.size(); i++) {
+            parametro novoParametro = new parametro();
+            novoParametro.setIdmodelo(list_AuxParam.get(i).getIdmodelo());
+            novoParametro.setIdparametroref(list_AuxParam.get(i).getIdparametroref());
+            novoParametro.setNmparametroref(list_AuxParam.get(i).getNmparametroref());
+            
+            modelo modelo = new modelo();
+            modelo.setIdmodelo(novoParametro.getIdmodelo());
+            
+            modelos modelos = new modelos();
+            modelo = modelos.modeloPorId(modelo);
+            
+            novoParametro.setModelo(modelo);
+            
+            list_Parametro.add(novoParametro);
+        }
+
     }
 
 //    @PostConstruct

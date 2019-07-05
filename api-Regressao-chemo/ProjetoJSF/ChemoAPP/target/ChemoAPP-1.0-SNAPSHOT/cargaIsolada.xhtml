@@ -55,21 +55,22 @@
                                 <div class="form-group col-md-4">
                                     <p:outputLabel for="tipos" value="#{messages['dashboard.tipoAmostra']}" />
                                     <p:selectOneMenu id="tipos"
-                                                     value="#{cargaIsoladaBean.modelo}"
+                                                     value="#{cargaIsoladaBean.tpModelo}"
                                                      converter="omnifaces.SelectItemsConverter"
                                                      effect="fade">
                                         <f:selectItem itemValue="#{null}"
                                                       noSelectionOption="true"
                                                       itemLabel="#{menu['select-one']}"/>
-                                        <f:selectItem itemValue="#{null}"
+                                        <f:selectItem itemValue="#{enums['tpamostra.nir']}"
                                                       noSelectionOption="true"
                                                       itemLabel="#{menu['nir']}"/>
-                                        <f:selectItem itemValue="#{null}"
+                                        <f:selectItem itemValue="#{enums['tpamostra.nir']}"
                                                       noSelectionOption="true"
                                                       itemLabel="#{menu['img']}"/>
+                                        <f:ajax event="itemSelect" execute="@this" render="uploadImg,espectro"/>
                                     </p:selectOneMenu>
                                 </div>
-                                
+
                                 <div class="form-group col-md-4">
                                     <p:outputLabel for="modelos" value="#{messages['model.name']}" />
                                     <p:selectOneMenu id="modelos"
@@ -110,18 +111,20 @@
                                     <!--value="#{modeloBean.modelo.dsModelo}"-->
                                     <h:outputText id="display" />                                                 
                                 </div>
-                                
-                                
+
+
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+
+                        <div class="col-md-12">
                             <div class="row">
                                 <div class="form-group col-md-12">
                                     <!--for="fileUpload"-->
                                     <p:outputLabel for="uploadImg"
-                                        value="#{messages['upload.modelo']}: "/>
+                                                   value="#{messages['upload.modelo']}: "/>
                                     <p:fileUpload id="uploadImg"
+                                                  rendered=""
                                                   fileUploadListener="#{imageBean.converteImageRgb}"  
                                                   label="#{messages['upload.choose']}" 
                                                   uploadLabel="#{messages['upload.upload']}" 
@@ -151,19 +154,60 @@
                             </div>
                         </div>
 
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <p:dataTable id="cars2" 
+                                                 var="car" 
+                                                 value="#{dtEditView.cars2}" 
+                                                 editable="true" 
+                                                 editMode="cell" 
+                                                 widgetVar="cellCars">
+                                        <f:facet name="header">
+                                            #{messages[parametro.valores]}
+                                        </f:facet>
+
+                                        <p:ajax event="cellEdit"
+                                                update=":form:msgs" />
+                                        <!--listener="#{dtEditView.onCellEdit}"--> 
+
+                                        <p:column headerText="#{messages['parametro.form.name']}"
+                                                  style="text-center" 
+                                                  width="30%">
+                                            <h:outputText value="#{parametro.nmparametroref}" />
+                                        </p:column>
+                                        
+                                        <p:column headerText="#{messages[parametro.valor]}">
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText value="" />
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:inputText 
+                                                        value="" 
+                                                        style="width:96%" 
+                                                        label="Year"/>
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
             </h:form>
         </div>
-        <h:form prependId="false">
+<!--        <h:form prependId="false">
             <p:remoteCommand autoRun="true"
                              name="initializer"
                              update=":movimentationSummary"
                              onstart="block('loadingBlock')"
                              oncomplete="unblock('loadingBlock')"/>
-                             <!--actionListener="#{dashboardBean.initialize()}"-->
-            <!--/>-->
-        </h:form>
+                             actionListener="#{dashboardBean.initialize()}"
+            />
+        </h:form>-->
     </ui:define>
 </ui:composition>

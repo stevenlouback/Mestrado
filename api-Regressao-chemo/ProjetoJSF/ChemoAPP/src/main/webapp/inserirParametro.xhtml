@@ -63,10 +63,12 @@
                                                  styleClass="form-control"
                                                  value="#{parametroB.parametro.idparametroref}"/>
                                 </div>
-                                
+
                                 <div class="form-group col-md-5">
-                                <p:outputLabel for="modelos" value="#{messages['model.name']}" />
+                                    <p:outputLabel for="modelos" 
+                                                   value="#{messages['model.name']}" />
                                     <p:selectOneMenu id="modelos"
+                                                     disabled="#{parametroB.editando}"
                                                      value="#{parametroB.parametro.modelo}"
                                                      converter="omnifaces.SelectItemsConverter"
                                                      filter="true" 
@@ -87,7 +89,9 @@
                                     <p:inputText id="nome"
                                                  maxlength="45"
                                                  styleClass="form-control"
-                                                 value="#{parametroB.parametro.nmparametroref}"/>
+                                                 value="#{parametroB.parametro.nmparametroref}"
+                                                 onkeydown="this.value = this.value.toUpperCase();" 
+                                                 onkeyup="this.value = this.value.toUpperCase()"/>
                                 </div>
 
                             </div>
@@ -132,12 +136,18 @@
 
                                         <!--selectionMode="single"--> 
 
-                                        <p:column headerText="#{messages['parametro.form.id']}" 
+                                        <p:column headerText="#{messages['model.name']}" 
+                                                  style="text-center" 
+                                                  width="30%">
+                                            <h:outputText value="#{parametro.modelo.nmmodelo}" />
+                                        </p:column>
+                       
+                                        <p:column headerText="#{messages['parametro.form.id']}"
                                                   style="text-center" 
                                                   width="10%">
                                             <h:outputText value="#{parametro.idparametroref}" />
                                         </p:column>
-
+                                        
                                         <p:column headerText="#{messages['parametro.form.name']}"
                                                   style="text-center" 
                                                   width="30%">
@@ -148,12 +158,13 @@
                                         <p:column width="15%" 
                                                   styleClass="text-center"
                                                   headerText="#{messages['list.actions']}">
-                                            <!--                                            <p:commandButton update="frmPesquisa" oncomplete="PF('chaveDialog').show()" 
-                                                                                                         icon="ui-icon-search" title="#{menu['detail']}">
-                                                                                            <f:setPropertyActionListener 
-                                                                                                target="#{Bean.modelo}" value="#{modelo}"/>
-                                                                                        </p:commandButton>
-                                                                                        <p:spacer width="5"/>-->
+                                            <p:commandButton update="parametroForm" 
+                                                             icon="ui-icon-pencil" 
+                                                             title="#{menu['detail']}">
+                                                <f:setPropertyActionListener 
+                                                    target="#{parametroB.parametro}" value="#{parametro}"/>
+                                            </p:commandButton>
+                                            <!--<p:spacer width="5"/>-->
                                         </p:column>
                                     </p:dataTable>
                                 </div>
@@ -163,6 +174,6 @@
                 </div>
             </h:form>
         </div>
-        
+
     </ui:define>
 </ui:composition>

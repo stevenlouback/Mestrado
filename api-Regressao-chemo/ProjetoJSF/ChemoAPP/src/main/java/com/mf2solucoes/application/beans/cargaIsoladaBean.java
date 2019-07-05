@@ -42,10 +42,20 @@ public class cargaIsoladaBean implements Serializable {
     @Inject
     private modeloService modeloService;
     
-    
+    @Setter
+    @Getter
+    String tpModelo;
     
     public cargaIsoladaBean() {
         limpar();
+    }
+    
+    public boolean isImagem() {
+        return this.getTpModelo().equals("IMG");
+    }
+    
+    public boolean isNIR() {
+        return this.getTpModelo().equals("NIR");
     }
 
     private void limpar() {

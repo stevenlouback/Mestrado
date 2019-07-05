@@ -79,6 +79,10 @@ public class ModeloBean implements Serializable {
         modelos = new modelos();
         list_Modelo = modelos.findAll();
     }
+    
+    public modelo modeloPorId(modelo modelo){
+        return modelos.modeloPorId(modelo);
+    }
 
 //    public modelo getModelo() {
 //        return modelo;

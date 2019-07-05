@@ -69,7 +69,9 @@
                                     <p:inputText id="nome"
                                                  maxlength="45"
                                                  styleClass="form-control"
-                                                 value="#{modeloB.modelo.nmmodelo}"/>
+                                                 value="#{modeloB.modelo.nmmodelo}"
+                                                 onkeydown="this.value = this.value.toUpperCase();" 
+                                                 onkeyup="this.value = this.value.toUpperCase()"/>
                                 </div>
 
                                 <div class="form-group col-md-2">
@@ -98,7 +100,9 @@
                                     <p:inputText id="metodo"
                                                  maxlength="45"
                                                  styleClass="form-control"
-                                                 value="#{modeloB.modelo.nmmetodoreferencia}"/>
+                                                 value="#{modeloB.modelo.nmmetodoreferencia}"
+                                                 onkeydown="this.value = this.value.toUpperCase();" 
+                                                 onkeyup="this.value = this.value.toUpperCase()"/>
                                 </div>
 
                                 <div class="form-group col-md-12">
@@ -174,10 +178,8 @@
                                         <p:column width="15%" 
                                                   styleClass="text-center"
                                                   headerText="#{messages['list.actions']}">
-                                            <!--oncomplete="PF('chaveDialog').show()"--> 
                                             <p:commandButton update="modeloForm" 
-
-                                                             icon="ui-icon-search" 
+                                                             icon="ui-icon-pencil" 
                                                              title="#{menu['detail']}">
                                                 <f:setPropertyActionListener 
                                                     target="#{modeloB.modelo}" value="#{modelo}"/>

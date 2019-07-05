@@ -34,6 +34,9 @@ public class parametro  implements Serializable {
     @Setter
     @Getter
     private String nmparametroref;
+    @Setter
+    @Getter
+    private Long idmodelo;
 
     /**
      * Constructor
