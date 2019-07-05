@@ -14,8 +14,7 @@
 
 
     <f:metadata>
-        <!--<f:event listener="#{modeloBean.listarTodos()}" type="preRenderView" />-->
-        <!--<f:viewAction action="#{modeloBean.listarTodos()}"/>-->
+        <!--<f:viewAction action="#{modeloB.listarTodos()}"/>-->
         <f:event listener="#{modeloB.listarTodos()}" type="preRenderView" />
         <f:viewParam name="dummy" />
     </f:metadata>
@@ -74,7 +73,8 @@
                                 </div>
 
                                 <div class="form-group col-md-2">
-                                    <p:outputLabel for="tipos" value="#{messages['dashboard.tipoAmostra']}" />
+                                    <p:outputLabel for="tipos" 
+                                                   value="#{messages['dashboard.tipoAmostra']}" />
                                     <p:selectOneMenu id="tipos"
                                                      value="#{modeloB.modelo.tpinstrumento}"
                                                      converter="omnifaces.SelectItemsConverter"
@@ -116,17 +116,15 @@
                             </div>
                         </div>
                     </div>
-
+                    <!--process="@this,descricao,metodo,tipos,nome,id"-->
                     <div class="box-footer text-right">
                         <p:commandButton id="botaoSalvar"
-                                         update="modeloForm"
-                                         process="modeloForm"
+                                         update="@form"
+                                         process="@this,descricao,metodo,tipos,nome,id"
+                                         partialSubmit="true"
                                          value="#{menu['save']}"
-                                         actionListener="#{modeloB.salvar}"
+                                         action="#{modeloB.salvar()}"
                                          styleClass="btn btn-flat btn-success"/>
-                        <!--process="modeloForm"-->
-                        <!--onstart="PF('blocker').show()"-->
-                        <!--oncomplete="PF('blocker').hide()"-->
                         <p:spacer width="5"/>
                         <p:button value="#{menu['clear']}"
                                   styleClass="btn btn-flat btn-danger"
@@ -178,7 +176,7 @@
                                                   headerText="#{messages['list.actions']}">
                                             <!--oncomplete="PF('chaveDialog').show()"--> 
                                             <p:commandButton update="modeloForm" 
-                                                             
+
                                                              icon="ui-icon-search" 
                                                              title="#{menu['detail']}">
                                                 <f:setPropertyActionListener 
@@ -197,14 +195,6 @@
                 </div>
             </h:form>
         </div>
-        <h:form prependId="false">
-            <p:remoteCommand autoRun="true"
-                             name="initializer"
-                             update="boxBody"
-                             onstart="block('loadingBlock')"
-                             oncomplete="unblock('loadingBlock')"/>
-                             
-            <!--actionListener="#{dashboardBean.initialize()}"-->
-        </h:form>
+
     </ui:define>
 </ui:composition>

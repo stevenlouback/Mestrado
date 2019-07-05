@@ -10,23 +10,22 @@ package com.mf2solucoes.application.beans;
 import com.mf2solucoes.application.modelDb.modelo;
 import com.mf2solucoes.application.repository.modelos;
 import com.mf2solucoes.application.service.modeloService;
+import com.mf2solucoes.tools.Mensagens;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.faces.bean.ViewScoped;
-//import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import javax.faces.bean.ManagedBean;
 import lombok.Getter;
 import lombok.Setter;
-//import org.omnifaces.cdi.ViewScoped;
+import javax.inject.Inject;
+import javax.faces.bean.ViewScoped;
 
 /**
  *
  * @author Marlons
  */
-@Named("modeloB")
+//@Named("modeloB")
+@ManagedBean(name = "modeloB")
 @ViewScoped
 public class ModeloBean implements Serializable {
 
@@ -64,8 +63,12 @@ public class ModeloBean implements Serializable {
 
     public void salvar(){
         try {
+            modeloService = new modeloService();
             this.modelo = modeloService.salvar(modelo);
+            limpar();
         } catch (Exception e) {
+            Mensagens msg = new Mensagens();
+            msg.addError(String.valueOf(e), modelo);
             System.out.println(e);
             e.printStackTrace();
         }
@@ -73,8 +76,17 @@ public class ModeloBean implements Serializable {
     
     @SuppressWarnings("unchecked")
     public void listarTodos() {
+        modelos = new modelos();
         list_Modelo = modelos.findAll();
     }
+
+//    public modelo getModelo() {
+//        return modelo;
+//    }
+//
+//    public void setModelo(modelo modelo) {
+//        this.modelo = modelo;
+//    }
 
     
     
