@@ -46,6 +46,10 @@ public class cargaIsoladaBean implements Serializable {
     @Getter
     String tpModelo;
     
+    @Setter
+    @Getter
+    String espectro;
+    
     public cargaIsoladaBean() {
         limpar();
     }

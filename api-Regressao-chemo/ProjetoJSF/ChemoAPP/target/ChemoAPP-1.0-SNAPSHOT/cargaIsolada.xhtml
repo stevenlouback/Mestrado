@@ -67,7 +67,9 @@
                                         <f:selectItem itemValue="#{enums['tpamostra.nir']}"
                                                       noSelectionOption="true"
                                                       itemLabel="#{menu['img']}"/>
-                                        <f:ajax event="itemSelect" execute="@this" render="uploadImg,espectro"/>
+                                        <!--<f:ajax event="itemSelect" execute="@this" render="uploadImg,espectro"/>-->
+<!--                                        <f:ajax rendered="uploadImg" event="change" />
+                                        <f:ajax rendered="espectro" event="change"/>-->
                                     </p:selectOneMenu>
                                 </div>
 
@@ -122,7 +124,7 @@
                                     <p:outputLabel 
                                                    value="#{messages['parametro.input']}: "/>
                                     <p:fileUpload id="uploadImg"
-                                                  rendered="#{cargaBean.IMAGEM()}"
+                                                  
                                                   fileUploadListener="#{imageBean.converteImageRgb}"  
                                                   label="#{messages['upload.choose']}" 
                                                   uploadLabel="#{messages['upload.upload']}" 
@@ -134,16 +136,18 @@
                                                   multiple="false"  
                                                   sizeLimit="10000000"   
                                                   allowTypes="/(\.|\/)(gif|jpe?g|png)$/"/> 
+                                    <!--rendered="#{cargaBean.IMAGEM()}"-->
 <!--                                    <p:outputLabel for="espectro"
                                                    value="#{messages['model.form.espectro']}: "/>-->
                                     <p:inputTextarea rows="2" cols="30" 
                                                      id="espectro"
-                                                     rendered="#{cargaBean.NIR}"
+                                                     value="#{cargaBean.espectro}"
                                                      styleClass="form-control"
                                                      counter="display1" maxlength="10000" 
                                                      counterTemplate="{0} caracteres restantes." 
                                                      autoResize="true" 
                                                      />
+                                    <!--rendered="#{cargaBean.NIR}"-->
                                     <!--value="#{modeloBean.modelo.dsModelo}"-->
                                     <h:outputText id="display1" />                                                 
                                 </div>
