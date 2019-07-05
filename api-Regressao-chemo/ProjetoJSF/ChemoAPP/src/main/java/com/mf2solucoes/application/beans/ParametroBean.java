@@ -5,10 +5,12 @@ import com.mf2solucoes.application.modelDb.parametro;
 import com.mf2solucoes.application.repository.modelos;
 import com.mf2solucoes.application.repository.parametros;
 import com.mf2solucoes.application.service.parametroService;
+import com.mf2solucoes.tools.Mensagens;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
+//import javax.faces.bean.ManagedBean;
+//import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.Getter;
@@ -19,7 +21,7 @@ import org.omnifaces.cdi.ViewScoped;
  *
  * @author Marlons
  */
-@Named
+@Named("parametroB")
 @ViewScoped
 public class ParametroBean implements Serializable {
 
@@ -32,14 +34,14 @@ public class ParametroBean implements Serializable {
     @Setter
     @Getter
     private List<parametro> list_Parametro = new ArrayList<>();
-    
+
     @Setter
     @Getter
     private List<modelo> list_Modelo = new ArrayList<>();
 
     @Inject
     private parametros parametros;
-    
+
     @Inject
     private modelos modelos;
 
@@ -47,12 +49,12 @@ public class ParametroBean implements Serializable {
     private parametroService parametroService;
 
     public ParametroBean() {
-//        limpar();
+        limpar();
     }
 
     public void initialize() {
-        limpar();
         listarTodos();
+        preencheCombo1();
     }
 
     private void limpar() {
@@ -66,7 +68,10 @@ public class ParametroBean implements Serializable {
     public void salvar() {
         try {
             this.parametro = parametroService.salvar(parametro);
+            limpar();
         } catch (Exception e) {
+            Mensagens msg = new Mensagens();
+            msg.addError(String.valueOf(e), parametro);
             System.out.println(e);
             e.printStackTrace();
         }
@@ -77,8 +82,8 @@ public class ParametroBean implements Serializable {
         parametros = new parametros();
         list_Parametro = parametros.findAll();
     }
-    
-    @PostConstruct
+
+//    @PostConstruct
     public void preencheCombo1() {
         list_Modelo = modelos.findAll();
     }

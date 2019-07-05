@@ -282,6 +282,52 @@ def get_by_idmatrizy(idmodelo_,idamostra_,idparametroref_):
 
 from models.model import Parametro
 
+@app.route('/parametros/adiciona', methods=['POST'])
+def create_parametro():
+    print(request.json)
+    if not request.json or not 'nmparametroref' in request.json :
+        abort(400)
+
+    objeto = request.json
+
+    #RECUPERA O JSON DENTRO DE JSON
+    data = objeto['modelo']
+    idmodelo= data['idmodelo']
+
+
+    idparametroref = objeto['idparametroref']
+    nmparametroref = objeto['nmparametroref']
+
+    if idparametroref == "":
+        idparametroref = (db.session.query(func.max(Parametro.idparametroref)).filter_by(idmodelo=idmodelo).scalar() or 0) + 1
+
+    if idparametroref == 0:
+        idparametroref = (db.session.query(func.max(Parametro.idparametroref)).filter_by(idmodelo=idmodelo).scalar() or 0) + 1
+
+    try:
+        modelo = Parametro(
+
+            idparametroref=idparametroref,
+            idmodelo=idmodelo,
+            nmparametroref=nmparametroref
+        )
+
+        print(modelo.idmodelo)
+        print(modelo.idparametroref)
+        print(modelo.nmparametroref)
+
+        db.session.add(modelo)
+        db.session.commit()
+        msg = "Parametro Adicionado. idmodelo={}".format(objeto.idmodelo)
+    except Exception as e:
+        msg = e
+        abort(400)
+
+    print
+
+    return jsonify({'success': msg}), 201
+
+
 @app.route("/parametros/add")
 def add_parametros():
     param = request.args.get('param')
@@ -295,7 +341,6 @@ def add_parametros():
 
     try:
         modelo=Parametro(
-
             idparametroref =idparametroref,
             idmodelo=idmodelo,
             nmparametroref=nmparametroref

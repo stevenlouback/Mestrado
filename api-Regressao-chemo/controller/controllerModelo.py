@@ -16,11 +16,11 @@ def geraModelo(db, objeto):
   idmodelo = objeto['idmodelo']
   print(idmodelo)
 
-
-
   # Pega a ultima sequencia para gravar no banco
   if idmodelo == "":
-    print('IDMODELO: ', idmodelo)
+    idmodelo = (db.session.query(func.max(ModeloCalibracao.idmodelo)).scalar() or 0) + 1
+
+  if idmodelo == 0:
     idmodelo = (db.session.query(func.max(ModeloCalibracao.idmodelo)).scalar() or 0) + 1
 
   try:

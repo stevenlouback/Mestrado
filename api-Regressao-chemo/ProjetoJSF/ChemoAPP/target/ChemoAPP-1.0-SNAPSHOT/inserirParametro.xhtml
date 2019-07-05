@@ -13,10 +13,9 @@
                 template="/template/mainTemplate.xhtml">
 
     <f:metadata>
-        <!--<f:viewParam name="dummy" />-->
-        <!--<f:event listener="#{parametroBean.listarTodos()}" type="preRenderView" />-->
+        <f:viewParam name="dummy" />
+        <f:event listener="#{parametroB.initialize()}" type="preRenderView" />
         <!--<f:viewAction action="#{parametroBean.listarTodos}"/>-->
-        <f:viewAction action="#{parametroBean.initialize()}"/>
     </f:metadata>
 
     <ui:define name="pageTitle">
@@ -54,7 +53,7 @@
                     <div class="box-body row">
                         <div class="col-md-12">
                             <div class="row">
-                                <p:focus for="nome" />
+                                <p:focus for="modelos" />
                                 <div class="form-group col-md-2">
                                     <p:outputLabel for="id"
                                                    value="#{messages['parametro.form.id']}: "/>
@@ -62,13 +61,13 @@
                                                  disabled="true"
                                                  maxlength="45"
                                                  styleClass="form-control"
-                                                 value="#{parametroBean.parametro.idparametroref}"/>
+                                                 value="#{parametroB.parametro.idparametroref}"/>
                                 </div>
                                 
                                 <div class="form-group col-md-5">
                                 <p:outputLabel for="modelos" value="#{messages['model.name']}" />
                                     <p:selectOneMenu id="modelos"
-                                                     value="#{parametroBean.parametro.modelo}"
+                                                     value="#{parametroB.parametro.modelo}"
                                                      converter="omnifaces.SelectItemsConverter"
                                                      filter="true" 
                                                      filterMatchMode="contains"
@@ -79,7 +78,7 @@
                                         <f:selectItems var="models"
                                                        itemValue="#{models}"
                                                        itemLabel="#{models.nmmodelo}"
-                                                       value="#{parametroBean.list_Modelo}"/>
+                                                       value="#{parametroB.list_Modelo}"/>
                                     </p:selectOneMenu>
                                 </div>
                                 <div class="form-group col-md-5">
@@ -88,7 +87,7 @@
                                     <p:inputText id="nome"
                                                  maxlength="45"
                                                  styleClass="form-control"
-                                                 value="#{parametroBean.parametro.nmparametroref}"/>
+                                                 value="#{parametroB.parametro.nmparametroref}"/>
                                 </div>
 
                             </div>
@@ -96,12 +95,12 @@
                     </div>
 
                     <div class="box-footer text-right">
-                        <p:commandButton update="parametroForm"
-                                         process="parametroForm"
+                        <p:commandButton id="botaoSalvar"
+                                         update="@form"
+                                         process="@this,modelos,nome,id"
+                                         partialSubmit="true"
                                          value="#{menu['save']}"
-                                         action="#{parametroBean.salvar()}"
-                                         onstart="PF('blocker').show()"
-                                         oncomplete="PF('blocker').hide()"
+                                         action="#{parametroB.salvar()}"
                                          styleClass="btn btn-flat btn-success"/>
                         <p:spacer width="5"/>
                         <p:button value="#{menu['clear']}"
@@ -124,12 +123,11 @@
                                                  var="parametro"
                                                  paginator="true"
                                                  sortOrder="ascending"
-
                                                  rowKey="#{parametro.idparametroref}"
                                                  paginatorPosition="bottom"
                                                  paginatorAlwaysVisible="false"
-                                                 selection="#{parametroBean.parametro}"       
-                                                 value="#{parametroBean.list_Parametro}"
+                                                 selection="#{parametroB.parametro}"       
+                                                 value="#{parametroB.list_Parametro}"
                                                  emptyMessage="#{messages['list.empty']}">
 
                                         <!--selectionMode="single"--> 
@@ -165,14 +163,6 @@
                 </div>
             </h:form>
         </div>
-        <h:form prependId="false">
-            <p:remoteCommand autoRun="true"
-                             name="initializer"
-                             update="boxBody"
-                             onstart="block('loadingBlock')"
-                             oncomplete="unblock('loadingBlock')"/>
-                             <!--actionListener="#{dashboardBean.initialize()}"-->
-            <!--/>-->
-        </h:form>
+        
     </ui:define>
 </ui:composition>
