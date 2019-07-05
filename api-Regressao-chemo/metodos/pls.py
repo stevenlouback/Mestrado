@@ -24,19 +24,19 @@ class PLS(object):
 
         idmodelo = idmodelo
 
-        idAmostraTestes = idamostra
+        idamostra = idamostra
 
         print(idmodelo)
-        print(idAmostraTestes)
+        print(idamostra)
 
         conjunto = "NIR"
 
         X = self.selectMatrizX(idmodelo, conjunto)
         Y = self.selectMatrizY(idmodelo, conjunto)
 
-        amostraPredicao = self.selectAmostra(idAmostraTestes)
+        amostraPredicao = self.selectAmostra(idamostra)
 
-        valorReferencia = self.selectDadosReferenciaAmostra(idAmostraTestes)
+        valorReferencia = self.selectDadosReferenciaAmostra(idamostra)
 
         pls = PLSRegression(copy=True, max_iter=500, n_components=12, scale=False, tol=1e-06)
 
@@ -49,7 +49,7 @@ class PLS(object):
 
         Y_pred = pls.predict(amostraPredicao)
 
-        print('Amostra: ' + str(idAmostraTestes) + ' - Valor Predito :' + str(Y_pred))
+        print('Amostra: ' + str(idamostra) + ' - Valor Predito :' + str(Y_pred))
 
         print('R2 do modelo PLS')
         coeficiente = pls.score(X, Y, sample_weight=None)
@@ -62,7 +62,7 @@ class PLS(object):
             #print(i)
             linhaMatriz = []
             idAmostraTestes = i
-            amostraPredicao = self.selectAmostra(idAmostraTestes)
+            amostraPredicao = self.selectAmostra(idamostra)
             Y_pred = pls.predict(amostraPredicao)
             #print(Y_pred)
             linhaMatriz.append(np.double(Y_pred))
@@ -75,14 +75,7 @@ class PLS(object):
 
 
         ##Contrucao do JSON
-
-        data = {}
-        data['idamostra'] = idAmostraTestes
-        data['valorPredito'] = Y_pred
-        #data['RMSEC'] = raizQ
-        #json_data = json(data, cls=NumpyEncoder)
-
-        json_data = jsonify(idamostra=str(idAmostraTestes), valorpredito=str(Y_pred), rmsec=str(raizQ), idmodelo=str(idmodelo), valorReferencia=str(valorReferencia), coeficiente=str(coeficiente))
+        json_data = jsonify(idamostra=str(idamostra), valorpredito=str(Y_pred), rmsec=str(raizQ), idmodelo=str(idmodelo), valorReferencia=str(valorReferencia), coeficiente=str(coeficiente))
 
         return json_data
 
