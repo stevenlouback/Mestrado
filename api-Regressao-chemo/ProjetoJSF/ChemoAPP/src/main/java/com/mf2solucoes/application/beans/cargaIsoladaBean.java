@@ -27,7 +27,7 @@ import lombok.Setter;
  */
 @Named("cargaBean")
 @ViewScoped
-public class cargaIsoladaBean implements Serializable {
+public class cargaIsoladaBean   implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
