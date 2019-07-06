@@ -12,7 +12,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.ManagedBean;
+//import javax.faces.view.ViewScoped;
+//import javax.faces.bean.ViewScoped;
+import org.omnifaces.cdi.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.Getter;
@@ -52,14 +55,25 @@ public class cargaIsoladaBean implements Serializable {
     
     public cargaIsoladaBean() {
         limpar();
+        preencheCombo1();
+    }
+    
+    public void initialize() {
+        preencheCombo1();
     }
     
     public boolean isIMAGEM() {
-        return this.getTpModelo().equals("IMG");
+        if (tpModelo == null){
+            return false;
+        }
+        return tpModelo.equals("IMG");
     }
     
     public boolean isNIR() {
-        return this.getTpModelo().equals("NIR");
+        if (tpModelo == null){
+            return false;
+        }
+        return tpModelo.equals("NIR");
     }
 
     private void limpar() {
@@ -68,7 +82,6 @@ public class cargaIsoladaBean implements Serializable {
         modelo = new modelo();
     }
     
-    @PostConstruct
     public void preencheCombo1() {
         list_Modelo = modelos.findAll();
     }

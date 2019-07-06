@@ -2,7 +2,7 @@
 
 
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<!--<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:o="http://omnifaces.org/ui"
       xmlns:p="http://primefaces.org/ui"
       xmlns:jsf="http://xmlns.jcp.org/jsf"
@@ -10,8 +10,13 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:of="http://omnifaces.org/functions"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:pe="http://primefaces.org/ui/extensions">-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:pe="http://primefaces.org/ui/extensions">
-
 
     <h:head>
         <meta charset="utf-8"/>
@@ -70,7 +75,7 @@
 
                         <li class="#{activeMenu eq 'users' ? 'active' : ''}"
                             >
-                            <p:link href="/inserirModelo.xhtml">
+                            <p:link outcome="/inserirModelo.xhtml">
                                 <i class="fa fa-bar-chart" aria-hidden="true"></i> 
                                 <span>#{menu['model.modelo']}</span>
                             </p:link>
@@ -78,7 +83,7 @@
 
                         <li class="#{activeMenu eq 'users' ? 'active' : ''}"
                             >
-                            <p:link href="/inserirParametro.xhtml">
+                            <p:link outcome="/inserirParametro.xhtml">
                                 <i class="fa fa-sort-numeric-asc" aria-hidden="true"></i> 
                                 <span>#{menu['model.param']}</span>
                             </p:link>
@@ -86,7 +91,7 @@
 
                         <li class="#{activeMenu eq 'users' ? 'active' : ''}"
                             >
-                            <p:link href="/cargaIsolada.xhtml">
+                            <p:link outcome="/cargaIsolada.xhtml">
                                 <i class="fa fa-cube" aria-hidden="true"></i> 
                                 <span>#{menu['model.amostra']}</span>
                             </p:link>
@@ -94,7 +99,7 @@
 
                         <li class="#{activeMenu eq 'users' ? 'active' : ''}"
                             >
-                            <p:link href="/predicao.xhtml">
+                            <p:link outcome="/predicao.xhtml">
                                 <i class="fa fa-home" aria-hidden="true"></i> 
                                 <span>#{menu['model.predicao']}</span>
                             </p:link>
@@ -102,7 +107,7 @@
 
 <!--                        <li class="#{activeMenu eq 'users' ? 'active' : ''}"
                             >
-                            <p:link href="/inserirModelo.xhtml">
+                            <p:link outcome="/inserirModelo.xhtml">
                                 <i class="fa fa-cubes" aria-hidden="true"></i> 
                                 <span>#{menu['model.amostras']}</span>
                             </p:link>
@@ -113,14 +118,14 @@
 
                         <li class="#{activeMenu eq 'users' ? 'active' : ''}"
                             >
-                            <p:link href="/upload.xhtml">
+                            <p:link outcome="/upload.xhtml">
                                 <i class="fa fa-camera" aria-hidden="true"></i> 
                                 <span>#{menu['tools.upload']}</span>
                             </p:link>
                         </li>
 
                         <li class="#{activeMenu eq 'contacts' ? 'active' : ''}">
-                            <p:link href="/capture.xhtml">
+                            <p:link outcome="/capture.xhtml">
                                 <i class="fa fa-video-camera" aria-hidden="true"></i> 
                                 <span>#{menu['tools.capturar']}</span>
                             </p:link>
@@ -131,7 +136,7 @@
 
                         <li class="#{activeMenu eq 'users' ? 'active' : ''}"
                             >
-                            <p:link href="/upload.xhtml">
+                            <p:link outcome="/upload.xhtml">
                                 <i class="fa fa-pie-chart" aria-hidden="true"></i> 
                                 <span>#{menu['results.amostra']}</span>
                             </p:link>

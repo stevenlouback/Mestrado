@@ -3,6 +3,7 @@ com\mf2solucoes\tools\Mensagens.class
 com\mf2solucoes\tools\Constants.class
 com\mf2solucoes\tools\genericoWS.class
 com\mf2solucoes\application\beans\ParametroBean.class
+com\mf2solucoes\application\modelDb\amostra.class
 com\mf2solucoes\application\beans\ModeloDadosBean.class
 com\mf2solucoes\tools\tratamentoImagem.class
 com\mf2solucoes\application\repository\modelos.class

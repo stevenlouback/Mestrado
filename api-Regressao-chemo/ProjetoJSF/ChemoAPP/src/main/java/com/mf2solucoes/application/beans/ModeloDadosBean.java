@@ -27,7 +27,7 @@ import org.omnifaces.cdi.ViewScoped;
 @Named
 //@SessionScoped
 @ViewScoped
-public class ModeloDadosBean implements Serializable {
+public class ModeloDadosBean   implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

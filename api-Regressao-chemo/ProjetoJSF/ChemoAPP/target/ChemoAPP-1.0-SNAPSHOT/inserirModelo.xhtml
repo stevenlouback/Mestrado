@@ -12,7 +12,6 @@
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 template="/template/mainTemplate.xhtml">
 
-
     <f:metadata>
         <!--<f:viewAction action="#{modeloB.listarTodos()}"/>-->
         <f:event listener="#{modeloB.listarTodos()}" type="preRenderView" />
@@ -24,8 +23,8 @@
     </ui:define>
 
     <ui:define name="pageDescription">
-        <o:outputFormat value="#{messages['model.page-description']}">
-        </o:outputFormat>
+        <o:outputFormat value="#{messages['model.page-description']}"/>
+        <!--</o:outputFormat>-->
     </ui:define>
 
     <ui:define name="breadcrumb">

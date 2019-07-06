@@ -14,6 +14,7 @@ class Amostra(db.Model):
     tpamostra = db.Column(db.String(), nullable=False)
     dsobservacoes = db.Column(db.String(), nullable=True)
     dtcoletaamostra = db.Column(db.DateTime, nullable=False)
+    imamostra = db.Column(db.String(), nullable=True)
 
     # matrizesX = db.relationship('MatrizX', backref='Amostra', lazy=True)
     # matrizesY = db.relationship('MatrizY', backref='Amostra', lazy=True)
