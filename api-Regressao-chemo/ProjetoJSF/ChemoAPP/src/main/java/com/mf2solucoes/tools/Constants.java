@@ -12,4 +12,6 @@ public class Constants {
     public static final String modeloGetId = "/modelo/get/";  
     public static final String parametroADD = "/parametros/adiciona";  
     public static final String parametroGetALL = "/parametros/getall";  
+    public static final String predicaoGetId = "/predicao/get/"; 
+    public static final String predicaoADD = "/predicao/adiciona"; 
 }

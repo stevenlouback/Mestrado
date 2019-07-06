@@ -4,10 +4,15 @@ com\mf2solucoes\tools\Constants.class
 com\mf2solucoes\tools\genericoWS.class
 com\mf2solucoes\application\beans\ParametroBean.class
 com\mf2solucoes\application\modelDb\amostra.class
+com\mf2solucoes\application\beans\PredicaoBean.class
 com\mf2solucoes\application\beans\ModeloDadosBean.class
 com\mf2solucoes\tools\tratamentoImagem.class
 com\mf2solucoes\application\repository\modelos.class
+com\mf2solucoes\application\modelDb\predicao.class
 com\mf2solucoes\application\repository\modelos$1.class
+com\mf2solucoes\application\repository\predicoes$1.class
+com\mf2solucoes\application\service\predicaoService.class
+com\mf2solucoes\application\repository\predicoes.class
 com\mf2solucoes\application\modelDb\modelo.class
 com\mf2solucoes\application\service\modeloService.class
 com\mf2solucoes\application\controller\PhotoCamView.class

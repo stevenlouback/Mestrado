@@ -13,6 +13,7 @@
                 template="/template/mainTemplate.xhtml">
 
     <f:metadata>
+        <f:event listener="#{predicaoB.pesquisar()}" type="preRenderView" />
         <f:viewParam name="dummy" />
     </f:metadata>
 
@@ -22,7 +23,6 @@
 
     <ui:define name="pageDescription">
         <o:outputFormat value="#{messages['predicao.page-description']}">
-            <!--<f:param value="#{userBean.user.login}"/>-->
         </o:outputFormat>
     </ui:define>
 
@@ -32,14 +32,14 @@
     <ui:define name="content">
 
         <pe:blockUI widgetVar="loadingBlock"
-                    target="movimentationSummary" >
+                    target="boxBody" >
             <p:graphicImage width="32" 
                             height="32"
                             library="uploading" 
                             name="img/loading.gif" />
         </pe:blockUI> 
-        <div jsf:id="movimentationSummary">
-            <h:form id="profileForm" prependId="false">
+        <div jsf:id="boxBody">
+            <h:form id="predicaoForm" prependId="false">
 
                 <div class="row">
                     <div class="col-sm-12">
@@ -51,6 +51,26 @@
                     <div class="box-body row">
                         <div class="col-md-12">
                             <div class="row">
+                                <div class="form-group col-md-5">
+                                    <p:outputLabel for="modelos" 
+                                                   value="#{messages['model.name']}" />
+                                    <p:selectOneMenu id="modelos"
+                                                     disabled="#{parametroB.editando}"
+                                                     value="#{predicaoB.predicao.modelo}"
+                                                     converter="omnifaces.SelectItemsConverter"
+                                                     filter="true" 
+                                                     filterMatchMode="contains"
+                                                     effect="fade">
+                                        <f:selectItem itemValue="#{null}"
+                                                      noSelectionOption="true"
+                                                      itemLabel="#{menu['select-one']}"/>
+                                        <f:selectItems var="models"
+                                                       itemValue="#{models}"
+                                                       itemLabel="#{models.nmmodelo}"
+                                                       value="#{predicaoB.list_Modelo}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                                
                                 <div class="form-group col-md-2">
                                     <p:outputLabel for="id"
                                                    value="#{messages['predicao.form.idamostra']}"/>
@@ -58,26 +78,95 @@
                                                  disabled="false"
                                                  maxlength="45"
                                                  styleClass="form-control"
-                                                 value="#{parametroB.parametro.idparametroref}"/>
-                                    <p:button value="#{menu['search']}"
-                                              styleClass="ui-priority-primary"
-                                              outcome="inserirParametro.xhtml"/>  
+                                                 value="#{predicaoB.predicao.idamostra}"
+                                                 />
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <div class="box-footer text-right">
+                        <p:commandButton id="botaoPesquisar"
+                                         update="@form"
+                                         process="@this,modelos,id"
+                                         partialSubmit="true"
+                                         styleClass="ui-priority-primary"
+                                         action="#{predicaoB.pesquisar()}"
+                                         value="#{menu['search']}"
+                                         />        
+                    </div>
+
+                </div>
+
+                <!--Aqui começa montar a CONSULTA-->
+                <div class="box">
+                    <div class="box-body row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <p:dataTable rows="25"
+                                                 lazy="true"
+                                                 rowHover="true"
+                                                 var="predicao"
+                                                 paginator="true"
+                                                 sortOrder="ascending"
+                                                 selectionMode="single" 
+                                                 rowKey="#{predicao.idamostra}"
+                                                 paginatorPosition="bottom"
+                                                 paginatorAlwaysVisible="false"
+                                                 selection="#{predicaoB.predicao}"
+                                                 value="#{predicaoB.list_Predicao}"
+                                                 emptyMessage="#{messages['list.empty']}">
+
+                                        <p:column headerText="#{messages['predicao.form.idamostra']}" 
+                                                  style="text-center" 
+                                                  width="10%">
+                                            <h:outputText value="#{predicao.idamostra}" style="display: block; width:100%; text-align:center;"/>
+                                        </p:column>
+
+                                        <p:column headerText="#{messages['predicao.form.valorreferencia']}" 
+                                                  style="text-center" 
+                                                  width="10%">
+                                            <h:outputText value="#{predicao.valorreferencia}" style="display: block; width:100%; text-align:center;"/>
+                                        </p:column>
+
+                                        <p:column headerText="#{messages['predicao.form.valorpredito']}" 
+                                                  style="text-center" 
+                                                  width="10%">
+                                            <h:outputText value="#{predicao.valorpredito}" style="display: block; width:100%; text-align:center;"/>
+                                        </p:column> 
+
+                                        <p:column headerText="#{messages['predicao.form.coeficiente']} " 
+                                                  style="text-center" 
+                                                  width="10%">
+                                            <h:outputText value="#{predicao.coeficiente}" style="display: block; width:100%; text-align:center;"/>
+                                        </p:column>  
+
+                                        <p:column headerText="#{messages['predicao.form.rmsec']}" 
+                                                  style="text-center" 
+                                                  width="10%">
+                                            <h:outputText value="#{predicao.rmsec}" style="display: block; width:100%; text-align:center;"/>
+                                        </p:column>                                          
+
+                                    </p:dataTable>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
             </h:form>
         </div>
-        <h:form prependId="false">
-            <p:remoteCommand autoRun="true"
-                             name="initializer"
-                             update=":movimentationSummary"
-                             onstart="block('loadingBlock')"
-                             oncomplete="unblock('loadingBlock')"/>
-                             <!--actionListener="#{dashboardBean.initialize()}"-->
-            <!--/>-->
-        </h:form>
+        <!--        <h:form prependId="false">
+                    <p:remoteCommand autoRun="true"
+                                     name="initializer"
+                                     update=":movimentationSummary"
+                                     onstart="block('loadingBlock')"
+                                     oncomplete="unblock('loadingBlock')"/>
+                                     actionListener="#{dashboardBean.initialize()}"
+                    />
+                </h:form>-->
     </ui:define>
 </ui:composition>

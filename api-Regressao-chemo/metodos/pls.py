@@ -35,9 +35,9 @@ class PLS(object):
         X = self.selectMatrizX(idmodelo, conjunto)
         Y = self.selectMatrizY(idmodelo, conjunto)
 
-        amostraPredicao = self.selectAmostra(idamostra)
+        amostraPredicao = self.selectAmostra(idamostra, idmodelo)
 
-        valorReferencia = self.selectDadosReferenciaAmostra(idamostra)
+        valorReferencia = self.selectDadosReferenciaAmostra(idamostra, idmodelo)
 
         pls = PLSRegression(copy=True, max_iter=500, n_components=12, scale=False, tol=1e-06)
 
@@ -48,9 +48,9 @@ class PLS(object):
 
         # pls.fit(S, Y)
 
-        Y_pred = pls.predict(amostraPredicao)
+        valorPredito = pls.predict(amostraPredicao)
 
-        print('Amostra: ' + str(idamostra) + ' - Valor Predito :' + str(Y_pred))
+        print('Amostra: ' + str(idamostra) + ' - Valor Predito :' + str(valorPredito))
 
         print('R2 do modelo PLS')
         coeficiente = pls.score(X, Y, sample_weight=None)
@@ -63,7 +63,7 @@ class PLS(object):
             #print(i)
             linhaMatriz = []
             idAmostraTestes = i
-            amostraPredicao = self.selectAmostra(idamostra)
+            amostraPredicao = self.selectAmostra(idamostra, idmodelo)
             Y_pred = pls.predict(amostraPredicao)
             #print(Y_pred)
             linhaMatriz.append(np.double(Y_pred))
@@ -78,17 +78,27 @@ class PLS(object):
         db.execute(" update matrizy set vlresultado = " + str(1) + " , dtpredicao = '" + str(datetime.now()) + "' where idamostra = 1 and idmodelo = " + str(idmodelo) + "  ")
         db.execute("commit")
 
+        #tratamento dos dados para o Json
+        coeficiente = round(coeficiente, 2)
+        #valorPredito = round(valorPredito, 2)
+        raizQ = round(raizQ, 2)
+        valorReferencia = round(valorReferencia, 2)
+
+        valorPreditoString = str(valorPredito)
+        valorPreditoString = valorPreditoString.replace("[","")
+        valorPreditoString = valorPreditoString.replace("]", "")
+
 
         ##Contrucao do JSON
-        json_data = jsonify(idamostra=str(idamostra), valorpredito=str(Y_pred), rmsec=str(raizQ), idmodelo=str(idmodelo), valorReferencia=str(valorReferencia), coeficiente=str(coeficiente))
+        json_data = jsonify(idamostra=str(idamostra), valorpredito=str(valorPreditoString), rmsec=str(raizQ), idmodelo=str(idmodelo), valorreferencia=str(valorReferencia), coeficiente=str(coeficiente))
 
         return json_data
 
-    def selectAmostra(self, idAmostra):
+    def selectAmostra(self, idAmostra, idmodelo):
 
         try:
             #numero de colunas da matriz
-            cursorColunas = db.execute("select max(x.nrposicaocoluna) from matrizx x where x.idamostra = " + str(idAmostra) + "  ")
+            cursorColunas = db.execute("select max(x.nrposicaocoluna) from matrizx x where x.idamostra = " + str(idAmostra) + "  and x.idmodelo = " + str(idmodelo) + "")
 
             contadorColunas = 0
 
@@ -98,7 +108,10 @@ class PLS(object):
             #Preenchimento da MatrizX
             matrizX = []
 
-            cursorAmostras = db.execute("select x.idamostra from matrizx x where x.idamostra =  " + str(idAmostra) + " group by x.idamostra order by x.idamostra asc")
+            cursorAmostras = db.execute("select x.idamostra from matrizx x "
+                                        "where x.idamostra =  " + str(idAmostra) + ""
+                                        "  and x.idmodelo = " + str(idmodelo) + ""
+                                        " group by x.idamostra order by x.idamostra asc")
 
             listaAmostras = []
             for regAmostras in cursorAmostras:
@@ -112,7 +125,10 @@ class PLS(object):
 
 
 
-                cursorDadosAmostra = db.execute("SELECT x.idamostra, x.vllinhacoluna FROM matrizx x where x.idamostra = " + str(amostra) + " order by x.idamostra, x.nrsequencia, x.nrposicaolinha, x.nrposicaocoluna asc")
+                cursorDadosAmostra = db.execute("SELECT x.idamostra, x.vllinhacoluna FROM matrizx x "
+                                                "where x.idamostra = " + str(amostra) + "" 
+                                                 "  and x.idmodelo = " + str(idmodelo) + ""
+                                                " order by x.idamostra, x.nrsequencia, x.nrposicaolinha, x.nrposicaocoluna asc")
 
                 for regDadosAmostra in cursorDadosAmostra:
                     if  regDadosAmostra[1] == 0E-8 :
@@ -160,6 +176,7 @@ class PLS(object):
                                         "inner join matrizy y on (y.idamostra = x.idamostra) "
                                         "inner join amostra a on ( a.idamostra = x.idamostra ) "
                                         "where a.tpamostra = '" + str(conjunto) + "' "
+                                        " and x.idModelo = " + str(idModelo) + "  "                                                                                  
                                         "group by x.idamostra order by x.idamostra asc")
 
             cont = 0
@@ -176,7 +193,7 @@ class PLS(object):
                 linhaMatriz = []
 
                 cursorDadosAmostra = db.execute("SELECT idamostra, vllinhacoluna 	FROM matrizx x "
-                                                "where x.idamostra = " + str(amostra) + ""
+                                                "where x.idamostra = " + str(amostra) + " and x.idModelo = " + str(idModelo) + ""
                                                 "order by x.idamostra, x.nrsequencia, x.nrposicaolinha, x.nrposicaocoluna asc")
 
                 for regDadosAmostra in cursorDadosAmostra:
@@ -203,7 +220,7 @@ class PLS(object):
             print(Exception)
             return "Ocorreu um erro na busca dos dados"
 
-    def selectMatrizY(self, idModelo, conjunto):
+    def selectMatrizY(self, idmodelo, conjunto):
 
         try:
 
@@ -211,6 +228,7 @@ class PLS(object):
 
             cursorAmostras = db.execute("select y.idamostra from matrizy y "
                                         "inner join amostra a on (a.idamostra = y.idamostra) where a.tpamostra = '" + str(conjunto) + "' "
+                                        " and y.idmodelo = " + str(idmodelo) + " "                                                                                              
                                         "order by y.idamostra asc")
 
             listaAmostras = []
@@ -228,8 +246,10 @@ class PLS(object):
                 #print(amostra)
                 linhaMatriz = []
 
-                cursorDadosAmostra = db.execute("select y.idamostra, y.vlreferencia from matrizy y  where "
-                                                "y.idamostra = " + str(amostra) + " order by y.idamostra asc")
+                cursorDadosAmostra = db.execute("select y.idamostra, y.vlreferencia from matrizy y "
+                                                " where y.idamostra = " + str(amostra)  + " "
+                                                " and y.idmodelo = " + str(idmodelo) + " "
+                                                " order by y.idamostra asc")
 
                 for regDadosAmostra in cursorDadosAmostra:
                     if  regDadosAmostra[1] == 0E-8 :
@@ -249,10 +269,10 @@ class PLS(object):
             print(Exception)
             return "Ocorreu um erro na busca dos dados"
 
-    def selectDadosReferenciaAmostra(self, idAmostra):
+    def selectDadosReferenciaAmostra(self, idAmostra, idmodelo):
 
         try:
-             cursorDadosAmostra = db.execute("SELECT y.vlreferencia FROM matrizy y where y.idamostra = " + str(idAmostra) + "  ")
+             cursorDadosAmostra = db.execute("SELECT y.vlreferencia FROM matrizy y where y.idamostra = " + str(idAmostra) + "  and y.idmodelo =  "+ str(idmodelo) + "")
 
              for regDadosAmostra in cursorDadosAmostra:
                 valorReferencia = regDadosAmostra[0]

@@ -2,6 +2,7 @@ import json
 
 from flask import Flask, request, jsonify, make_response, abort
 from flask_sqlalchemy import SQLAlchemy
+from numpy import long
 from sqlalchemy import engine, func
 
 app = Flask(__name__)
@@ -18,6 +19,7 @@ def hello():
 
 @app.errorhandler(404)
 def not_found(error):
+    print("erro")
     return make_response(jsonify({'error': 'Não existe.'}), 404)
 
 ########################################
@@ -26,6 +28,7 @@ def not_found(error):
 
 from models.model import ModeloCalibracao
 from controller.controllerModelo import geraModelo
+from controller.controllerPredicao import geraPredicao
 from metodos.pls import PLS
 
 @app.route('/modelo/adiciona', methods=['POST'])
@@ -389,6 +392,17 @@ def get_by_amostra(idmodelo, idamostra):
         #return jsonify(resultado.serialize())
     except Exception as e:
 	      return(str(e))
+
+@app.route('/predicao/adiciona', methods=['POST'])
+def create_predicao():
+    if not request.json or not 'valorpredito' in request.json:
+        abort(400)
+
+    objeto = request.json
+
+    msg = geraPredicao(db, objeto)
+    db.session.commit()
+    return jsonify({'success': msg}), 201
 
 if __name__ == '__main__':
     app.run()
