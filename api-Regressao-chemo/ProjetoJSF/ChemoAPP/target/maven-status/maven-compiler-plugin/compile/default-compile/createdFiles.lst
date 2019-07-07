@@ -27,6 +27,7 @@ com\mf2solucoes\application\beans\cargaIsoladaBean.class
 com\mf2solucoes\infraestrutura\utils\MessageSource.class
 com\mf2solucoes\domain\misc\ex\InternalServiceError.class
 com\mf2solucoes\application\beans\ModeloBean.class
+com\mf2solucoes\application\repository\parametros$2.class
 com\mf2solucoes\application\controller\captureBean.class
 com\mf2solucoes\application\modelDb\parametro.class
 com\mf2solucoes\infraestrutura\primefaces\CustomCalendarRenderer.class

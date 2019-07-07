@@ -6,8 +6,10 @@
 package com.mf2solucoes.application.modelDb;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import lombok.EqualsAndHashCode;
@@ -37,6 +39,10 @@ public class parametro  implements Serializable {
     @Setter
     @Getter
     private Long idmodelo;
+    @Setter
+    @Getter
+    @Column(precision = 13, scale = 8)
+    private BigDecimal valorMovto = BigDecimal.ZERO;
 
     /**
      * Constructor

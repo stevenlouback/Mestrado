@@ -326,8 +326,6 @@ def create_parametro():
         msg = e
         abort(400)
 
-    print
-
     return jsonify({'success': msg}), 201
 
 
@@ -366,6 +364,15 @@ def get_allparametros():
 def get_allparametrosModelo(idmodelo_):
     try:
         modelos=Parametro.query.filter_by(idmodelo=idmodelo_)
+        return  jsonify([e.serialize() for e in modelos])
+    except Exception as e:
+	      return(str(e))
+
+
+@app.route("/parametros/getallTipoAmostra/<tpamostra_>")
+def get_allTipoAmostraModelo(tpamostra_):
+    try:
+        modelos=Parametro.query.filter_by(tpamostra=tpamostra_)
         return  jsonify([e.serialize() for e in modelos])
     except Exception as e:
 	      return(str(e))

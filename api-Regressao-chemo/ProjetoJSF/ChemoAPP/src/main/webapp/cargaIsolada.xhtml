@@ -53,12 +53,13 @@
 
                         <div class="col-md-12">
                             <div class="row">
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-2">
                                     <p:outputLabel for="tipos" value="#{messages['dashboard.tipoAmostra']}" />
                                     <p:selectOneMenu id="tipos"
                                                      value="#{cargaBean.tpModelo}"
+                                                     converter="omnifaces.SelectItemsConverter"
                                                      effect="fade">
-                                        <!--converter="omnifaces.SelectItemsConverter"-->
+
                                         <f:selectItem itemValue="#{null}"
                                                       noSelectionOption="true"
                                                       itemLabel="#{menu['select-one']}"/>
@@ -69,20 +70,21 @@
                                                       noSelectionOption="true"
                                                       itemLabel="#{menu['img']}"/>
                                         <!--<p:ajax update="@form" />-->
-                                        <f:ajax event="change"
-                                                execute="@this"
-                                                render="espectro" />    
-                                        <f:ajax event="change"
-                                                execute="@this"
-                                                render="uploadImg" />    
-                                        
+                                        <!--                                        <f:ajax event="change"
+                                                                                        execute="@this"
+                                                                                        render="espectro" />    
+                                                                                <f:ajax event="change"
+                                                                                        execute="@this"
+                                                                                        render="uploadImg" />    -->
+                                        <p:ajax event="change" listener="#{cargaBean.buscaModeloNirImg()}" update="modelos"/>
+
                                         <!--<f:ajax event="itemSelect" execute="@this" render="uploadImg,espectro"/>-->
                                         <!--                                        <f:ajax rendered="uploadImg" event="change" />
                                                                                 <f:ajax rendered="espectro" event="change"/>-->
                                     </p:selectOneMenu>
                                 </div>
 
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-3">
                                     <p:outputLabel for="modelos" value="#{messages['model.name']}" />
                                     <p:selectOneMenu id="modelos"
                                                      value="#{cargaBean.modelo}"
@@ -97,14 +99,21 @@
                                                        itemValue="#{models}"
                                                        itemLabel="#{models.nmmodelo}"
                                                        value="#{cargaBean.list_Modelo}"/>
+                                        <p:ajax event="change" listener="#{cargaBean.buscaParametrosModelo()}" update="@this,resultados"/>
+
                                     </p:selectOneMenu>
                                 </div>
-                                <div class="form-group col-md-4">
+
+                                <div class="form-group col-md-2">
                                     <p:outputLabel for="dataAmostra" value="#{messages['arquivo.unico.data']}" />
-                                    <p:calendar id="dataAmostra"  pattern="dd-MM-yyyy" />
+                                    <p:calendar id="dataAmostra"  pattern="dd-MM-yyyy" maxdate="#{cargaBean.maxDate}" />
                                 </div>
 
-
+                                <div class="form-group col-md-5">
+                                    <p:outputLabel for="identificaAmostra" 
+                                                   value="#{messages['amostra.identifica']}" />
+                                    <p:calendar id="identificaAmostra"  pattern="dd-MM-yyyy" maxdate="#{cargaBean.maxDate}" />
+                                </div>
 
                                 <div class="form-group col-md-12">
                                     <p:outputLabel for="descricao"
@@ -167,9 +176,20 @@
                         <div class="col-md-12">
                             <div class="row">
                                 <div class="form-group col-md-12">
-                                    <p:dataTable id="resultados" 
-                                                 var="car" 
-                                                 value="#{dtEditView.cars2}" 
+
+                                    <p:dataTable rows="25"
+                                                 id="resultados"
+                                                 lazy="true"
+                                                 rowHover="true"
+                                                 var="parametro"
+                                                 paginator="true"
+                                                 sortOrder="ascending"
+                                                 rowKey="#{parametro.parametro}"
+                                                 paginatorPosition="bottom"
+                                                 paginatorAlwaysVisible="false"
+                                                 selection="#{cargaBean.parametroResultado}"       
+                                                 value="#{cargaBean.list_ParametroResultado}"
+                                                 emptyMessage="#{messages['list.empty']}"
                                                  editable="true" 
                                                  editMode="cell" 
                                                  widgetVar="cellCars">
@@ -187,16 +207,18 @@
                                             <h:outputText value="#{parametro.nmparametroref}" />
                                         </p:column>
 
-                                        <p:column headerText="#{messages['parametro.valor']}">
+                                        <p:column headerText="#{messages['parametro.valor']}" 
+                                                  style="text-center" 
+                                                  width="30%">
                                             <p:cellEditor>
                                                 <f:facet name="output">
-                                                    <h:outputText value="" />
+                                                    <h:outputText value="#{parametro.valorMovto}" />
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText 
-                                                        value="" 
+                                                        value="#{parametro.valorMovto}" 
                                                         style="width:96%" 
-                                                        label="Year"/>
+                                                        label="#{messages['parametro.valor']}"/>
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
@@ -210,14 +232,5 @@
                 </div>
             </h:form>
         </div>
-        <!--        <h:form prependId="false">
-                    <p:remoteCommand autoRun="true"
-                                     name="initializer"
-                                     update=":movimentationSummary"
-                                     onstart="block('loadingBlock')"
-                                     oncomplete="unblock('loadingBlock')"/>
-                                     actionListener="#{dashboardBean.initialize()}"
-                    />
-                </h:form>-->
     </ui:define>
 </ui:composition>

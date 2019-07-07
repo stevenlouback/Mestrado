@@ -9,6 +9,7 @@ import static com.mf2solucoes.tools.Constants.BASE_URI;
 import static com.mf2solucoes.tools.Constants.modeloADD;
 import static com.mf2solucoes.tools.Constants.modeloGetALL;
 import static com.mf2solucoes.tools.Constants.modeloGetId;
+import static com.mf2solucoes.tools.Constants.modeloGetTpAmostra;
 import com.mf2solucoes.tools.DateDeserializer;
 import com.mf2solucoes.tools.Mensagens;
 import com.mf2solucoes.tools.genericoWS;
@@ -98,6 +99,14 @@ public class modelos implements Serializable {
 //
 //        return (modelo) list_Aux.get(0);
 //        return ggson.fromJson(json, modelo.class);
+    }
+    
+    public List<modelo> modeloPorTipoAmostra(modelo modelo) {
+        Client c = Client.create();
+        WebResource wr = c.resource(BASE_URI).path(modeloGetTpAmostra).path(String.valueOf(modelo.getTpinstrumento()));
+        String json = wr.get(String.class);
+        System.out.println(json);
+        return retornaListaJson(json);
     }
 
     public List<modelo> findLogin(String login) {
