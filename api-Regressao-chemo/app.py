@@ -271,6 +271,15 @@ def get_allmatrizy():
     except Exception as e:
 	      return(str(e))
 
+@app.route("/matrizy/getallmodelo/<idmodelo_>")
+def get_allmatryzymodelo(idmodelo_):
+    try:
+        modelos=MatrizY.query.filter_by(idmodelo=idmodelo_)
+        return  jsonify([e.serialize() for e in modelos])
+    except Exception as e:
+	      return(str(e))
+
+
 @app.route("/matrizy/get/<idmodelo_>/<idamostra_>/<idparametroref_>")
 def get_by_idmatrizy(idmodelo_,idamostra_,idparametroref_):
     try:
