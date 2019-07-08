@@ -5,11 +5,15 @@
  */
 package com.mf2solucoes.application.beans;
 
+import com.mf2solucoes.application.modelDb.amostra;
 import com.mf2solucoes.application.modelDb.modelo;
 import com.mf2solucoes.application.modelDb.parametro;
+import com.mf2solucoes.application.repository.amostras;
 import com.mf2solucoes.application.repository.modelos;
 import com.mf2solucoes.application.repository.parametros;
+import com.mf2solucoes.application.service.amostraService;
 import com.mf2solucoes.application.service.modeloService;
+import com.mf2solucoes.tools.Mensagens;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +44,10 @@ public class cargaIsoladaBean implements Serializable {
 
     @Setter
     @Getter
+    private amostra amostra;
+    
+    @Setter
+    @Getter
     private parametro parametroResultado;
 
     @Setter
@@ -60,9 +68,21 @@ public class cargaIsoladaBean implements Serializable {
     @Inject
     private parametros parametros;
 
+    @Inject
+    private amostras amostras;
+    
+    @Inject
+    private amostraService amostraService;
+
     @Setter
     @Getter
     String tpModelo;
+    @Setter
+    @Getter
+    String identificaAmostra;
+    @Setter
+    @Getter
+    Date dataAmostra;
 
     @Setter
     @Getter
@@ -70,7 +90,7 @@ public class cargaIsoladaBean implements Serializable {
 
     public cargaIsoladaBean() {
         limpar();
-//        preencheCombo1();
+        preencheCombo1();
     }
 
     public void initialize() {
@@ -78,17 +98,11 @@ public class cargaIsoladaBean implements Serializable {
     }
 
     public boolean isIMAGEM() {
-        if (tpModelo == null) {
-            return false;
-        }
-        return tpModelo.equals("IMG");
-    }
-
-    public boolean isNIR() {
-        if (tpModelo == null) {
-            return false;
-        }
-        return tpModelo.equals("NIR");
+//        if (amostra.getModelo().getTpinstrumento() == null) {
+//            return false;
+//        }
+//        return amostra.getModelo().getTpinstrumento().equals("IMG");
+return false;
     }
 
     private void limpar() {
@@ -115,6 +129,41 @@ public class cargaIsoladaBean implements Serializable {
         parametro param = new parametro();
         param.setModelo(modelo);
         list_ParametroResultado = parametros.findParametrosModelo(param);
+    }
+    
+    public void gerarAmostra(){
+        Mensagens msg = new Mensagens();
+        try {
+            amostraService = new amostraService();
+            
+            if (modelo.getNmmodelo().equals("")){
+                msg.addError("model.validation.name", modelo);
+                return;
+            }
+            
+            if (modelo.getTpinstrumento().equals("")){
+                msg.addError("model.validation.instrumento", modelo);
+                return;
+            }
+            
+            if (modelo.getNmmetodoreferencia().equals("")){
+                msg.addError("model.validation.metodo", modelo);
+                return;
+            }
+            
+            if (modelo.getDsmodelo().equals("")){
+                msg.addError("model.validation.descricao", modelo);
+                return;
+            }
+            
+            this.amostra = amostraService.salvar(amostra);
+            limpar();
+            msg.addInfo("saved", "");
+        } catch (Exception e) {
+            
+            msg.addError(String.valueOf(e), amostra);
+            e.printStackTrace();
+        }
     }
 
 }

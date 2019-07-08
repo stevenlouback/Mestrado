@@ -62,12 +62,35 @@ public class ModeloBean implements Serializable {
     }
 
     public void salvar(){
+        Mensagens msg = new Mensagens();
         try {
             modeloService = new modeloService();
+            
+            if (modelo.getNmmodelo().equals("")){
+                msg.addError("model.validation.name", modelo);
+                return;
+            }
+            
+            if (modelo.getTpinstrumento().equals("")){
+                msg.addError("model.validation.instrumento", modelo);
+                return;
+            }
+            
+            if (modelo.getNmmetodoreferencia().equals("")){
+                msg.addError("model.validation.metodo", modelo);
+                return;
+            }
+            
+            if (modelo.getDsmodelo().equals("")){
+                msg.addError("model.validation.descricao", modelo);
+                return;
+            }
+            
             this.modelo = modeloService.salvar(modelo);
             limpar();
+            msg.addInfo("saved", "");
         } catch (Exception e) {
-            Mensagens msg = new Mensagens();
+            
             msg.addError(String.valueOf(e), modelo);
             e.printStackTrace();
         }

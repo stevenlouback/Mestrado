@@ -53,41 +53,36 @@
 
                         <div class="col-md-12">
                             <div class="row">
-                                <div class="form-group col-md-2">
-                                    <p:outputLabel for="tipos" value="#{messages['dashboard.tipoAmostra']}" />
-                                    <p:selectOneMenu id="tipos"
-                                                     value="#{cargaBean.tpModelo}"
-                                                     converter="omnifaces.SelectItemsConverter"
-                                                     effect="fade">
+                                <!--                                <div class="form-group col-md-2">
+                                                                    <p:outputLabel for="tipos" value="#{messages['dashboard.tipoAmostra']}" />
+                                                                    <p:selectOneMenu id="tipos"
+                                                                                     value="#{cargaBean.tpModelo}"
+                                                                                     converter="omnifaces.SelectItemsConverter"
+                                                                                     effect="fade">
+                                                                        <f:selectItem itemValue="#{null}"
+                                                                                      noSelectionOption="true"
+                                                                                      itemLabel="#{menu['select-one']}"/>
+                                                                        <f:selectItem itemValue="#{enums['tpamostra.nir']}"
+                                                                                      noSelectionOption="true"
+                                                                                      itemLabel="#{menu['nir']}"/>
+                                                                        <f:selectItem itemValue="#{enums['tpamostra.nir']}"
+                                                                                      noSelectionOption="true"
+                                                                                      itemLabel="#{menu['img']}"/>
+                                                                                                                <p:ajax event="change" 
+                                                                                                                        listener="#{cargaBean.buscaModeloNirImg()}"
+                                                                                                                        process="@this"
+                                                                                                                        update="modelos"/>
+                                                                        <f:ajax event="change"
+                                                                                execute="@this"
+                                                                                listener="#{cargaBean.buscaModeloNirImg()}"
+                                                                                render="modelos" />
+                                                                    </p:selectOneMenu>
+                                                                </div>-->
 
-                                        <f:selectItem itemValue="#{null}"
-                                                      noSelectionOption="true"
-                                                      itemLabel="#{menu['select-one']}"/>
-                                        <f:selectItem itemValue="#{enums['tpamostra.nir']}"
-                                                      noSelectionOption="true"
-                                                      itemLabel="#{menu['nir']}"/>
-                                        <f:selectItem itemValue="#{enums['tpamostra.nir']}"
-                                                      noSelectionOption="true"
-                                                      itemLabel="#{menu['img']}"/>
-                                        <!--<p:ajax update="@form" />-->
-                                        <!--                                        <f:ajax event="change"
-                                                                                        execute="@this"
-                                                                                        render="espectro" />    
-                                                                                <f:ajax event="change"
-                                                                                        execute="@this"
-                                                                                        render="uploadImg" />    -->
-                                        <p:ajax event="change" listener="#{cargaBean.buscaModeloNirImg()}" update="modelos"/>
-
-                                        <!--<f:ajax event="itemSelect" execute="@this" render="uploadImg,espectro"/>-->
-                                        <!--                                        <f:ajax rendered="uploadImg" event="change" />
-                                                                                <f:ajax rendered="espectro" event="change"/>-->
-                                    </p:selectOneMenu>
-                                </div>
-
-                                <div class="form-group col-md-3">
-                                    <p:outputLabel for="modelos" value="#{messages['model.name']}" />
+                                <div class="form-group col-md-5">
+                                    <p:outputLabel for="modelos" value="#{messages['model.name']}/#{messages['model.form.instrumento']}" />
                                     <p:selectOneMenu id="modelos"
-                                                     value="#{cargaBean.modelo}"
+                                                     value="#{cargaBean.amostra.modelo}"
                                                      converter="omnifaces.SelectItemsConverter"
                                                      filter="true" 
                                                      filterMatchMode="contains"
@@ -97,22 +92,34 @@
                                                       itemLabel="#{menu['select-one']}"/>
                                         <f:selectItems var="models"
                                                        itemValue="#{models}"
-                                                       itemLabel="#{models.nmmodelo}"
+                                                       itemLabel="#{models.nmmodelo} / #{models.tpinstrumento}"
                                                        value="#{cargaBean.list_Modelo}"/>
-                                        <p:ajax event="change" listener="#{cargaBean.buscaParametrosModelo()}" update="@this,resultados"/>
+                                        <p:ajax event="change" 
+                                                listener="#{cargaBean.buscaParametrosModelo()}" 
+                                                process="@this"
+                                                update="resultados,painelespectro,paineluploadImg" />
 
                                     </p:selectOneMenu>
                                 </div>
 
                                 <div class="form-group col-md-2">
-                                    <p:outputLabel for="dataAmostra" value="#{messages['arquivo.unico.data']}" />
-                                    <p:calendar id="dataAmostra"  pattern="dd-MM-yyyy" maxdate="#{cargaBean.maxDate}" />
+                                    <p:outputLabel for="dataAmostra" 
+                                                   value="#{messages['arquivo.unico.data']}" />
+                                    <p:calendar id="dataAmostra"  
+                                                pattern="dd-MM-yyyy" 
+                                                maxdate="#{cargaBean.maxDate}" 
+                                                value="#{cargaBean.amostra.dtcoletaamostra}"/>
                                 </div>
 
                                 <div class="form-group col-md-5">
                                     <p:outputLabel for="identificaAmostra" 
                                                    value="#{messages['amostra.identifica']}" />
-                                    <p:calendar id="identificaAmostra"  pattern="dd-MM-yyyy" maxdate="#{cargaBean.maxDate}" />
+                                    <p:inputText id="identificaAmostra"
+                                                 maxlength="45"
+                                                 styleClass="form-control"
+                                                 value="#{cargaBean.amostra.tpamostra}"
+                                                 onkeydown="this.value = this.value.toUpperCase();" 
+                                                 onkeyup="this.value = this.value.toUpperCase()"/>
                                 </div>
 
                                 <div class="form-group col-md-12">
@@ -120,12 +127,12 @@
                                                    value="#{messages['model.form.descricao']}: "/>
                                     <p:inputTextarea rows="2" cols="30" 
                                                      id="descricao"
+                                                     value="#{cargaBean.amostra.dsobservacoes}"
                                                      styleClass="form-control"
                                                      counter="display" maxlength="1000" 
                                                      counterTemplate="{0} caracteres restantes." 
                                                      autoResize="true" 
                                                      />
-                                    <!--value="#{modeloBean.modelo.dsModelo}"-->
                                     <h:outputText id="display" />                                                 
                                 </div>
 
@@ -137,38 +144,39 @@
                         <div class="col-md-12">
                             <div class="row">
                                 <div class="form-group col-md-12">
-                                    <!--for="fileUpload"-->
-                                    <p:outputLabel 
-                                        value="#{cargaBean.NIR == true ? 'Espectro Amostra:' : 'Imagem Amostra:'}" />
-                                                           <!--value="#{messages['parametro.input']}: "/>-->
-                                    <p:fileUpload id="uploadImg"
-                                                  rendered="#{cargaBean.IMAGEM}"
-                                                  fileUploadListener="#{imageBean.converteImageRgb}"  
-                                                  label="#{messages['upload.choose']}" 
-                                                  uploadLabel="#{messages['upload.upload']}" 
-                                                  cancelLabel="#{messages['upload.cancel']}"
-                                                  invalidFileMessage="#{messages['arquivo.img']}" 
-                                                  fileLimit="1"
-                                                  fileLimitMessage="#{messages['arquivo.unico']}"
-                                                  mode="advanced"  
-                                                  multiple="false"  
-                                                  sizeLimit="10000000"   
-                                                  allowTypes="/(\.|\/)(gif|jpe?g|png)$/"/> 
-                                    <!--rendered="#{cargaBean.IMAGEM()}"-->
-                                    <!--                                    <p:outputLabel for="espectro"
-                                                                                       value="#{messages['model.form.espectro']}: "/>-->
-                                    <p:inputTextarea rows="2" cols="30" 
-                                                     id="espectro"
-                                                     rendered="#{cargaBean.NIR}"
-                                                     value="#{cargaBean.espectro}"
-                                                     styleClass="form-control"
-                                                     counter="display1" maxlength="10000" 
-                                                     counterTemplate="{0} caracteres restantes." 
-                                                     autoResize="true" 
-                                                     />
-                                    <!--rendered="#{cargaBean.NIR}"-->
-                                    <!--value="#{modeloBean.modelo.dsModelo}"-->
-                                    <h:outputText id="display1" />                                                 
+                                    <p:panel id="paineluploadImg">
+                                             <!--rendered="#{cargaBean.IMAGEM}">-->
+                                        <p:outputLabel 
+                                            for="uploadImg"
+                                            value="#{messages['parametro.input']}: "/>
+                                        <p:fileUpload id="uploadImg"
+                                                      fileUploadListener="#{imageBean.converteImageRgb}"  
+                                                      label="#{messages['upload.choose']}" 
+                                                      uploadLabel="#{messages['upload.upload']}" 
+                                                      cancelLabel="#{messages['upload.cancel']}"
+                                                      invalidFileMessage="#{messages['arquivo.img']}" 
+                                                      fileLimit="1"
+                                                      fileLimitMessage="#{messages['arquivo.unico']}"
+                                                      mode="advanced"  
+                                                      multiple="false"  
+                                                      sizeLimit="10000000"   
+                                                      allowTypes="/(\.|\/)(gif|jpe?g|png)$/"/> 
+                                    </p:panel>
+
+                                    <p:panel id="painelespectro">
+                                             <!--rendered="#{!cargaBean.IMAGEM}">-->
+                                        <p:outputLabel for="espectro"
+                                                       value="#{messages['model.form.espectro']}: "/>
+                                        <p:inputTextarea rows="2" cols="30" 
+                                                         id="espectro"
+                                                         value="#{cargaBean.espectro}"
+                                                         styleClass="form-control"
+                                                         counter="display1" maxlength="10000" 
+                                                         counterTemplate="{0} caracteres restantes." 
+                                                         autoResize="true" 
+                                                         />
+                                        <h:outputText id="display1" />                                                 
+                                    </p:panel>
                                 </div>
                             </div>
                         </div>
@@ -191,8 +199,8 @@
                                                  value="#{cargaBean.list_ParametroResultado}"
                                                  emptyMessage="#{messages['list.empty']}"
                                                  editable="true" 
-                                                 editMode="cell" 
-                                                 widgetVar="cellCars">
+                                                 editMode="cell" >
+                                        <!--                                                 widgetVar="cellCars">-->
                                         <f:facet name="header">
                                             #{messages[parametro.valores]}
                                         </f:facet>
@@ -227,6 +235,21 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="box-footer text-right">
+                        <p:commandButton id="botaoSalvar"
+                                         update="@form"
+
+                                         partialSubmit="true"
+                                         value="#{menu['save']}"
+                                         action="#{modeloB.salvar()}"
+                                         styleClass="btn btn-flat btn-success"/>
+                        <!--process="@this,descricao,metodo,tipos,nome,id"-->
+                        <p:spacer width="5"/>
+                        <p:button value="#{menu['clear']}"
+                                  styleClass="btn btn-flat btn-danger"
+                                  outcome="cargaIsolada.xhtml"/>       
                     </div>
 
                 </div>

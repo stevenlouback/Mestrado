@@ -1,5 +1,6 @@
 package com.mf2solucoes.application.controller;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.io.ByteArrayInputStream;
@@ -10,6 +11,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.view.ViewScoped;
 import javax.imageio.ImageIO;
 import javax.inject.Named;
+import javax.swing.ImageIcon;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.event.FileUploadEvent;
@@ -42,9 +44,12 @@ public class imageBean implements Serializable {
 
             byte[] bimagem = event.getFile().getContents();
             System.out.println(uploadedFile.getFileName());
+
 //            image = ImageIO.read(new File(uploadedFile.getFileName()));
             ByteArrayInputStream bais = new ByteArrayInputStream(bimagem);
             image = ImageIO.read(bais);
+
+            image = redimensionaImg(image, 15, 15);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -55,15 +60,22 @@ public class imageBean implements Serializable {
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
                 raster.getPixel(x, y, cores); // captura da combinação de cor do pixel  
-                int total = cores[0] + cores[1] + cores[2];
-                System.out.println("=====================");
-                System.out.println("Pixel: " + total);
-                System.out.println("=====================");
                 System.out.println("R(" + cores[0] + ") G(" + cores[1] + ") B(" + cores[2] + ")");
             }
         }
         // esses laços varrem todo o objeto "imagem",   
         // saindo do eixo 0,0 até o último pixel da mesma 
+    }
+
+    public BufferedImage redimensionaImg(BufferedImage imagem, int new_w, int new_h) throws IOException {
+        //BufferedImage imagem = ImageIO.read(image);
+        BufferedImage new_img = new BufferedImage(new_w, new_h, BufferedImage.TYPE_INT_RGB);
+
+        Graphics2D g = new_img.createGraphics();
+        g.drawImage(imagem, 0, 0, new_w, new_h, null);
+        g.dispose();
+
+        return new_img;
     }
 
 }

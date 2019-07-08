@@ -26,7 +26,7 @@ public class amostra implements Serializable {
     private Long idamostra;
     @Setter
     @Getter
-    private amostra amostra;
+    private modelo modelo;
     @Setter
     @Getter
     private String tpamostra; //Nome da Amostra
@@ -41,9 +41,10 @@ public class amostra implements Serializable {
     @Lob
     @Column(columnDefinition = "mediumblob")
     private byte[] imamostra;
+    @Setter
+    @Getter
+    private String dsespectro;
 
-    
-    
     /**
      * Constructor
      */
