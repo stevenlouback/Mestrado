@@ -152,10 +152,10 @@ class MatrizY(db.Model):
     idmodelo = db.Column(db.Integer, primary_key=True)
     idamostra = db.Column(db.Integer, primary_key=True)
     idparametroref = db.Column(db.Integer, primary_key=True)
-    idcalibracao = db.Column(db.Integer, nullable=False)
-    vlresultado = db.Column(db.Numeric, nullable=False)
-    vlreferencia = db.Column(db.Numeric, nullable=False)
-    dtpredicao = db.Column(db.DateTime, nullable=False)
+    idcalibracao = db.Column(db.Integer, nullable=True)
+    vlresultado = db.Column(db.Numeric, nullable=True)
+    vlreferencia = db.Column(db.Numeric, nullable=True)
+    dtpredicao = db.Column(db.DateTime, nullable=True)
 
     def __init__(self, idmodelo, idamostra, idparametroref, idcalibracao, vlresultado, vlreferencia, dtpredicao):
         self.idmodelo = idmodelo
@@ -170,13 +170,14 @@ class MatrizY(db.Model):
         return '<matrizy{}'.format(self.idmodelo, self.idamostra)
 
     def serialize(self):
+
         return {
             'idmodelo': self.idmodelo,
             'idamostra': self.idamostra,
             'idparametroref': self.idparametroref,
             'idcalibracao': self.idcalibracao,
-            'vlresultado': self.vlresultado,
-            'vlreferencia': self.vlreferencia,
+            'vlresultado': str(self.vlresultado),
+            'vlreferencia': str(self.vlreferencia),
             'dtpredicao': self.dtpredicao.strftime("%d/%m/%Y")
         }
 
@@ -245,3 +246,5 @@ class Parametro(db.Model):
           'idparametroref': self.idparametroref,
           'nmparametroref': self.nmparametroref
       }
+
+

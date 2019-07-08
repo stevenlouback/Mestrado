@@ -16,4 +16,6 @@ public class Constants {
     public static final String parametroGetModelo = "/parametros/getallModelo/";  
     public static final String predicaoGetId = "/predicao/get/"; 
     public static final String predicaoADD = "/predicao/adiciona"; 
+    public static final String matrizyGetALL = "/matrizy/getallmodelo"; 
+    
 }

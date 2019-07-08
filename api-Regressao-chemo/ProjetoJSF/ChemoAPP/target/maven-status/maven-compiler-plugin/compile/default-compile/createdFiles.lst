@@ -5,12 +5,12 @@ com\mf2solucoes\tools\genericoWS.class
 com\mf2solucoes\application\beans\ParametroBean.class
 com\mf2solucoes\application\modelDb\amostra.class
 com\mf2solucoes\application\beans\PredicaoBean.class
-com\mf2solucoes\application\beans\ModeloDadosBean.class
 com\mf2solucoes\tools\tratamentoImagem.class
 com\mf2solucoes\application\repository\modelos.class
 com\mf2solucoes\application\modelDb\predicao.class
 com\mf2solucoes\application\repository\modelos$1.class
 com\mf2solucoes\application\repository\predicoes$1.class
+com\mf2solucoes\application\service\amostraService.class
 com\mf2solucoes\application\service\predicaoService.class
 com\mf2solucoes\application\repository\predicoes.class
 com\mf2solucoes\application\modelDb\modelo.class
@@ -20,10 +20,13 @@ com\mf2solucoes\infraestrutura\primefaces\AutoCloseMessages.class
 com\mf2solucoes\application\repository\parametros$1.class
 com\mf2solucoes\application\service\parametroService.class
 com\mf2solucoes\application\controller\imageBean.class
+com\mf2solucoes\application\repository\amostras$1.class
 com\mf2solucoes\infraestrutura\primefaces\CustomInputNumberRenderer.class
+com\mf2solucoes\application\modelDb\matrizX.class
 com\mf2solucoes\tools\DateDeserializer.class
 com\mf2solucoes\tools\MinimoQuadradoParcialPLS.class
 com\mf2solucoes\application\beans\cargaIsoladaBean.class
+com\mf2solucoes\application\repository\amostras.class
 com\mf2solucoes\infraestrutura\utils\MessageSource.class
 com\mf2solucoes\domain\misc\ex\InternalServiceError.class
 com\mf2solucoes\application\beans\ModeloBean.class
