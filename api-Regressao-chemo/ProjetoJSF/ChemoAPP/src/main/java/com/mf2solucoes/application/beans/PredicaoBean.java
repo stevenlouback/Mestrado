@@ -91,12 +91,13 @@ public class PredicaoBean implements Serializable {
     }
 
     public void salvar() {
+        Mensagens msg = new Mensagens();
         try {
             predicaoService = new predicaoService();
             this.predicao = predicaoService.salvar(predicao);
             limpar();
+            msg.addInfo("saved", "");
         } catch (Exception e) {
-            Mensagens msg = new Mensagens();
             msg.addError(String.valueOf(e), predicao);
             e.printStackTrace();
         }

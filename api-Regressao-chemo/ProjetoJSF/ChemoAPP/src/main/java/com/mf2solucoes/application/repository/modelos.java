@@ -9,6 +9,7 @@ import static com.mf2solucoes.tools.Constants.BASE_URI;
 import static com.mf2solucoes.tools.Constants.modeloADD;
 import static com.mf2solucoes.tools.Constants.modeloGetALL;
 import static com.mf2solucoes.tools.Constants.modeloGetId;
+import static com.mf2solucoes.tools.Constants.modeloGetTpAmostra;
 import com.mf2solucoes.tools.DateDeserializer;
 import com.mf2solucoes.tools.Mensagens;
 import com.mf2solucoes.tools.genericoWS;
@@ -58,7 +59,6 @@ public class modelos implements Serializable {
         ws.insertObject(modelo, BASE_URI, modeloADD, "POST");
 
         Mensagens msg = new Mensagens();
-        msg.addInfo("saved", "");
 
         return null;
     }
@@ -67,7 +67,6 @@ public class modelos implements Serializable {
         Client c = Client.create();
         WebResource wr = c.resource(BASE_URI).path(modeloGetALL);
         String json = wr.get(String.class);
-        System.out.println(json);
         return retornaListaJson(json);
 //        GsonBuilder gson = new GsonBuilder().registerTypeAdapter(Date.class, new DateDeserializer());
 //        return gson.create().fromJson(json, new TypeToken<List<modelo>>() {
@@ -92,12 +91,13 @@ public class modelos implements Serializable {
             Logger.getLogger(modelos.class.getName()).log(Level.SEVERE, null, ex);
         }
         return modelo;
-//        System.out.println(json);
-//        List<modelo> list_Aux = new ArrayList<>();
-//        list_Aux = retornaListaJson(json);
-//
-//        return (modelo) list_Aux.get(0);
-//        return ggson.fromJson(json, modelo.class);
+    }
+    
+    public List<modelo> modeloPorTipoAmostra(modelo modelo) {
+        Client c = Client.create();
+        WebResource wr = c.resource(BASE_URI).path(modeloGetTpAmostra).path(String.valueOf(modelo.getTpinstrumento()));
+        String json = wr.get(String.class);
+        return retornaListaJson(json);
     }
 
     public List<modelo> findLogin(String login) {

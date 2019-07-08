@@ -84,10 +84,8 @@
                                                       noSelectionOption="true"
                                                       itemLabel="#{menu['select-one']}"/>
                                         <f:selectItem itemValue="NIR"
-                                                      noSelectionOption="true"
                                                       itemLabel="#{menu['nir']}"/>
                                         <f:selectItem itemValue="IMG"
-                                                      noSelectionOption="true"
                                                       itemLabel="#{menu['img']}"/>
                                     </p:selectOneMenu>
                                 </div>                                                                
@@ -158,7 +156,7 @@
 
                                         <p:column headerText="#{messages['model.form.id']}" 
                                                   style="text-center" 
-                                                  width="10%">
+                                                  width="8%">
                                             <h:outputText value="#{modelo.idmodelo}" />
                                         </p:column>
 
@@ -173,8 +171,14 @@
                                                   width="20%">
                                             <h:outputText value="#{modelo.nmmetodoreferencia}" />
                                         </p:column>
+                                        
+                                        <p:column headerText="#{messages['model.form.instrumento']}"
+                                                  style="text-center" 
+                                                  width="8%">
+                                            <h:outputText value="#{modelo.tpinstrumento}" />
+                                        </p:column>
 
-                                        <p:column width="15%" 
+                                        <p:column width="7%" 
                                                   styleClass="text-center"
                                                   headerText="#{messages['list.actions']}">
                                             <p:commandButton update="modeloForm" 

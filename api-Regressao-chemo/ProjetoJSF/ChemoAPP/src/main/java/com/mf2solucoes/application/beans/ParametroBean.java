@@ -67,11 +67,22 @@ public class ParametroBean implements Serializable {
     }
 
     public void salvar() {
+        Mensagens msg = new Mensagens();
         try {
+            if (parametro.getModelo().getDsmodelo().equals("")){
+                msg.addError("parametro.validation.modelo", parametro);
+                return;
+            }
+            
+            if (parametro.getNmparametroref().equals("")){
+                msg.addError("parametro.validation.name", parametro);
+                return;
+            }
+            
             this.parametro = parametroService.salvar(parametro);
             limpar();
+            msg.addInfo("saved", "");
         } catch (Exception e) {
-            Mensagens msg = new Mensagens();
             msg.addError(String.valueOf(e), parametro);
             System.out.println(e);
             e.printStackTrace();

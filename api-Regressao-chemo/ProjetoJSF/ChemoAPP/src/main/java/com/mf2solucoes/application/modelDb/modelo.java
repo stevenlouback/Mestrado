@@ -10,6 +10,7 @@ import java.util.Objects;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,15 +31,19 @@ public class modelo implements Serializable {
     private Long idmodelo;
     @Setter
     @Getter
+    @NotBlank(message="{model.name}")
     private String nmmodelo;
     @Setter
     @Getter
+    @NotBlank(message="{model.metodo}")
     private String nmmetodoreferencia;
     @Setter
     @Getter
+    @NotBlank(message="{model.instrumento}")
     private String tpinstrumento;
     @Setter
     @Getter
+    @NotBlank(message="{'model.descricao'}")
     private String dsmodelo;
     @Setter
     @Getter
