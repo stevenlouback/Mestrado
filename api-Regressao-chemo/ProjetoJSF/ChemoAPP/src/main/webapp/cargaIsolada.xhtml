@@ -82,7 +82,7 @@
                                 <div class="form-group col-md-5">
                                     <p:outputLabel for="modelos" value="#{messages['model.name']}/#{messages['model.form.instrumento']}" />
                                     <p:selectOneMenu id="modelos"
-                                                     value="#{cargaBean.amostra.modelo}"
+                                                     value="#{cargaBean.modelo}"
                                                      converter="omnifaces.SelectItemsConverter"
                                                      filter="true" 
                                                      filterMatchMode="contains"
@@ -124,7 +124,7 @@
 
                                 <div class="form-group col-md-12">
                                     <p:outputLabel for="descricao"
-                                                   value="#{messages['model.form.descricao']}: "/>
+                                                   value="#{messages['amostra.form.descricao']}: "/>
                                     <p:inputTextarea rows="2" cols="30" 
                                                      id="descricao"
                                                      value="#{cargaBean.amostra.dsobservacoes}"
@@ -150,17 +150,26 @@
                                             for="uploadImg"
                                             value="#{messages['parametro.input']}: "/>
                                         <p:fileUpload id="uploadImg"
-                                                      fileUploadListener="#{imageBean.converteImageRgb}"  
+                                                      fileUploadListener="#{cargaBean.converteImageRgb}"  
                                                       label="#{messages['upload.choose']}" 
                                                       uploadLabel="#{messages['upload.upload']}" 
                                                       cancelLabel="#{messages['upload.cancel']}"
                                                       invalidFileMessage="#{messages['arquivo.img']}" 
                                                       fileLimit="1"
                                                       fileLimitMessage="#{messages['arquivo.unico']}"
+                                                      update="@this,imagemSelecionada"
                                                       mode="advanced"  
                                                       multiple="false"  
                                                       sizeLimit="10000000"   
-                                                      allowTypes="/(\.|\/)(gif|jpe?g|png)$/"/> 
+                                                      allowTypes="/(\.|\/)(gif|jpe?g|png)$/"/>
+                                        <p:imageSwitch 
+                                                       effect="fade" id="fadeEffect" style="width: 20%;">
+                                            <ui:repeat value="#{cargaBean.amostra.imagem}" var="image" 
+                                                       id="imagemSelecionada"  >
+                                                <p:graphicImage value="/temp/#{image}" styleClass="content" />
+                                            </ui:repeat>
+                                        </p:imageSwitch>
+                                        <!--<p:graphicImage id="imagemSelecionada" value="#{cargaBean.amostra.imagem}" styleClass="content" />-->
                                     </p:panel>
 
                                     <p:panel id="painelespectro">
@@ -169,7 +178,7 @@
                                                        value="#{messages['model.form.espectro']}: "/>
                                         <p:inputTextarea rows="2" cols="30" 
                                                          id="espectro"
-                                                         value="#{cargaBean.espectro}"
+                                                         value="#{cargaBean.amostra.dsespectro}"
                                                          styleClass="form-control"
                                                          counter="display1" maxlength="10000" 
                                                          counterTemplate="{0} caracteres restantes." 
@@ -240,12 +249,11 @@
                     <div class="box-footer text-right">
                         <p:commandButton id="botaoSalvar"
                                          update="@form"
-
                                          partialSubmit="true"
+                                         process="@this,modelos, dataAmostra, identificaAmostra, descricao, uploadImg, espectro, resultados"
                                          value="#{menu['save']}"
-                                         action="#{modeloB.salvar()}"
+                                         action="#{cargaBean.gerarAmostra()}"
                                          styleClass="btn btn-flat btn-success"/>
-                        <!--process="@this,descricao,metodo,tipos,nome,id"-->
                         <p:spacer width="5"/>
                         <p:button value="#{menu['clear']}"
                                   styleClass="btn btn-flat btn-danger"

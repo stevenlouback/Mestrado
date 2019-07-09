@@ -31,12 +31,8 @@ public class amostras implements Serializable {
 
     public amostra guardar(amostra amostra) {
 
-        
-
         genericoWS ws = new genericoWS();
         ws.insertObject(amostra, BASE_URI, modeloADD, "POST");
-
-        
 
         return null;
     }

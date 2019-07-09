@@ -1,11 +1,11 @@
 package com.mf2solucoes.application.modelDb;
 
 import java.io.Serializable;
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.Transient;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,8 +39,12 @@ public class amostra implements Serializable {
     @Setter
     @Getter
     @Lob
+    @Transient
     @Column(columnDefinition = "mediumblob")
-    private byte[] imamostra;
+    private byte[] imagem;
+    @Setter
+    @Getter
+    private String imamostra;
     @Setter
     @Getter
     private String dsespectro;
