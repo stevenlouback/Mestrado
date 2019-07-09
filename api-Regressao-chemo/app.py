@@ -81,6 +81,43 @@ def get_by_id(id_):
 from models.model import Amostra
 from controller.controllerAmostra import geraAmostra
 
+@app.route('/amostra/adiciona', methods=['POST'])
+def create_toda_amostra():
+    if not request.json or not 'tpamostra' in request.json:
+        abort(400)
+
+    objeto = request.json
+
+    # RECUPERA O JSON DENTRO DE JSON
+    listaParametro = json.dumps(objeto['listaParametro'])
+
+    listaMatrizX = json.dumps(objeto['listaMatrizX'])
+    listaMatrizX = json.dumps(listaMatrizX)
+    print('Tamanho Lista Parametro')
+    print(len(listaParametro))
+
+    for i in range(len(listaParametro))
+        print(i)
+
+    modelo = objeto['modelo']
+    idmodelo = modelo['idmodelo']
+
+    # print(listaParametro)
+    # print('-----------------------------------------------------------')
+    # print(listaMatrizX)
+    msg = geraAmostra(db, objeto)
+
+    print(msg)
+    idamostra= msg
+
+    # MONTA A MATRIZ Y
+    # listaParametro = json.dumps(listaParametro)
+
+    db.session.commit()
+
+    return jsonify({'success': msg}), 201
+
+
 @app.route("/amostra/add")
 def add_amostra():
     param = request.args.get('param')

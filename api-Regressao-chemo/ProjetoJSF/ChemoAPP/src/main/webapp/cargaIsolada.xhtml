@@ -108,7 +108,7 @@
                                     <p:calendar id="dataAmostra"  
                                                 pattern="dd-MM-yyyy" 
                                                 maxdate="#{cargaBean.maxDate}" 
-                                                value="#{cargaBean.amostra.dtcoletaamostra}"/>
+                                                value="#{cargaBean.amostra.dataamostra}"/>
                                 </div>
 
                                 <div class="form-group col-md-5">
@@ -155,8 +155,9 @@
                                                       invalidFileMessage="#{messages['arquivo.img']}" 
                                                       fileLimit="1"
                                                       fileLimitMessage="#{messages['arquivo.unico']}"
-                                                      update="@this,imagemSelecionada"
-                                                      mode="simple"  
+                                                      auto="true"
+                                                      update="@this"
+                                                      mode="advanced"  
                                                       multiple="false"  
                                                       sizeLimit="10000000"   
                                                       allowTypes="/(\.|\/)(gif|jpe?g|png)$/"/>

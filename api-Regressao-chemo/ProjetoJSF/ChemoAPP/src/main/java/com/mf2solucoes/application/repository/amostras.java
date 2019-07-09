@@ -5,7 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.mf2solucoes.application.modelDb.amostra;
 import com.mf2solucoes.application.modelDb.modelo;
 import static com.mf2solucoes.tools.Constants.BASE_URI;
-import static com.mf2solucoes.tools.Constants.modeloADD;
+import static com.mf2solucoes.tools.Constants.amostraADD;
 import static com.mf2solucoes.tools.Constants.modeloGetALL;
 import static com.mf2solucoes.tools.Constants.modeloGetId;
 import static com.mf2solucoes.tools.Constants.modeloGetTpAmostra;
@@ -31,9 +31,15 @@ public class amostras implements Serializable {
 
     public amostra guardar(amostra amostra) {
 
+        if (amostra.getIdamostra()== null) {
+            Long x = Long.parseLong("0");
+            amostra.setIdamostra(x);
+        }
+        
         genericoWS ws = new genericoWS();
-        ws.insertObject(amostra, BASE_URI, modeloADD, "POST");
-
+        String resultado = ws.insertObject(amostra, BASE_URI, amostraADD, "POST");
+        System.out.println(resultado);
+        
         return null;
     }
 

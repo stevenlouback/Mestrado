@@ -20,12 +20,14 @@ class Amostra(db.Model):
     # matrizesY = db.relationship('MatrizY', backref='Amostra', lazy=True)
     # amostrascalibracao = db.relationship('AmostraCalibracao', backref='Amostra', lazy=True)
 
-    def __init__(self, idmodelo,idamostra, tpamostra, dsobservacoes, dtcoletaamostra):
+    def __init__(self, idmodelo,idamostra, tpamostra, dsobservacoes, dtcoletaamostra, imamostra, dsespectro):
         self.idmodelo = idmodelo
         self.idamostra = idamostra
         self.tpamostra = tpamostra
         self.dsobservacoes = dsobservacoes
         self.dtcoletaamostra = dtcoletaamostra
+        self.imamostra = imamostra
+        self.dsespectro = dsespectro
 
     def __repr__(self):
         return "<Amostras(%s, %s)>" % (
@@ -37,7 +39,9 @@ class Amostra(db.Model):
             'idamostra': self.idamostra,
             'tpamostra': self.tpamostra,
             'dsobservacoes': self.dsobservacoes,
-            'dtcoletaamostra': self.dtcoletaamostra.strftime("%d/%m/%Y")
+            'dtcoletaamostra': self.dtcoletaamostra.strftime("%d/%m/%Y"),
+            'imamostra': self.imamostra,
+            'dsespectro': self.dsespectro
         }
 
 

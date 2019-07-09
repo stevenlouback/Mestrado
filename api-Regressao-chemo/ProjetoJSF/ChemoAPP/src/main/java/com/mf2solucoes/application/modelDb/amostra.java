@@ -2,6 +2,7 @@ package com.mf2solucoes.application.modelDb;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,6 +39,9 @@ public class amostra implements Serializable {
     @Setter
     @Getter
     private String dtcoletaamostra;
+    @Setter
+    @Getter
+    private Date dataamostra;
     @Setter
     @Getter
     @Lob

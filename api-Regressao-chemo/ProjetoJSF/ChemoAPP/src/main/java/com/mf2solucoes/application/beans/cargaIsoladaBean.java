@@ -130,6 +130,8 @@ public class cargaIsoladaBean implements Serializable {
         modelo = new modelo();
         amostras = new amostras();
         amostra = new amostra();
+        list_MatrizX.clear();
+        list_ParametroResultado.clear();
     }
 
     public void preencheCombo1() {
@@ -163,7 +165,8 @@ public class cargaIsoladaBean implements Serializable {
                 return;
             }
             
-            if (amostra.getDtcoletaamostra().equals("")){
+            if (amostra.getDataamostra() == null){
+//            if (amostra.getDtcoletaamostra().equals("")){
                 msg.addError("amostra.validation.dataamostra", amostra);
                 return;
             }
@@ -178,7 +181,7 @@ public class cargaIsoladaBean implements Serializable {
                 return;
             }
             
-            if (modelo.getNmmetodoreferencia().equals("NIR")) {
+            if (modelo.getTpinstrumento().equals("NIR")) {
                 if (amostra.getDsespectro().equals("")) {
                     msg.addError("amostra.valida.espectro", amostra);
                     return;
@@ -195,6 +198,8 @@ public class cargaIsoladaBean implements Serializable {
                 return;
             }
 
+            amostra.setModelo(modelo);
+            amostra.setDtcoletaamostra(String.valueOf(amostra.getDataamostra().toString().replace("/", "-")));
             amostra.setListaParametro(list_ParametroResultado);
             amostra.setListaMatrizX(list_MatrizX);
             
@@ -240,6 +245,7 @@ public class cargaIsoladaBean implements Serializable {
 
         // esses laços varrem todo o objeto "imagem",   
         // saindo do eixo 0,0 até o último pixel da imagem 
+        list_MatrizX.clear();
         int nrsequencia = 0;
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {

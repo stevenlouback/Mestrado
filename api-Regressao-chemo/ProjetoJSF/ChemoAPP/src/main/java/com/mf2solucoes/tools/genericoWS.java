@@ -111,7 +111,7 @@ public class genericoWS {
 
             OutputStream ops = conexao.getOutputStream();
 
-            System.out.println("JSON: " + gson.toJson(object));
+//            System.out.println("JSON: " + gson.toJson(object));
 
             ops.write(gson.toJson(object).getBytes());
             ops.flush();
