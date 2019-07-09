@@ -148,34 +148,27 @@
                                              <!--rendered="#{cargaBean.IMAGEM}">-->
                                         <p:outputLabel 
                                             for="uploadImg"
-                                            value="#{messages['parametro.input']}: "/>
+                                            value="#{messages['amostra.form.imagem']}: "/>
                                         <p:fileUpload id="uploadImg"
                                                       fileUploadListener="#{cargaBean.converteImageRgb}"  
                                                       label="#{messages['upload.choose']}" 
-                                                      uploadLabel="#{messages['upload.upload']}" 
-                                                      cancelLabel="#{messages['upload.cancel']}"
                                                       invalidFileMessage="#{messages['arquivo.img']}" 
                                                       fileLimit="1"
                                                       fileLimitMessage="#{messages['arquivo.unico']}"
                                                       update="@this,imagemSelecionada"
-                                                      mode="advanced"  
+                                                      mode="simple"  
                                                       multiple="false"  
                                                       sizeLimit="10000000"   
                                                       allowTypes="/(\.|\/)(gif|jpe?g|png)$/"/>
-                                        <p:imageSwitch 
-                                                       effect="fade" id="fadeEffect" style="width: 20%;">
-                                            <ui:repeat value="#{cargaBean.amostra.imagem}" var="image" 
-                                                       id="imagemSelecionada"  >
-                                                <p:graphicImage value="/temp/#{image}" styleClass="content" />
-                                            </ui:repeat>
-                                        </p:imageSwitch>
-                                        <!--<p:graphicImage id="imagemSelecionada" value="#{cargaBean.amostra.imagem}" styleClass="content" />-->
+<!--                                        uploadLabel="#{messages['upload.upload']}" 
+                                                      cancelLabel="#{messages['upload.cancel']}"-->
+                                        
                                     </p:panel>
 
                                     <p:panel id="painelespectro">
                                              <!--rendered="#{!cargaBean.IMAGEM}">-->
                                         <p:outputLabel for="espectro"
-                                                       value="#{messages['model.form.espectro']}: "/>
+                                                       value="#{messages['amostra.form.espectro']}: "/>
                                         <p:inputTextarea rows="2" cols="30" 
                                                          id="espectro"
                                                          value="#{cargaBean.amostra.dsespectro}"

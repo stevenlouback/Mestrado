@@ -1,6 +1,8 @@
 package com.mf2solucoes.application.modelDb;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -48,6 +50,15 @@ public class amostra implements Serializable {
     @Setter
     @Getter
     private String dsespectro;
+    
+    @Setter
+    @Getter
+    private List<parametro> listaParametro = new ArrayList<>();
+    
+    @Setter
+    @Getter
+    private List<matrizX> listaMatrizX = new ArrayList<>();
+
 
     /**
      * Constructor
