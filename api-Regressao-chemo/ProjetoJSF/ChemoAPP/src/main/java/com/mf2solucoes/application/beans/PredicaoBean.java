@@ -19,6 +19,9 @@ import javax.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
 import org.omnifaces.cdi.ViewScoped;
+import org.primefaces.model.chart.BarChartModel;
+import org.primefaces.model.chart.BarChartSeries;
+import org.primefaces.model.chart.ChartSeries;
 
 /**
  *
@@ -53,6 +56,7 @@ public class PredicaoBean implements Serializable {
 
     public PredicaoBean() {
         limpar();
+        //preencheComboModelos();
     }
 
     public void initialize() {
@@ -61,6 +65,7 @@ public class PredicaoBean implements Serializable {
 
     private void limpar() {
         predicao = new predicao();
+
         //this.list_Predicao = new ArrayList<>(); 
     }
 
@@ -70,19 +75,20 @@ public class PredicaoBean implements Serializable {
 
     public void pesquisar() {
         try {
-            predicaoService = new predicaoService();
-            
-            preencheComboModelos();
 
+            predicaoService = new predicaoService();
+
+            //preencheComboModelos();
             if (predicao.getIdamostra() != null) {
+
                 this.list_Predicao = new ArrayList<>();
                 this.predicao = predicaoService.pesquisar(predicao);
                 System.out.println(predicao.toString());
                 this.list_Predicao.add(predicao);
                 salvar();
+                //graficoBarras();
             }
 
-            limpar();
         } catch (Exception e) {
             Mensagens msg = new Mensagens();
             msg.addError(String.valueOf(e), predicao);
@@ -95,7 +101,7 @@ public class PredicaoBean implements Serializable {
         try {
             predicaoService = new predicaoService();
             this.predicao = predicaoService.salvar(predicao);
-            limpar();
+            //limpar();
             msg.addInfo("saved", "");
         } catch (Exception e) {
             msg.addError(String.valueOf(e), predicao);
@@ -108,4 +114,42 @@ public class PredicaoBean implements Serializable {
         list_Modelo = modelos.findAll();
     }
 
+    public BarChartModel graficoBarras() {
+        BarChartModel categoryModel = new BarChartModel();
+        ChartSeries barraReferencia = new BarChartSeries();
+        ChartSeries barraPredito = new BarChartSeries();
+
+        if (this.predicao.getIdamostra() != null) {
+            barraReferencia.setLabel("Valor Referência");
+            barraReferencia.set("", Double.parseDouble(this.predicao.getValorreferencia()));
+            barraPredito.setLabel("Valor Predito");
+            barraPredito.set("", Double.parseDouble(this.predicao.getValorpredito()));
+
+            categoryModel.addSeries(barraReferencia);
+            categoryModel.addSeries(barraPredito);
+
+            categoryModel.setTitle("Referência X Predito");
+            categoryModel.setLegendPosition("w");
+            categoryModel.setShowPointLabels(true);
+            return categoryModel;
+        }
+
+        return categoryModel;
+    }
+
+//    public BarChartModel graficoBarras() {
+//        BarChartModel model = new BarChartModel();
+//        BarChartSeries barra = new BarChartSeries();
+//
+//        if (this.predicao.getIdamostra() != null) {
+//            barra.setLabel("Predição");
+//            barra.set("Valor de Referência", Double.parseDouble(this.predicao.getValorreferencia()));
+//            barra.set("Valor de Predito", Double.parseDouble(this.predicao.getValorpredito()));
+//
+//            model.addSeries(barra);
+//            return model;
+//        }
+//
+//        return model;
+//    }
 }
