@@ -1,6 +1,4 @@
-<!--
-  Copyright (C) 2017-2018 Marlons dos Santos, MF² Soluções
--->
+
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:o="http://omnifaces.org/ui"
@@ -41,11 +39,11 @@
         <div jsf:id="boxBody">
             <h:form id="predicaoForm" prependId="false">
 
-<!--                <div class="row">
-                    <div class="col-sm-12">
-                        <p:messages id="messages" closable="true" />
-                    </div>
-                </div>-->
+                <!--                <div class="row">
+                                    <div class="col-sm-12">
+                                        <p:messages id="messages" closable="true" />
+                                    </div>
+                                </div>-->
 
                 <div class="box">
                     <div class="box-body row">
@@ -70,7 +68,7 @@
                                                        value="#{predicaoB.list_Modelo}"/>
                                     </p:selectOneMenu>
                                 </div>
-                                
+
                                 <div class="form-group col-md-2">
                                     <p:outputLabel for="id"
                                                    value="#{messages['predicao.form.idamostra']}"/>
@@ -149,6 +147,14 @@
                                         </p:column>                                          
 
                                     </p:dataTable>
+                                    <h:panelGrid columns="1">
+                                        <p:outputLabel 
+                                            value="R2: Coeficiente de Variância do Modelo"/>
+                                        <p:outputLabel 
+                                            value="RMSEC: Raiz Quadrada do Erro Médio Quadrático da Calibração"/>
+                                        <p:outputLabel 
+                                            value="RMSEP: Raiz Quadrada do Erro Médio Quadrático de Previsão"/>
+                                    </h:panelGrid>
                                 </div>
 
                             </div>
