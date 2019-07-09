@@ -34,7 +34,7 @@ public class predicoes implements Serializable {
         genericoWS ws = new genericoWS();
         ws.insertObject(predicao, BASE_URI, predicaoADD, "POST");
 
-        return null;
+        return predicao;
     }
 
     public predicao predicaoPorAmostra(predicao predicao) {

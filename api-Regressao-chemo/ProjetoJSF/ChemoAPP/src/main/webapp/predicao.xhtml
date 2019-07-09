@@ -11,7 +11,7 @@
                 template="/template/mainTemplate.xhtml">
 
     <f:metadata>
-        <f:event listener="#{predicaoB.pesquisar()}" type="preRenderView" />
+        <f:event listener="#{predicaoB.preencheComboModelos()}" type="preRenderView" />
         <f:viewParam name="dummy" />
     </f:metadata>
 
@@ -143,10 +143,22 @@
                                         <p:column headerText="#{messages['predicao.form.rmsec']}" 
                                                   style="text-center" 
                                                   width="10%">
-                                            <h:outputText value="#{predicao.rmsec}" style="display: block; width:100%; text-align:center;"/>
-                                        </p:column>                                          
+                                            <h:outputText value="#{predicao.rmsec}" />
+
+
+                                        </p:column>      
+
+                                        <p:column headerText="Gráfico" 
+                                                  style="text-center" 
+                                                  width="10%">
+                                            <p:commandButton update=":graficos" oncomplete="PF('pesquisaDialog').show()" icon="ui-icon-search" title="View" styleClass="ui-priority-primary">
+                                                <f:setPropertyActionListener value="#{predicao}" target="#{predicaoB.predicao}" />
+                                            </p:commandButton> 
+                                        </p:column>   
 
                                     </p:dataTable>
+
+
                                     <h:panelGrid columns="1">
                                         <p:outputLabel 
                                             value="R2: Coeficiente de Variância do Modelo"/>
@@ -163,6 +175,27 @@
                     </div>
 
                 </div>
+
+                <p:dialog header="Gráfico da Predição" widgetVar="pesquisaDialog"
+                          modal="true" showEffect="fade" hideEffect="fade" resizable="false" width="350">
+
+                    <p:outputPanel id="graficos" style="text-align: center">
+                        <p:panelGrid id="panelChartsDialog" columns="1" layout="grid">
+                            <p:chart type="bar" model="#{predicaoB.graficoBarras()}" 
+                                     style="width:100%"   
+                                     rendered="#{predicaoB.predicao != null}"/>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:dialog>
+
+
+<!--                <p:outputPanel id="graf" style="text-align: center">
+                    <p:panelGrid id="panelCharts" columns="2" layout="grid">
+                        <p:chart type="bar" model="#{predicaoB.graficoBarras()}" 
+                                 style="height: 300px"   
+                                 rendered="#{predicaoB.predicao != null}"/>
+                    </p:panelGrid>
+                </p:outputPanel>-->
             </h:form>
         </div>
         <!--        <h:form prependId="false">
