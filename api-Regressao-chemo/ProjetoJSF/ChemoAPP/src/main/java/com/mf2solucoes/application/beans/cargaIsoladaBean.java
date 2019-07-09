@@ -7,6 +7,7 @@ package com.mf2solucoes.application.beans;
 
 import com.google.gson.Gson;
 import com.mf2solucoes.application.modelDb.amostra;
+import com.mf2solucoes.application.modelDb.matrizX;
 import com.mf2solucoes.application.modelDb.modelo;
 import com.mf2solucoes.application.modelDb.parametro;
 import com.mf2solucoes.application.repository.amostras;
@@ -22,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Base64;
 //import java.util.Base64;
@@ -75,6 +77,10 @@ public class cargaIsoladaBean implements Serializable {
     @Setter
     @Getter
     private List<parametro> list_ParametroResultado = new ArrayList<>();
+    
+    @Setter
+    @Getter
+    private List<matrizX> list_MatrizX = new ArrayList<>();
 
     @Inject
     private modelos modelos;
@@ -189,6 +195,9 @@ public class cargaIsoladaBean implements Serializable {
                 return;
             }
 
+            amostra.setListaParametro(list_ParametroResultado);
+            amostra.setListaMatrizX(list_MatrizX);
+            
             this.amostra = amostraService.salvar(amostra);
             limpar();
             msg.addInfo("saved", "");
@@ -228,14 +237,47 @@ public class cargaIsoladaBean implements Serializable {
         int cores[] = new int[255];
         // esse vetor "cores[]" vai armazenar as cores RGB  
         // [0] será Red(R), [1] será Green(G) e [2] será Blue(B)  
+
+        // esses laços varrem todo o objeto "imagem",   
+        // saindo do eixo 0,0 até o último pixel da imagem 
+        int nrsequencia = 0;
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
                 raster.getPixel(x, y, cores); // captura da combinação de cor do pixel  
+                
+                nrsequencia += 1;
+                //Monta a Matriz RGB
+                matrizX matriz = new matrizX();
+                matriz.setNrsequencia(Long.parseLong(String.valueOf(nrsequencia)));
+                matriz.setNrposicaolinha(x);
+                matriz.setNrposicaocoluna(y);
+                matriz.setVllinhacoluna(BigDecimal.valueOf(cores[0]));
+                
+                list_MatrizX.add(matriz);
+                
+                nrsequencia += 1;
+                //Monta a Matriz RGB
+                matriz = new matrizX();
+                matriz.setNrsequencia(Long.parseLong(String.valueOf(nrsequencia)));
+                matriz.setNrposicaolinha(x);
+                matriz.setNrposicaocoluna(y);
+                matriz.setVllinhacoluna(BigDecimal.valueOf(cores[1]));
+                
+                list_MatrizX.add(matriz);
+                
+                nrsequencia += 1;
+                //Monta a Matriz RGB
+                matriz = new matrizX();
+                matriz.setNrsequencia(Long.parseLong(String.valueOf(nrsequencia)));
+                matriz.setNrposicaolinha(x);
+                matriz.setNrposicaocoluna(y);
+                matriz.setVllinhacoluna(BigDecimal.valueOf(cores[2]));
+
+                list_MatrizX.add(matriz);
+                
                 System.out.println("R(" + cores[0] + ") G(" + cores[1] + ") B(" + cores[2] + ")");
             }
         }
-        // esses laços varrem todo o objeto "imagem",   
-        // saindo do eixo 0,0 até o último pixel da imagem 
     }
 
     public BufferedImage redimensionaImg(BufferedImage imagem, int new_w, int new_h) throws IOException {
