@@ -21,7 +21,7 @@ public class matrizY implements Serializable {
     @Setter
     @Getter
     @Id
-    private amostra amostra;
+    private String idamostra;
     @Setter
     @Getter
     private String dtpredicao;
@@ -39,7 +39,12 @@ public class matrizY implements Serializable {
     private String vlresultado;
     @Setter
     @Getter
-    private String vlreferencia;    
+    private String vlreferencia; 
+    @Setter
+    @Getter
+    private modelo modelo;      
+    
+    
 
     public matrizY() {
     }

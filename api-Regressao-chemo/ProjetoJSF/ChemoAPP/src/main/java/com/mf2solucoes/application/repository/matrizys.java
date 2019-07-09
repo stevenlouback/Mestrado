@@ -30,9 +30,9 @@ public class matrizys implements Serializable {
 
 
 
-    public List<matrizY> predicaoListPorAmostra(matrizY matrizy) {
+    public List<matrizY> matrizYPorModelo(matrizY matrizy) {
         Client c = Client.create();
-        WebResource wr = c.resource(BASE_URI).path(matrizyGetALL).path(String.valueOf(matrizy.getIdmodelo()));
+        WebResource wr = c.resource(BASE_URI).path(matrizyGetALL).path(String.valueOf(matrizy.getModelo().getIdmodelo()));
         String json = wr.get(String.class);
         return retornaListaJson(json);
     }
@@ -56,7 +56,7 @@ public class matrizys implements Serializable {
         matrizY m = new matrizY();
         m.setIdmodelo(1);
 
-        List<matrizY> lista = mat.predicaoListPorAmostra(m);
+        List<matrizY> lista = mat.matrizYPorModelo(m);
         
     }
 }
