@@ -116,7 +116,7 @@ class Calibracao(db.Model):
 #####################################################
 class MatrizX(db.Model):
 ###########################################################
-    __tablename__ = 'matrizX'
+    __tablename__ = 'matrizx'
 
     idmodelo = db.Column(db.Integer, primary_key=True)
     idamostra = db.Column(db.Integer, primary_key=True)

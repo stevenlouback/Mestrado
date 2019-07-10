@@ -88,30 +88,57 @@ def create_toda_amostra():
 
     objeto = request.json
 
-    # RECUPERA O JSON DENTRO DE JSON
-    listaParametro = json.dumps(objeto['listaParametro'])
-
-    listaMatrizX = json.dumps(objeto['listaMatrizX'])
-    listaMatrizX = json.dumps(listaMatrizX)
-    print('Tamanho Lista Parametro')
-    print(len(listaParametro))
-
-    for i in range(len(listaParametro))
-        print(i)
-
     modelo = objeto['modelo']
     idmodelo = modelo['idmodelo']
 
-    # print(listaParametro)
-    # print('-----------------------------------------------------------')
-    # print(listaMatrizX)
     msg = geraAmostra(db, objeto)
 
-    print(msg)
     idamostra= msg
 
+    # RECUPERA O JSON DENTRO DE JSON
     # MONTA A MATRIZ Y
-    # listaParametro = json.dumps(listaParametro)
+    # Access data
+    for x in objeto['listaParametro']:
+        idparametroref = x['idparametroref']
+        idcalibracao = None
+        vlresultado = None
+        vlreferencia = x['valorMovto']
+        dtpredicao = None
+
+        try:
+            modelo = MatrizY(
+                idmodelo=idmodelo,
+                idamostra=idamostra,
+                idparametroref=idparametroref,
+                idcalibracao=idcalibracao,
+                vlresultado=vlresultado,
+                vlreferencia=vlreferencia,
+                dtpredicao=dtpredicao
+            )
+            db.session.add(modelo)
+        except Exception as e:
+            return (str(e))
+
+
+    # MONTA A MATRIZ X
+    for y in objeto['listaMatrizX']:
+        nrsequencia= y['nrsequencia']
+        nrposicaolinha = y['nrposicaolinha']
+        nrposicaocoluna = y['nrposicaocoluna']
+        vllinhacoluna = y['vllinhacoluna']
+
+        try:
+            modelo = MatrizX(
+                idmodelo=idmodelo,
+                idamostra=idamostra,
+                nrsequencia=nrsequencia,
+                nrposicaolinha=nrposicaolinha,
+                nrposicaocoluna=nrposicaocoluna,
+                vllinhacoluna=vllinhacoluna
+            )
+            db.session.add(modelo)
+        except Exception as e:
+            return (str(e))
 
     db.session.commit()
 

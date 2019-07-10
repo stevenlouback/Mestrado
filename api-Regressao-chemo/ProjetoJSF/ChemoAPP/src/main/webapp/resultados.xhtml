@@ -101,6 +101,11 @@
                                                  value="#{resultadosB.list_matrizY}"
                                                  emptyMessage="#{messages['list.empty']}">
 
+
+<!--                                        <p:column style="width:16px">
+                                            <p:rowToggler />
+                                        </p:column>-->
+
                                         <p:column headerText="#{messages['resultados.form.idamostra']}" 
                                                   style="text-center" 
                                                   width="10%">
@@ -125,6 +130,13 @@
                                             <h:outputText value="#{matrizY.dtpredicao}" style="display: block; width:100%; text-align:center;"/>
                                         </p:column>       
 
+<!--                                        <p:rowExpansion>
+                                            <p:panelGrid  columns="2" columnClasses="label,value" style="width:300px">
+                                                <f:facet name="header">
+                                                    <p:graphicImage value="#{m}" name="demo/images/car/#{car.brand}-big.gif"/> 
+                                                </f:facet>
+                                            </p:panelGrid>
+                                        </p:rowExpansion>-->
                                     </p:dataTable>
                                 </div>
 
