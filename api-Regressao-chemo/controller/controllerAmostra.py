@@ -17,6 +17,7 @@ def geraAmostra(db, objeto):
   dtcoletaamostra = objeto['dtcoletaamostra']
   imamostra = objeto['imamostra']
   dsespectro= objeto['dsespectro']
+  nmidentifica= objeto['nmidentifica']
 
   # Pega a ultima sequencia para gravar no banco
 
@@ -35,7 +36,8 @@ def geraAmostra(db, objeto):
       dsobservacoes=dsobservacoes,
       dtcoletaamostra=dtcoletaamostra,
       imamostra=imamostra,
-      dsespectro=dsespectro
+      dsespectro=dsespectro,
+      nmidentifica=nmidentifica
     )
     db.session.add(modelo)
     # db.session.commit()

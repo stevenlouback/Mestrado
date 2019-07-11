@@ -15,12 +15,14 @@ class Amostra(db.Model):
     dsobservacoes = db.Column(db.String(), nullable=True)
     dtcoletaamostra = db.Column(db.DateTime, nullable=False)
     imamostra = db.Column(db.String(), nullable=True)
+    dsespectro = db.Column(db.String(), nullable=True)
+    nmidentifica = db.Column(db.String(), nullable=True)
 
     # matrizesX = db.relationship('MatrizX', backref='Amostra', lazy=True)
     # matrizesY = db.relationship('MatrizY', backref='Amostra', lazy=True)
     # amostrascalibracao = db.relationship('AmostraCalibracao', backref='Amostra', lazy=True)
 
-    def __init__(self, idmodelo,idamostra, tpamostra, dsobservacoes, dtcoletaamostra, imamostra, dsespectro):
+    def __init__(self, idmodelo,idamostra, tpamostra, dsobservacoes, dtcoletaamostra, imamostra, dsespectro, nmidentifica):
         self.idmodelo = idmodelo
         self.idamostra = idamostra
         self.tpamostra = tpamostra
@@ -28,6 +30,7 @@ class Amostra(db.Model):
         self.dtcoletaamostra = dtcoletaamostra
         self.imamostra = imamostra
         self.dsespectro = dsespectro
+        self.nmidentifica = nmidentifica
 
     def __repr__(self):
         return "<Amostras(%s, %s)>" % (
@@ -41,7 +44,8 @@ class Amostra(db.Model):
             'dsobservacoes': self.dsobservacoes,
             'dtcoletaamostra': self.dtcoletaamostra.strftime("%d/%m/%Y"),
             'imamostra': self.imamostra,
-            'dsespectro': self.dsespectro
+            'dsespectro': self.dsespectro,
+            'nmidentifica': self.nmidentifica
         }
 
 
