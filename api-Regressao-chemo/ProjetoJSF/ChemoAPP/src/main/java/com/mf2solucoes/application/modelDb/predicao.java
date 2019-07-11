@@ -36,6 +36,12 @@ public class predicao implements Serializable {
     private String rmsec;
     @Setter
     @Getter
+    private String rmsep;
+    @Setter
+    @Getter
+    private String dtcalibracao;
+    @Setter
+    @Getter
     private String idmodelo;
 
     @Setter

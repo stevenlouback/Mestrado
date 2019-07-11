@@ -2,6 +2,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import json
+from math import sqrt
 from flask import jsonify
 from datetime import datetime
 
@@ -9,13 +10,16 @@ sys.path.append("..\dao")
 
 from sklearn.cross_decomposition import PLSRegression
 from sklearn.metrics import r2_score, mean_squared_error, median_absolute_error, mean_absolute_error, mean_squared_log_error, coverage_error, label_ranking_loss, explained_variance_score, label_ranking_average_precision_score
-
+from sqlalchemy.orm import relationship, backref, sessionmaker, joinedload
 
 from sqlalchemy import create_engine
 
 db_string = "postgresql://postgres:postgres@localhost:5432/Quimiometria"
 
 db = create_engine(db_string)
+
+Session = sessionmaker(bind=db)
+session = Session()
 
 
 class PLS(object):
@@ -30,10 +34,10 @@ class PLS(object):
         print(idmodelo)
         print(idamostra)
 
-        conjunto = "NIR"
+        conjunto = "CALIBRACAO"
 
         X = self.selectMatrizX(idmodelo, conjunto)
-        Y = self.selectMatrizY(idmodelo, conjunto)
+        Y = self.selectMatrizY(idmodelo, conjunto, "VALOR")
 
         amostraPredicao = self.selectAmostra(idamostra, idmodelo)
 
@@ -43,45 +47,30 @@ class PLS(object):
 
         pls.fit(X, Y)
 
-        # L = pls.x_loadings_
-        # S = pls.x_scores_
-
-        # pls.fit(S, Y)
-
         valorPredito = pls.predict(amostraPredicao)
 
         print('Amostra: ' + str(idamostra) + ' - Valor Predito :' + str(valorPredito))
 
-        print('R2 do modelo PLS')
-        coeficiente = pls.score(X, Y, sample_weight=None)
+        cursorDadosCalibracao = db.execute("select rmsec, rmsep, coeficiente, dtcalibracao "
+                                           "from calibracao where inativo = 'A' and idmodelo = " + str(idmodelo) + " ")
+        for regCodigo in cursorDadosCalibracao:
+            rmsec = regCodigo[0]
+            rmsep = regCodigo[1]
+            coeficiente = regCodigo[2]
+            dtcalibracao = regCodigo[3]
+
+        print(rmsec)
+        print(rmsep)
         print(coeficiente)
-        print(r2_score(pls.predict(X), Y))
+        print(dtcalibracao)
 
-        matYPred = []
-
-        for i in range(1, 349):
-            #print(i)
-            linhaMatriz = []
-            idAmostraTestes = i
-            amostraPredicao = self.selectAmostra(idamostra, idmodelo)
-            Y_pred = pls.predict(amostraPredicao)
-            #print(Y_pred)
-            linhaMatriz.append(np.double(Y_pred))
-            matYPred += [linhaMatriz]
-
-        print('RMSEC')
-        # print(mean_squared_error(Y,matYPred))
-        raizQ = mean_squared_error(Y, matYPred) ** (1 / 2)
-        #print(raizQ)
-
-        ##Grava Predicao
-        db.execute(" update matrizy set vlresultado = " + str(1) + " , dtpredicao = '" + str(datetime.now()) + "' where idamostra = 1 and idmodelo = " + str(idmodelo) + "  ")
-        db.execute("commit")
+        dtcalibracao = dtcalibracao.strftime('%d/%m/%Y')
+        print(dtcalibracao)
 
         #tratamento dos dados para o Json
         coeficiente = round(coeficiente, 2)
-        #valorPredito = round(valorPredito, 2)
-        raizQ = round(raizQ, 2)
+        rmsec = round(rmsec, 2)
+        rmsep = round(rmsep, 2)
         valorReferencia = round(valorReferencia, 2)
 
         valorPreditoString = str(valorPredito)
@@ -90,7 +79,9 @@ class PLS(object):
 
 
         ##Contrucao do JSON
-        json_data = jsonify(idamostra=str(idamostra), valorpredito=str(valorPreditoString), rmsec=str(raizQ), idmodelo=str(idmodelo), valorreferencia=str(valorReferencia), coeficiente=str(coeficiente))
+        json_data = jsonify(idamostra=str(idamostra), valorpredito=str(valorPreditoString),
+                            rmsec=str(rmsec), rmsep=str(rmsep), idmodelo=str(idmodelo),  dtcalibracao=str(dtcalibracao),
+                            valorreferencia=str(valorReferencia), coeficiente=str(coeficiente))
 
         return json_data
 
@@ -220,7 +211,7 @@ class PLS(object):
             print(Exception)
             return "Ocorreu um erro na busca dos dados"
 
-    def selectMatrizY(self, idmodelo, conjunto):
+    def selectMatrizY(self, idmodelo, conjunto, tipo):
 
         try:
 
@@ -255,7 +246,10 @@ class PLS(object):
                     if  regDadosAmostra[1] == 0E-8 :
                         linhaMatriz.append('0')
                     else:
-                        linhaMatriz.append(np.double(regDadosAmostra[1]))
+                        if tipo == "ID" :
+                            linhaMatriz.append(np.double(regDadosAmostra[0]))
+                        if tipo == "VALOR":
+                            linhaMatriz.append(np.double(regDadosAmostra[1]))
 
                 #print(amostra)
                 #print(linhaMatriz)
@@ -281,8 +275,119 @@ class PLS(object):
         except Exception:
              return "Ocorreu um erro na busca dos dados"
 
-#pls = PLS()
+
+    def calibracao(self, idmodelo):
+
+        #Inativa calibracoes anteriores
+        db.execute("update calibracao set  inativo = 'F'" +
+                   " where idmodelo = " + str(idmodelo) + " ")
+        session.commit()
+
+        #cria calibracao para o modelo
+        data_Atual = datetime.today()
+        data_em_texto = data_Atual.strftime('%d/%m/%Y')
+
+        cursorCodigo = db.execute("select coalesce(max(idcalibracao),0) + 1 as codigo from calibracao where idmodelo = " + str(idmodelo) + " ")
+        for regCodigo in cursorCodigo:
+            idcalibracao = regCodigo[0]
+
+
+        db.execute("insert into calibracao (idcalibracao, idmodelo, dtcalibracao) "
+                   "values (" +str(idcalibracao) + ","+str(idmodelo)+" , '" + str(data_em_texto) +"' )")
+        session.commit()
+
+        idmodelo = idmodelo
+
+        print(idmodelo)
+
+        conjunto = "CALIBRACAO"
+
+        X = self.selectMatrizX(idmodelo, conjunto)
+        Y = self.selectMatrizY(idmodelo, conjunto, "VALOR")
+
+        YCodigo = self.selectMatrizY(idmodelo, conjunto, "ID")
+
+        teste = kennardstonealgorithm(X, 100)
+        print(teste)
+
+        pls = PLSRegression(copy=True, max_iter=500, n_components=12, scale=False, tol=1e-06)
+        pls.fit(X, Y)
+
+        coeficiente = pls.score(X, Y, sample_weight=None)
+        print('R2 do modelo PLS')
+        print(coeficiente)
+        print(r2_score(pls.predict(X), Y))
+
+        #Ajustar Calculos do RMSEC e RMSEP para ficarem dinamicos
+        matYPred = []
+
+        for item in YCodigo:
+            #print(i)
+            linhaMatriz = []
+            amostra = str(item)
+            amostra = amostra.replace("[", "")
+            amostra = amostra.replace("]", "")
+            amostraPredicao = self.selectAmostra(int(float(amostra)), idmodelo)
+            Y_pred = pls.predict(amostraPredicao)
+            #print(Y_pred)
+            linhaMatriz.append(np.double(Y_pred))
+            matYPred += [linhaMatriz]
+            db.execute("insert into amostra_calibracao (idcalibracao, idmodelo, idamostra) "
+                       "values (" + str(idcalibracao) + "," + str(idmodelo) + " , '" + str(int(float(amostra))) + "' )")
+
+        session.commit()
+
+        # print(mean_squared_error(Y,matYPred))
+        raizQ = mean_squared_error(Y, matYPred) ** (1 / 2)
+
+        rms = sqrt(mean_squared_error(Y, matYPred))
+        print('RMSEC')
+        print(raizQ)
+        print(rms)
+
+        #Atualiza valores da calibracao
+        db.execute("update calibracao set rmsec = " + str(rms) +
+                   " , inativo = 'A'" +
+                   " , rmsep = " + str(rms) +
+                   " , coeficiente = " + str(coeficiente) +
+                   " , dtcalibracao = '" + str(data_em_texto) + "'"
+                   " where idmodelo = " + str(idmodelo) +
+                   " and idcalibracao = " + str(idcalibracao) + " ")
+        session.commit()
+
+
+        return idmodelo
+
+def kennardstonealgorithm(x_variables, k):
+    x_variables = np.array(x_variables)
+    original_x = x_variables
+    distance_to_average = ((x_variables - np.tile(x_variables.mean(axis=0), (x_variables.shape[0], 1))) ** 2).sum(axis=1)
+    max_distance_sample_number = np.where(distance_to_average == np.max(distance_to_average))
+    max_distance_sample_number = max_distance_sample_number[0][0]
+    selected_sample_numbers = list()
+    selected_sample_numbers.append(max_distance_sample_number)
+    remaining_sample_numbers = np.arange(0, x_variables.shape[0], 1)
+    x_variables = np.delete(x_variables, selected_sample_numbers, 0)
+    remaining_sample_numbers = np.delete(remaining_sample_numbers, selected_sample_numbers, 0)
+    for iteration in range(1, k):
+        selected_samples = original_x[selected_sample_numbers, :]
+        min_distance_to_selected_samples = list()
+        for min_distance_calculation_number in range(0, x_variables.shape[0]):
+            distance_to_selected_samples = ((selected_samples - np.tile(x_variables[min_distance_calculation_number, :],
+                                                                        (selected_samples.shape[0], 1))) ** 2).sum(axis=1)
+            min_distance_to_selected_samples.append(np.min(distance_to_selected_samples))
+        max_distance_sample_number = np.where(
+            min_distance_to_selected_samples == np.max(min_distance_to_selected_samples))
+        max_distance_sample_number = max_distance_sample_number[0][0]
+        selected_sample_numbers.append(remaining_sample_numbers[max_distance_sample_number])
+        x_variables = np.delete(x_variables, max_distance_sample_number, 0)
+        remaining_sample_numbers = np.delete(remaining_sample_numbers, max_distance_sample_number, 0)
+
+    return selected_sample_numbers, remaining_sample_numbers
+
+pls = PLS()
 #pls.predicao(1,348)
+#pls.calibracao(1)
 
 
 class NumpyEncoder(json.JSONEncoder):
