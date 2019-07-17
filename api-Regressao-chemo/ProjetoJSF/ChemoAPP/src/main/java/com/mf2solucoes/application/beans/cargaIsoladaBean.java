@@ -171,7 +171,7 @@ public class cargaIsoladaBean implements Serializable {
                 return;
             }
             
-            if (amostra.getTpamostra().equals("")){
+            if (amostra.getNmidentifica().equals("")){
                 msg.addError("amostra.validation.identifica", amostra);
                 return;
             }
@@ -186,11 +186,20 @@ public class cargaIsoladaBean implements Serializable {
                     msg.addError("amostra.valida.espectro", amostra);
                     return;
                 }
+                
+                amostra.setImamostra("");
+                amostra.setImagem(null);
             } else {
+                if (amostra.getImamostra() == null){
+                    msg.addError("amostra.valida.imagem", amostra);
+                    return;
+                }
                 if (amostra.getImamostra().equals("")) {
                     msg.addError("amostra.valida.imagem", amostra);
                     return;
                 }
+                
+                amostra.setDsespectro("");
             }
 
             if (modelo.getDsmodelo().equals("")) {
@@ -221,7 +230,7 @@ public class cargaIsoladaBean implements Serializable {
             ByteArrayInputStream bais = new ByteArrayInputStream(bimagem);
             image = ImageIO.read(bais);
 
-            image = redimensionaImg(image, 15, 15);
+            image = redimensionaImg(image, 70, 70);
 
             //Inclui a imagem redimensionada no Array de Byte
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -258,6 +267,7 @@ public class cargaIsoladaBean implements Serializable {
                 matriz.setNrposicaolinha(x);
                 matriz.setNrposicaocoluna(y);
                 matriz.setVllinhacoluna(BigDecimal.valueOf(cores[0]));
+                matriz.setIdpixel(1);
                 
                 list_MatrizX.add(matriz);
                 
@@ -268,6 +278,7 @@ public class cargaIsoladaBean implements Serializable {
                 matriz.setNrposicaolinha(x);
                 matriz.setNrposicaocoluna(y);
                 matriz.setVllinhacoluna(BigDecimal.valueOf(cores[1]));
+                matriz.setIdpixel(2);
                 
                 list_MatrizX.add(matriz);
                 
@@ -278,6 +289,7 @@ public class cargaIsoladaBean implements Serializable {
                 matriz.setNrposicaolinha(x);
                 matriz.setNrposicaocoluna(y);
                 matriz.setVllinhacoluna(BigDecimal.valueOf(cores[2]));
+                matriz.setIdpixel(3);
 
                 list_MatrizX.add(matriz);
                 

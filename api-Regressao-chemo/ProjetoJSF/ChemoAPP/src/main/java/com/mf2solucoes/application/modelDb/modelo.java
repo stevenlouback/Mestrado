@@ -6,6 +6,8 @@
 package com.mf2solucoes.application.modelDb;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -48,11 +50,24 @@ public class modelo implements Serializable {
     @Setter
     @Getter
     private String dtcriacao;
+    
+    @Setter
+    @Getter
+    private List<parametro> listaParametro = new ArrayList<>();
 
     /**
      * Constructor
      */
     public modelo() {
+    }
+    
+    public void adicionarItemVazio() {
+        parametro parametro = new parametro();
+//
+//        parametro.setNmparametroref("");
+//        parametro.setModelo(this);
+
+        this.getListaParametro().add(0, parametro);
     }
 
 }

@@ -33,6 +33,8 @@ from metodos.pls import PLS
 
 @app.route('/modelo/adiciona', methods=['POST'])
 def create_modelo():
+    print('Entrou')
+    print(request.json)
     if not request.json or not 'nmmodelo' in request.json:
         abort(400)
 
@@ -83,16 +85,16 @@ from controller.controllerAmostra import geraAmostra
 
 @app.route('/amostra/adiciona', methods=['POST'])
 def create_toda_amostra():
-    if not request.json or not 'tpamostra' in request.json:
+    # print(request.json)
+    if not request.json or not 'nmidentifica' in request.json:
         abort(400)
 
     objeto = request.json
-
     modelo = objeto['modelo']
     idmodelo = modelo['idmodelo']
 
-    msg = geraAmostra(db, objeto)
 
+    msg = geraAmostra(db, objeto)
     idamostra= msg
 
     # RECUPERA O JSON DENTRO DE JSON
@@ -104,6 +106,7 @@ def create_toda_amostra():
         vlresultado = None
         vlreferencia = x['valorMovto']
         dtpredicao = None
+        print(vlreferencia)
 
         try:
             modelo = MatrizY(
@@ -119,13 +122,17 @@ def create_toda_amostra():
         except Exception as e:
             return (str(e))
 
-
     # MONTA A MATRIZ X
     for y in objeto['listaMatrizX']:
         nrsequencia= y['nrsequencia']
         nrposicaolinha = y['nrposicaolinha']
         nrposicaocoluna = y['nrposicaocoluna']
         vllinhacoluna = y['vllinhacoluna']
+
+        if not 'idpixel' in y:
+            idpixel=1
+        else:
+            idpixel=y['idpixel']
 
         try:
             modelo = MatrizX(
@@ -134,7 +141,8 @@ def create_toda_amostra():
                 nrsequencia=nrsequencia,
                 nrposicaolinha=nrposicaolinha,
                 nrposicaocoluna=nrposicaocoluna,
-                vllinhacoluna=vllinhacoluna
+                vllinhacoluna=vllinhacoluna,
+                idpixel=idpixel
             )
             db.session.add(modelo)
         except Exception as e:
