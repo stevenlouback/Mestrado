@@ -5,6 +5,7 @@ import json
 from math import sqrt
 from flask import jsonify
 from datetime import datetime
+import pandas as pd
 
 sys.path.append("..\dao")
 
@@ -303,12 +304,42 @@ class PLS(object):
         conjunto = "CALIBRACAO"
 
         X = self.selectMatrizX(idmodelo, conjunto)
+
+        #caso seja necessario PCA
+        #pca = PCA()
+        #pca.testePCA(X)
+
         Y = self.selectMatrizY(idmodelo, conjunto, "VALOR")
 
         YCodigo = self.selectMatrizY(idmodelo, conjunto, "ID")
 
-        teste = kennardstonealgorithm(X, 100)
-        print(teste)
+        #***************************************************************************************************************
+        #inicio kennard-stone
+        data = pd.DataFrame(X)
+        number_of_samples = 300
+        number_of_selected_samples = 20
+        # generate samples 0f samples for demonstration
+        XX = np.random.rand(number_of_samples, 2)
+        # standarize X
+        autoscaled_X = (XX - XX.mean(axis=0)) / XX.std(axis=0, ddof=1)
+        selected_sample_numbers, remaining_sample_numbers = kennardstonealgorithm(autoscaled_X, number_of_samples)
+        print("selected sample numbers")
+        print(selected_sample_numbers)
+        print("---")
+        print("remaining sample numbers")
+        print(remaining_sample_numbers)
+
+        # plot samples
+        plt.figure()
+        plt.scatter(autoscaled_X[:, 0], autoscaled_X[:, 1], label="all samples")
+        plt.scatter(autoscaled_X[selected_sample_numbers, 0], autoscaled_X[selected_sample_numbers, 1], marker="*",
+                    label="all samples")
+        plt.xlabel("x1")
+        plt.ylabel("x2")
+        plt.legend(loc='upper right')
+        plt.show()
+        #***************************************************************************************************************
+        #fim kennard-stone
 
         pls = PLSRegression(copy=True, max_iter=500, n_components=12, scale=False, tol=1e-06)
         pls.fit(X, Y)
@@ -385,7 +416,7 @@ def kennardstonealgorithm(x_variables, k):
 
     return selected_sample_numbers, remaining_sample_numbers
 
-pls = PLS()
+#pls = PLS()
 #pls.predicao(1,348)
 #pls.calibracao(1)
 
