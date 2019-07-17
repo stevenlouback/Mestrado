@@ -32,7 +32,7 @@ public class amostra implements Serializable {
     private modelo modelo;
     @Setter
     @Getter
-    private String tpamostra; //Nome da Amostra
+    private String tpamostra; 
     @Setter
     @Getter
     private String dsobservacoes;
@@ -54,6 +54,9 @@ public class amostra implements Serializable {
     @Setter
     @Getter
     private String dsespectro;
+    @Setter
+    @Getter
+    private String nmidentifica;
     
     @Setter
     @Getter
