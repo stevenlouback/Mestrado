@@ -316,12 +316,15 @@ class PLS(object):
         #***************************************************************************************************************
         #inicio kennard-stone
         data = pd.DataFrame(X)
-        number_of_samples = 300
+        number_of_samples = X.__len__()
         number_of_selected_samples = 20
+
         # generate samples 0f samples for demonstration
-        XX = np.random.rand(number_of_samples, 2)
+        #XX = np.random.rand(number_of_samples, 2)
+
         # standarize X
-        autoscaled_X = (XX - XX.mean(axis=0)) / XX.std(axis=0, ddof=1)
+        autoscaled_X = (X - X.mean(axis=0)) / X.std(axis=0, ddof=1)
+
         selected_sample_numbers, remaining_sample_numbers = kennardstonealgorithm(autoscaled_X, number_of_samples)
         print("selected sample numbers")
         print(selected_sample_numbers)
@@ -416,9 +419,9 @@ def kennardstonealgorithm(x_variables, k):
 
     return selected_sample_numbers, remaining_sample_numbers
 
-#pls = PLS()
+pls = PLS()
 #pls.predicao(1,348)
-#pls.calibracao(1)
+pls.calibracao(3)
 
 
 class NumpyEncoder(json.JSONEncoder):
