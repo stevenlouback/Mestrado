@@ -6,8 +6,8 @@
 package com.mf2solucoes.application.beans;
 
 //import com.mf2solucoes.application.modelDb.modelo;
-
 import com.mf2solucoes.application.modelDb.modelo;
+import com.mf2solucoes.application.modelDb.parametro;
 import com.mf2solucoes.application.repository.modelos;
 import com.mf2solucoes.application.service.modeloService;
 import com.mf2solucoes.tools.Mensagens;
@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 import javax.inject.Inject;
 import javax.faces.bean.ViewScoped;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -34,19 +35,25 @@ public class ModeloBean implements Serializable {
     @Setter
     @Getter
     private modelo modelo;
-    
+
     @Setter
     @Getter
     private List<modelo> list_Modelo = new ArrayList<>();
-    
+
     @Inject
     private modelos modelos;
-    
+
     @Inject
     private modeloService modeloService;
-    
-    
-    
+
+    @Setter
+    @Getter
+    private String nmparametroref;
+
+    @Setter
+    @Getter
+    private parametro parametroLinhaEditavel;
+
     public ModeloBean() {
         limpar();
     }
@@ -55,59 +62,115 @@ public class ModeloBean implements Serializable {
 //        modelos = new modelos();
 //        modeloService = new modeloService();
         modelo = new modelo();
-    }
-    
-    public boolean isEditando() {
-        return this.modelo.getIdmodelo()!= null;
+        this.modelo.adicionarItemVazio();
     }
 
-    public void salvar(){
+    public boolean isEditando() {
+        return this.modelo.getIdmodelo() != null;
+    }
+
+    public void salvar() {
         Mensagens msg = new Mensagens();
         try {
             modeloService = new modeloService();
-            
-            if (modelo.getNmmodelo().equals("")){
+
+            if (modelo.getNmmodelo().equals("")) {
                 msg.addError("model.validation.name", modelo);
                 return;
             }
-            
-            if (modelo.getTpinstrumento().equals("")){
+
+            if (modelo.getTpinstrumento().equals("")) {
                 msg.addError("model.validation.instrumento", modelo);
                 return;
             }
-            
-            if (modelo.getNmmetodoreferencia().equals("")){
+
+            if (modelo.getNmmetodoreferencia().equals("")) {
                 msg.addError("model.validation.metodo", modelo);
                 return;
             }
-            
-            if (modelo.getDsmodelo().equals("")){
+
+            if (modelo.getDsmodelo().equals("")) {
                 msg.addError("model.validation.descricao", modelo);
                 return;
             }
-            
+
             this.modelo = modeloService.salvar(modelo);
             limpar();
             msg.addInfo("saved", "");
         } catch (Exception e) {
-            
+
             msg.addError(String.valueOf(e), modelo);
             e.printStackTrace();
         }
     }
-    
+
+    public void carregarParametroLinhaEditavel() {
+        Mensagens msg = new Mensagens();
+
+        if (StringUtils.isNotEmpty(this.nmparametroref)) {
+            this.parametroLinhaEditavel = new parametro();
+            this.parametroLinhaEditavel.setNmparametroref(this.nmparametroref);
+        }
+
+        parametro item = this.modelo.getListaParametro().get(0);
+
+        if (this.parametroLinhaEditavel != null) {
+            if (this.existeItemComParametro(this.parametroLinhaEditavel)) {
+                msg.addError("errorParametro", "");
+                return;
+            } else {
+                item.setIdparametroref(sequenciaParametro());
+                item.setNmparametroref(this.nmparametroref);
+                item.setModelo(this.getModelo());
+
+                this.modelo.adicionarItemVazio();
+                this.nmparametroref = ""; //inicializa campo
+                this.parametroLinhaEditavel = null;
+
+            }
+        }
+    }
+
+    private boolean existeItemComParametro(parametro parametro) {
+        boolean existeItem = false;
+
+        for (parametro item : this.getModelo().getListaParametro()) {
+            if (parametro.getNmparametroref().equals(item.getNmparametroref())) {
+                existeItem = true;
+                break;
+            }
+        }
+
+        return existeItem;
+    }
+
+    private Long sequenciaParametro() {
+        Long nrsequencia = 0L;
+        for (parametro item : this.getModelo().getListaParametro()) {
+            if (nrsequencia < item.getIdparametroref()) {
+                nrsequencia = item.getIdparametroref();
+            }
+        }
+
+        return nrsequencia + 1L;
+    }
+
     @SuppressWarnings("unchecked")
     public void listarTodos() {
         modelos = new modelos();
         list_Modelo = modelos.findAll();
     }
-    
-    public modelo modeloPorId(modelo modelo){
+
+    public modelo modeloPorId(modelo modelo) {
         return modelos.modeloPorId(modelo);
     }
 
+    public void calibrarModelo(Long idmodelo) {
+        Mensagens msg = new Mensagens();
+        modeloService = new modeloService();
+        this.modelo = modeloService.calibrarModelo(idmodelo);
+        limpar();
+        msg.addInfo("calibrado", "");
+    }
 
-    
-    
-    
 }

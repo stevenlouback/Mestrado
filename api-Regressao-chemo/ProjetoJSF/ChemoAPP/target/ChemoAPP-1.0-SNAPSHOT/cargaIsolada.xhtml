@@ -97,7 +97,8 @@
                                         <p:ajax event="change" 
                                                 listener="#{cargaBean.buscaParametrosModelo()}" 
                                                 process="@this"
-                                                update="resultados,painelespectro,paineluploadImg" />
+                                                update="resultados,paineluploadImg" />
+                                        <!--update="resultados,painelespectro,paineluploadImg"-->
 
                                     </p:selectOneMenu>
                                 </div>
@@ -166,8 +167,8 @@
                                         
                                     </p:panel>
 
-                                    <p:panel id="painelespectro">
-                                             <!--rendered="#{!cargaBean.IMAGEM}">-->
+<!--                                    <p:panel id="painelespectro">
+                                             rendered="#{!cargaBean.IMAGEM}">
                                         <p:outputLabel for="espectro"
                                                        value="#{messages['amostra.form.espectro']}: "/>
                                         <p:inputTextarea rows="2" cols="30" 
@@ -179,7 +180,7 @@
                                                          autoResize="true" 
                                                          />
                                         <h:outputText id="display1" />                                                 
-                                    </p:panel>
+                                    </p:panel>-->
                                 </div>
                             </div>
                         </div>
@@ -240,11 +241,12 @@
                         </div>
                     </div>
 
+                    <!--process="@this,modelos, dataAmostra, identificaAmostra, descricao, uploadImg, espectro, resultados"-->
                     <div class="box-footer text-right">
                         <p:commandButton id="botaoSalvar"
                                          update="@form"
                                          partialSubmit="true"
-                                         process="@this,modelos, dataAmostra, identificaAmostra, descricao, uploadImg, espectro, resultados"
+                                         process="@this,modelos, dataAmostra, identificaAmostra, descricao, uploadImg, resultados"
                                          value="#{menu['save']}"
                                          action="#{cargaBean.gerarAmostra()}"
                                          styleClass="btn btn-flat btn-success"/>

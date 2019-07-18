@@ -62,7 +62,7 @@
                                                  value="#{modeloB.modelo.idmodelo}"/>
                                 </div>
 
-                                <div class="form-group col-md-5">
+                                <div class="form-group col-md-6">
                                     <p:outputLabel for="nome"
                                                    value="#{messages['model.form.name']}: "/>
                                     <p:inputText id="nome"
@@ -73,7 +73,7 @@
                                                  onkeyup="this.value = this.value.toUpperCase()"/>
                                 </div>
 
-                                <div class="form-group col-md-2">
+<!--                                <div class="form-group col-md-2">
                                     <p:outputLabel for="tipos" 
                                                    value="#{messages['dashboard.tipoAmostra']}" />
                                     <p:selectOneMenu id="tipos"
@@ -88,10 +88,10 @@
                                         <f:selectItem itemValue="IMG"
                                                       itemLabel="#{menu['img']}"/>
                                     </p:selectOneMenu>
-                                </div>                                                                
+                                </div>                                                                -->
 
 
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-4">
                                     <p:outputLabel for="metodo"
                                                    value="#{messages['model.form.metodo']}: "/>
                                     <p:inputText id="metodo"
@@ -117,11 +117,14 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <ui:include src="/template/parametrosModelo.xhtml" />
+                    
                     <!--process="@this,descricao,metodo,tipos,nome,id"-->
                     <div class="box-footer text-right">
                         <p:commandButton id="botaoSalvar"
                                          update="@form"
-                                         process="@this,descricao,metodo,tipos,nome,id"
+                                         process="@this,descricao,metodo,nome,id"
                                          partialSubmit="true"
                                          value="#{menu['save']}"
                                          action="#{modeloB.salvar()}"
@@ -183,11 +186,18 @@
                                                   headerText="#{messages['list.actions']}">
                                             <p:commandButton update="modeloForm" 
                                                              icon="ui-icon-pencil" 
+                                                             styleClass="btn btn-flat btn-default"
                                                              title="#{menu['detail']}">
                                                 <f:setPropertyActionListener 
                                                     target="#{modeloB.modelo}" value="#{modelo}"/>
                                             </p:commandButton>
                                             <p:spacer width="5"/>
+                                            <p:commandButton update="modeloForm" 
+                                                             icon="ui-icon-clock" 
+                                                             title="#{menu['calibra']}"
+                                                             styleClass="btn btn-flat btn-default"
+                                                             ajax="false"
+                                                             action="#{modeloB.calibrarModelo(modelo.idmodelo)}"/>
                                         </p:column>
                                     </p:dataTable>
                                 </div>

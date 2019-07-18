@@ -128,14 +128,16 @@ class MatrizX(db.Model):
     nrposicaolinha = db.Column(db.Integer, nullable=False)
     nrposicaocoluna = db.Column(db.Integer, nullable=False)
     vllinhacoluna = db.Column(db.Numeric, nullable=False)
+    idpixel = db.Column(db.Numeric, nullable=False)
 
-    def __init__(self, idmodelo, idamostra, nrsequencia, nrposicaolinha, nrposicaocoluna, vllinhacoluna):
+    def __init__(self, idmodelo, idamostra, nrsequencia, nrposicaolinha, nrposicaocoluna, vllinhacoluna,idpixel):
         self.idmodelo = idmodelo
         self.idamostra = idamostra
         self.nrsequencia = nrsequencia
         self.nrposicaolinha = nrposicaolinha
         self.nrposicaocoluna = nrposicaocoluna
         self.vllinhacoluna = vllinhacoluna
+        self.idpixel = idpixel
 
     def __repr__(self):
         return '<matrizX{}'.format(self.nrsequencia, self.idmodelo, self.idamostra)
@@ -147,7 +149,8 @@ class MatrizX(db.Model):
             'nrsequencia': self.nrsequencia,
             'nrposicaolinha': self.nrposicaolinha,
             'nrposicaocoluna': self.nrposicaocoluna,
-            'vllinhacoluna': self.vllinhacoluna
+            'vllinhacoluna': self.vllinhacoluna,
+            'idpixel': self.idpixel
         }
 
 ###########################################################

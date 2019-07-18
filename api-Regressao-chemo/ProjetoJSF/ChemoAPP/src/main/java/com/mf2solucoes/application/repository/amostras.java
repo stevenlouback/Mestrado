@@ -36,6 +36,11 @@ public class amostras implements Serializable {
             amostra.setIdamostra(x);
         }
         
+        if (amostra.getTpamostra() == null){
+            amostra.setTpamostra("1");
+        }
+        
+        
         genericoWS ws = new genericoWS();
         String resultado = ws.insertObject(amostra, BASE_URI, amostraADD, "POST");
         System.out.println(resultado);

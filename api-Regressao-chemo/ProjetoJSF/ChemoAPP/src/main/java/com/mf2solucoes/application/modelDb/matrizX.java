@@ -36,6 +36,9 @@ public class matrizX implements Serializable {
     private int nrposicaocoluna;
     @Setter
     @Getter
+    private int idpixel;
+    @Setter
+    @Getter
     @Column(precision = 13, scale = 8)
     private BigDecimal vllinhacoluna = BigDecimal.ZERO;
 
