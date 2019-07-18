@@ -31,6 +31,18 @@ from controller.controllerModelo import geraModelo
 from controller.controllerPredicao import geraPredicao
 from metodos.pls import PLS
 
+@app.route("/modelo/calibra/<id_>", methods=['POST'])
+def calibraModelo(id_):
+    try:
+        if (not id_):
+            abort(400)
+
+        pls = PLS()
+        pls.calibracao(id_)
+        return jsonify({'success': 'OK'}), 201
+    except Exception as e:
+	      return(str(e))
+
 @app.route('/modelo/adiciona', methods=['POST'])
 def create_modelo():
     print('Entrou')

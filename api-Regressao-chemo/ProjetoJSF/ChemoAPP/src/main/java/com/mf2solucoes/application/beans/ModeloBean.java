@@ -49,7 +49,7 @@ public class ModeloBean implements Serializable {
     @Setter
     @Getter
     private String nmparametroref;
-    
+
     @Setter
     @Getter
     private parametro parametroLinhaEditavel;
@@ -131,8 +131,6 @@ public class ModeloBean implements Serializable {
         }
     }
 
-    
-
     private boolean existeItemComParametro(parametro parametro) {
         boolean existeItem = false;
 
@@ -149,14 +147,14 @@ public class ModeloBean implements Serializable {
     private Long sequenciaParametro() {
         Long nrsequencia = 0L;
         for (parametro item : this.getModelo().getListaParametro()) {
-            if (nrsequencia < item.getIdparametroref()){
+            if (nrsequencia < item.getIdparametroref()) {
                 nrsequencia = item.getIdparametroref();
             }
         }
 
-        return nrsequencia +1L;
+        return nrsequencia + 1L;
     }
-    
+
     @SuppressWarnings("unchecked")
     public void listarTodos() {
         modelos = new modelos();
@@ -165,6 +163,14 @@ public class ModeloBean implements Serializable {
 
     public modelo modeloPorId(modelo modelo) {
         return modelos.modeloPorId(modelo);
+    }
+
+    public void calibrarModelo(Long idmodelo) {
+        Mensagens msg = new Mensagens();
+        modeloService = new modeloService();
+        this.modelo = modeloService.calibrarModelo(idmodelo);
+        limpar();
+        msg.addInfo("calibrado", "");
     }
 
 }

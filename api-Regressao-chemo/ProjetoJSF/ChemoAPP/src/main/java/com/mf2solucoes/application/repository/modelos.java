@@ -7,6 +7,7 @@ import com.mf2solucoes.application.modelDb.modelo;
 import com.mf2solucoes.application.modelDb.parametro;
 import static com.mf2solucoes.tools.Constants.BASE_URI;
 import static com.mf2solucoes.tools.Constants.modeloADD;
+import static com.mf2solucoes.tools.Constants.modeloCalibrar;
 import static com.mf2solucoes.tools.Constants.modeloGetALL;
 import static com.mf2solucoes.tools.Constants.modeloGetId;
 import static com.mf2solucoes.tools.Constants.modeloGetTpAmostra;
@@ -63,6 +64,22 @@ public class modelos implements Serializable {
         return null;
     }
 
+    public modelo calibrarModelo(Long idmodelo) {
+        Mensagens msg = new Mensagens();
+        if (idmodelo == null || idmodelo == 0) {
+            msg.addError("idmodeloinfo", "");
+            return null;
+        }
+        
+
+        String url = modeloCalibrar+idmodelo;
+        
+        genericoWS ws = new genericoWS();
+        ws.insertObject("", BASE_URI, url, "POST");
+
+        return null;
+    }
+
     public List<modelo> findAll() {
         Client c = Client.create();
         WebResource wr = c.resource(BASE_URI).path(modeloGetALL);
@@ -92,7 +109,7 @@ public class modelos implements Serializable {
         }
         return modelo;
     }
-    
+
     public List<modelo> modeloPorTipoAmostra(modelo modelo) {
         Client c = Client.create();
         WebResource wr = c.resource(BASE_URI).path(modeloGetTpAmostra).path(String.valueOf(modelo.getTpinstrumento()));

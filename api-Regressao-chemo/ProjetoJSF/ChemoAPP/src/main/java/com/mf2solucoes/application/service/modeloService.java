@@ -22,4 +22,10 @@ public class modeloService implements Serializable {
         modelos = new modelos();
         return modelos.guardar(modelo);
     }
+    
+    @Transactional
+    public modelo calibrarModelo(Long idmodelo) {
+        modelos = new modelos();
+        return modelos.calibrarModelo(idmodelo);
+    }
 }

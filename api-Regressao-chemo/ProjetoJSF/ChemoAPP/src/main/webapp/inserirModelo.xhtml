@@ -186,6 +186,7 @@
                                                   headerText="#{messages['list.actions']}">
                                             <p:commandButton update="modeloForm" 
                                                              icon="ui-icon-pencil" 
+                                                             styleClass="btn btn-flat btn-default"
                                                              title="#{menu['detail']}">
                                                 <f:setPropertyActionListener 
                                                     target="#{modeloB.modelo}" value="#{modelo}"/>
@@ -193,10 +194,10 @@
                                             <p:spacer width="5"/>
                                             <p:commandButton update="modeloForm" 
                                                              icon="ui-icon-clock" 
-                                                             title="#{menu['calibra']}">
-<!--                                                <f:setPropertyActionListener 
-                                                    target="#{modeloB.modelo}" value="#{modelo}"/>-->
-                                            </p:commandButton>
+                                                             title="#{menu['calibra']}"
+                                                             styleClass="btn btn-flat btn-default"
+                                                             ajax="false"
+                                                             action="#{modeloB.calibrarModelo(modelo.idmodelo)}"/>
                                         </p:column>
                                     </p:dataTable>
                                 </div>
