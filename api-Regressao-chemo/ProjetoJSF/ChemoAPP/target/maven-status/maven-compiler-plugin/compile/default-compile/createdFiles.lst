@@ -17,6 +17,7 @@ com\mf2solucoes\tools\DateDeserializer.class
 com\mf2solucoes\tools\MinimoQuadradoParcialPLS.class
 com\mf2solucoes\application\repository\amostras.class
 com\mf2solucoes\application\modelDb\matrizY.class
+com\mf2solucoes\tools\Limiar.class
 com\mf2solucoes\application\repository\parametros.class
 com\mf2solucoes\tools\genericoWS.class
 com\mf2solucoes\application\repository\matrizys$1.class
@@ -29,6 +30,7 @@ com\mf2solucoes\application\modelDb\modelo.class
 com\mf2solucoes\application\service\modeloService.class
 com\mf2solucoes\infraestrutura\primefaces\AutoCloseMessages.class
 com\mf2solucoes\application\service\parametroService.class
+com\mf2solucoes\tools\Histograma.class
 com\mf2solucoes\application\repository\amostras$1.class
 com\mf2solucoes\application\modelDb\matrizX.class
 com\mf2solucoes\application\beans\cargaIsoladaBean.class

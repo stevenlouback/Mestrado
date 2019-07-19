@@ -7,6 +7,7 @@ E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\Projeto
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\controller\captureBean.java
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\service\amostraService.java
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\tools\tratamentoImagem.java
+E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\tools\Limiar.java
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\repository\matrizys.java
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\modelDb\modelo.java
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\tools\MinimoQuadradoParcialPLS.java
@@ -34,3 +35,4 @@ E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\Projeto
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\beans\ModeloBean.java
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\infraestrutura\primefaces\CustomCalendarRenderer.java
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\tools\genericoWS.java
+E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\tools\Histograma.java
