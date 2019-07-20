@@ -14,6 +14,7 @@ import com.mf2solucoes.application.repository.amostras;
 import com.mf2solucoes.application.repository.modelos;
 import com.mf2solucoes.application.repository.parametros;
 import com.mf2solucoes.application.service.amostraService;
+import com.mf2solucoes.tools.Histograma;
 import com.mf2solucoes.tools.Mensagens;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -77,7 +78,7 @@ public class cargaIsoladaBean implements Serializable {
     @Setter
     @Getter
     private List<parametro> list_ParametroResultado = new ArrayList<>();
-    
+
     @Setter
     @Getter
     private List<matrizX> list_MatrizX = new ArrayList<>();
@@ -164,33 +165,33 @@ public class cargaIsoladaBean implements Serializable {
                 msg.addError("model.validation.name", amostra);
                 return;
             }
-            
-            if (amostra.getDataamostra() == null){
+
+            if (amostra.getDataamostra() == null) {
 //            if (amostra.getDtcoletaamostra().equals("")){
                 msg.addError("amostra.validation.dataamostra", amostra);
                 return;
             }
-            
-            if (amostra.getNmidentifica().equals("")){
+
+            if (amostra.getNmidentifica().equals("")) {
                 msg.addError("amostra.validation.identifica", amostra);
                 return;
             }
 
-            if (amostra.getDsobservacoes().equals("")){
+            if (amostra.getDsobservacoes().equals("")) {
                 msg.addError("amostra.validation.obs", amostra);
                 return;
             }
-            
+
             if (modelo.getTpinstrumento().equals("NIR")) {
                 if (amostra.getDsespectro().equals("")) {
                     msg.addError("amostra.valida.espectro", amostra);
                     return;
                 }
-                
+
                 amostra.setImamostra("");
                 amostra.setImagem(null);
             } else {
-                if (amostra.getImamostra() == null){
+                if (amostra.getImamostra() == null) {
                     msg.addError("amostra.valida.imagem", amostra);
                     return;
                 }
@@ -198,7 +199,7 @@ public class cargaIsoladaBean implements Serializable {
                     msg.addError("amostra.valida.imagem", amostra);
                     return;
                 }
-                
+
                 amostra.setDsespectro("");
             }
 
@@ -211,7 +212,7 @@ public class cargaIsoladaBean implements Serializable {
             amostra.setDtcoletaamostra(String.valueOf(amostra.getDataamostra().toString().replace("/", "-")));
             amostra.setListaParametro(list_ParametroResultado);
             amostra.setListaMatrizX(list_MatrizX);
-            
+
             this.amostra = amostraService.salvar(amostra);
             limpar();
             msg.addInfo("saved", "");
@@ -246,56 +247,98 @@ public class cargaIsoladaBean implements Serializable {
             ex.printStackTrace();
         }
 
-        //Percorre a Imagem pegando os RGB
-        raster = image.getRaster();
-        int cores[] = new int[255];
-        // esse vetor "cores[]" vai armazenar as cores RGB  
-        // [0] será Red(R), [1] será Green(G) e [2] será Blue(B)  
+        Histograma hhh = new Histograma();
+        int red[] = hhh.histogramaRed(image);
+        int green[] = hhh.histogramaGreen(image);
+        int blue[] = hhh.histogramaBlue(image);
 
-        // esses laços varrem todo o objeto "imagem",   
-        // saindo do eixo 0,0 até o último pixel da imagem 
         list_MatrizX.clear();
         int nrsequencia = 0;
-        for (int x = 0; x < image.getWidth(); x++) {
-            for (int y = 0; y < image.getHeight(); y++) {
-                raster.getPixel(x, y, cores); // captura da combinação de cor do pixel  
-                
-                nrsequencia += 1;
-                //Monta a Matriz RGB
-                matrizX matriz = new matrizX();
-                matriz.setNrsequencia(Long.parseLong(String.valueOf(nrsequencia)));
-                matriz.setNrposicaolinha(x);
-                matriz.setNrposicaocoluna(y);
-                matriz.setVllinhacoluna(BigDecimal.valueOf(cores[0]));
-                matriz.setIdpixel(1);
-                
-                list_MatrizX.add(matriz);
-                
-                nrsequencia += 1;
-                //Monta a Matriz RGB
-                matriz = new matrizX();
-                matriz.setNrsequencia(Long.parseLong(String.valueOf(nrsequencia)));
-                matriz.setNrposicaolinha(x);
-                matriz.setNrposicaocoluna(y);
-                matriz.setVllinhacoluna(BigDecimal.valueOf(cores[1]));
-                matriz.setIdpixel(2);
-                
-                list_MatrizX.add(matriz);
-                
-                nrsequencia += 1;
-                //Monta a Matriz RGB
-                matriz = new matrizX();
-                matriz.setNrsequencia(Long.parseLong(String.valueOf(nrsequencia)));
-                matriz.setNrposicaolinha(x);
-                matriz.setNrposicaocoluna(y);
-                matriz.setVllinhacoluna(BigDecimal.valueOf(cores[2]));
-                matriz.setIdpixel(3);
-
-                list_MatrizX.add(matriz);
-                
-                System.out.println("R(" + cores[0] + ") G(" + cores[1] + ") B(" + cores[2] + ")");
-            }
+        for (int r : red) {
+            nrsequencia += 1;
+            //Monta a Matriz RGB
+            matrizX matriz = new matrizX();
+            matriz.setNrsequencia(Long.parseLong(String.valueOf(nrsequencia)));
+            matriz.setNrposicaolinha(0);
+            matriz.setNrposicaocoluna(1);
+            matriz.setVllinhacoluna(BigDecimal.valueOf(r));
+            matriz.setIdpixel(1);
+            list_MatrizX.add(matriz);
         }
+
+        for (int g : green) {
+            nrsequencia += 1;
+            //Monta a Matriz RGB
+            matrizX matriz = new matrizX();
+            matriz.setNrsequencia(Long.parseLong(String.valueOf(nrsequencia)));
+            matriz.setNrposicaolinha(1);
+            matriz.setNrposicaocoluna(1);
+            matriz.setVllinhacoluna(BigDecimal.valueOf(g));
+            matriz.setIdpixel(2);
+            list_MatrizX.add(matriz);
+        }
+
+        for (int b : blue) {
+            nrsequencia += 1;
+            //Monta a Matriz RGB
+            matrizX matriz = new matrizX();
+            matriz.setNrsequencia(Long.parseLong(String.valueOf(nrsequencia)));
+            matriz.setNrposicaolinha(1);
+            matriz.setNrposicaocoluna(1);
+            matriz.setVllinhacoluna(BigDecimal.valueOf(b));
+            matriz.setIdpixel(3);
+            list_MatrizX.add(matriz);
+        }
+//        //Percorre a Imagem pegando os RGB
+//        raster = image.getRaster();
+//        int cores[] = new int[256];
+//        // esse vetor "cores[]" vai armazenar as cores RGB  
+//        // [0] será Red(R), [1] será Green(G) e [2] será Blue(B)  
+//
+//        // esses laços varrem todo o objeto "imagem",   
+//        // saindo do eixo 0,0 até o último pixel da imagem 
+//        list_MatrizX.clear();
+//        int nrsequencia = 0;
+//        for (int x = 0; x < image.getWidth(); x++) {
+//            for (int y = 0; y < image.getHeight(); y++) {
+//                raster.getPixel(x, y, cores); // captura da combinação de cor do pixel  
+//                
+//                nrsequencia += 1;
+//                //Monta a Matriz RGB
+//                matrizX matriz = new matrizX();
+//                matriz.setNrsequencia(Long.parseLong(String.valueOf(nrsequencia)));
+//                matriz.setNrposicaolinha(x);
+//                matriz.setNrposicaocoluna(y);
+//                matriz.setVllinhacoluna(BigDecimal.valueOf(cores[0]));
+//                matriz.setIdpixel(1);
+//                
+//                list_MatrizX.add(matriz);
+//                
+//                nrsequencia += 1;
+//                //Monta a Matriz RGB
+//                matriz = new matrizX();
+//                matriz.setNrsequencia(Long.parseLong(String.valueOf(nrsequencia)));
+//                matriz.setNrposicaolinha(x);
+//                matriz.setNrposicaocoluna(y);
+//                matriz.setVllinhacoluna(BigDecimal.valueOf(cores[1]));
+//                matriz.setIdpixel(2);
+//                
+//                list_MatrizX.add(matriz);
+//                
+//                nrsequencia += 1;
+//                //Monta a Matriz RGB
+//                matriz = new matrizX();
+//                matriz.setNrsequencia(Long.parseLong(String.valueOf(nrsequencia)));
+//                matriz.setNrposicaolinha(x);
+//                matriz.setNrposicaocoluna(y);
+//                matriz.setVllinhacoluna(BigDecimal.valueOf(cores[2]));
+//                matriz.setIdpixel(3);
+//
+//                list_MatrizX.add(matriz);
+//                
+//                System.out.println("R(" + cores[0] + ") G(" + cores[1] + ") B(" + cores[2] + ")");
+//            }
+//        }
     }
 
     public BufferedImage redimensionaImg(BufferedImage imagem, int new_w, int new_h) throws IOException {
