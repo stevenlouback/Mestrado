@@ -235,26 +235,25 @@ class PLS(object):
 
         try:
             if conjunto == "TODOS":
-                sqlConsulta = ("inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) ")
+                sqlConsulta = (" select y.idamostra from matrizy y "
+                               "inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) ")
                 whereConsulta = (" where y.idmodelo = " + str(idmodelo) + " " )
 
             elif conjunto == "CALIBRACAO":
-                sqlConsulta = (" inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) " 
-                              "inner join amostra_calibracao ac on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
-                              "inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
-                whereConsulta = (" where y.idModelo = " + str(idmodelo) + " and ac.tpconjunto = 'CALIBRACAO' ")
+                sqlConsulta = (" select ac.idamostra from amostra_calibracao ac "
+                              " inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
+                whereConsulta = (" where ac.idModelo = " + str(idmodelo) + " and ac.tpconjunto = 'CALIBRACAO' ")
 
             elif conjunto == "VALIDACAO":
-                sqlConsulta = (" inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) " 
-                              "inner join amostra_calibracao ac on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
-                              "inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
-                whereConsulta = (" where y.idModelo = " + str(idmodelo) + " and ac.tpconjunto = 'VALIDACAO' ")
+                sqlConsulta = (" select ac.idamostra from amostra_calibracao ac "
+                              " inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
+                whereConsulta = (" where ac.idModelo = " + str(idmodelo) + " and ac.tpconjunto = 'VALIDACAO' ")
 
 
 
             matrizY = []
 
-            sqlListaAmostras= ("select y.idamostra from matrizy y " + str(sqlConsulta) + " " + str(whereConsulta) + " order by y.idamostra asc" )
+            sqlListaAmostras= (" " + str(sqlConsulta) + " " + str(whereConsulta) + " order by 1 asc" )
             cursorAmostras = db.execute(sqlListaAmostras)
 
             """cursorAmostras = db.execute("select y.idamostra from matrizy y "
@@ -349,7 +348,7 @@ class PLS(object):
 
         #***************************************************************************************************************
         #inicio kennard-stone
-        data = pd.DataFrame(Xtodos)
+        #data = pd.DataFrame(Xtodos)
         number_of_samples = Xtodos.__len__()
         number_of_samples = number_of_samples * 0.75
         number_of_selected_samples = 20
@@ -358,10 +357,11 @@ class PLS(object):
         #XX = np.random.rand(number_of_samples, 2)
 
         # standarize X
-        #autoscaled_X = (X - X.mean(axis=0)) / X.std(axis=0, ddof=1)
+        #autoscaled_X = (Xtodos - Xtodos.mean(axis=0)) / Xtodos.std(axis=0, ddof=1)
 
         #selected_sample_numbers, remaining_sample_numbers = kennardstonealgorithm(X, number_of_samples)
         amostras_Calibracao = kennardStone(Xtodos, number_of_samples)
+        #amostras_Calibracao = kennardStone(autoscaled_X, number_of_samples)
         print("amostras_Calibracao")
         print(amostras_Calibracao)
         print("---")
@@ -416,20 +416,22 @@ class PLS(object):
 
 
         #Dados do Conjunto de Calibracao
-        pls = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
-        pls.fit(Xcal, Ycal)
-        coeficiente = pls.score(Xcal, Ycal, sample_weight=None)
-        print('R2 do modelo PLS - Calibracao')
+        plsCal = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
+        plsCal.fit(Xcal, Ycal)
+        coeficiente = plsCal.score(Xcal, Ycal, sample_weight=None)
+        print('score do modelo PLS - Calibracao')
         print(coeficiente)
-        print(r2_score(pls.predict(Xcal),Ycal))
+        print('R2 do modelo PLS - Calibracao')
+        print(r2_score(plsCal.predict(Xcal),Ycal))
 
         # Dados do Conjunto de Validacao
-        pls = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
-        pls.fit(Xval, Yval)
-        coeficiente = pls.score(Xval, Yval, sample_weight=None)
-        print('R2 do modelo PLS - Validacao')
+        plsVal = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
+        plsVal.fit(Xval, Yval)
+        coeficiente = plsVal.score(Xval, Yval, sample_weight=None)
+        print('score do modelo PLS - Validacao')
         print(coeficiente)
-        print(r2_score(pls.predict(Xval), Yval))
+        print('R2 do modelo PLS - Validacao')
+        print(r2_score(plsVal.predict(Xval), Yval))
 
 
         #Ajustar Calculos do RMSEC
@@ -442,9 +444,9 @@ class PLS(object):
             # print(i)
             linhaMatriz = []
             amostraPredicao = self.selectAmostra(int(float(amostra)), idmodelo)
-            Y_pred = pls.predict(amostraPredicao)
+            Y_pred = plsCal.predict(amostraPredicao)
             # print(Y_pred)
-            linhaMatriz.append(np.double(Y_pred))
+            linhaMatriz.append(round(np.double(Y_pred),0))
             matYPredCalibracao += [linhaMatriz]
 
         rmsec = sqrt(mean_squared_error(Ycal, matYPredCalibracao))
@@ -461,9 +463,9 @@ class PLS(object):
             # print(i)
             linhaMatriz = []
             amostraPredicao = self.selectAmostra(int(float(amostra)), idmodelo)
-            Y_pred = pls.predict(amostraPredicao)
+            Y_pred = plsVal.predict(amostraPredicao)
             # print(Y_pred)
-            linhaMatriz.append(np.double(Y_pred))
+            linhaMatriz.append(round(np.double(Y_pred),0))
             matYPredValidacao += [linhaMatriz]
 
         rmsep = sqrt(mean_squared_error(Yval, matYPredValidacao))
@@ -520,8 +522,8 @@ def kennardStone(X, k, precomputed=False):
 
 
 pls = PLS()
-#pls.predicao(1,300)
-pls.calibracao(2, 20)
+#pls.predicao(3,2)
+pls.calibracao(3, 20)
 
 
 class NumpyEncoder(json.JSONEncoder):

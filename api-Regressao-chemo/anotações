@@ -3,6 +3,7 @@ python manage.py runserver
 
 #Seta variavel de ambiente no Windows
 set DATABASE_URL=postgresql://postgres:postgres@localhost:5432/Quimiometria
+set DATABASE_URL=postgresql://postgres:postgres@localhost:5432/bkpSteven
 
 #Para movimentar o Banco de Dados
 python manage.py db init
