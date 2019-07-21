@@ -1,3 +1,41 @@
+<<<<<<< HEAD
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\service\parametroService.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\repository\matrizys.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\repository\predicoes.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\beans\ResultadosBean.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\controller\imageBean.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\tools\tratamentoImagem.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\infraestrutura\primefaces\CustomInputNumberRenderer.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\beans\PredicaoBean.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\beans\ModeloBean.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\modelDb\matrizY.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\repository\modelos.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\controller\captureBean.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\infraestrutura\primefaces\CustomAutoCompleteRenderer.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\repository\parametros.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\infraestrutura\utils\MessageSource.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\modelDb\modelo.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\modelDb\predicao.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\service\predicaoService.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\infraestrutura\primefaces\CustomCalendarRenderer.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\tools\MinimoQuadradoParcialPLS.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\controller\PhotoCamView.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\repository\amostras.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\tools\Constants.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\tools\genericoWS.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\service\matrizyservice.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\beans\cargaIsoladaBean.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\infraestrutura\primefaces\AutoCloseMessages.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\domain\misc\ex\InternalServiceError.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\tools\DateDeserializer.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\service\modeloService.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\beans\ParametroBean.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\service\amostraService.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\modelDb\parametro.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\modelDb\amostra.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\modelDb\matrizX.java
+D:\Mestrado\Dissertacao\Mestrado\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\tools\Mensagens.java
+=======
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\infraestrutura\primefaces\CustomInputNumberRenderer.java
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\infraestrutura\utils\MessageSource.java
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\application\service\parametroService.java
@@ -36,3 +74,4 @@ E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\Projeto
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\infraestrutura\primefaces\CustomCalendarRenderer.java
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\tools\genericoWS.java
 E:\Mestrado\Repositorio GIT - Projeto Chemo\Mestrado\api-Regressao-chemo\ProjetoJSF\ChemoAPP\src\main\java\com\mf2solucoes\tools\Histograma.java
+>>>>>>> 102a5579608bd750526db798705551e53a9d04f3

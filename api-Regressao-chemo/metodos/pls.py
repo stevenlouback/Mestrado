@@ -10,12 +10,14 @@ import pandas as pd
 sys.path.append("..\dao")
 
 from sklearn.cross_decomposition import PLSRegression
-from sklearn.metrics import r2_score, mean_squared_error, median_absolute_error, mean_absolute_error, mean_squared_log_error, coverage_error, label_ranking_loss, explained_variance_score, label_ranking_average_precision_score
+from sklearn.metrics import r2_score, mean_squared_error,median_absolute_error, mean_absolute_error, mean_squared_log_error, coverage_error, label_ranking_loss, explained_variance_score, label_ranking_average_precision_score
 from sqlalchemy.orm import relationship, backref, sessionmaker, joinedload
+from sklearn import metrics
 
 from sqlalchemy import create_engine
 
 db_string = "postgresql://postgres:postgres@localhost:5432/Quimiometria"
+#db_string = "postgresql://postgres:postgres@localhost:5432/bkpSteven"
 
 db = create_engine(db_string)
 
@@ -35,22 +37,20 @@ class PLS(object):
         print(idmodelo)
         print(idamostra)
 
-        conjunto = "CALIBRACAO"
-
-        X = self.selectMatrizX(idmodelo, conjunto)
-        Y = self.selectMatrizY(idmodelo, conjunto, "VALOR")
+        X = self.selectMatrizX(idmodelo, "CALIBRACAO")
+        Y = self.selectMatrizY(idmodelo, "VALOR", "CALIBRACAO")
 
         amostraPredicao = self.selectAmostra(idamostra, idmodelo)
 
         valorReferencia = self.selectDadosReferenciaAmostra(idamostra, idmodelo)
 
-        pls = PLSRegression(copy=True, max_iter=500, n_components=12, scale=False, tol=1e-06)
+        pls = PLSRegression(copy=True, max_iter=500, n_components=20, scale=False, tol=1e-06)
 
         pls.fit(X, Y)
 
         valorPredito = pls.predict(amostraPredicao)
 
-        print('Amostra: ' + str(idamostra) + ' - Valor Predito :' + str(valorPredito))
+        print('Amostra: ' + str(idamostra) + ' - Valor Predito :' + str(valorPredito)+ ' - Valor Referencia :' + str(valorReferencia))
 
         cursorDadosCalibracao = db.execute("select rmsec, rmsep, coeficiente, dtcalibracao "
                                            "from calibracao where inativo = 'A' and idmodelo = " + str(idmodelo) + " ")
@@ -148,12 +148,29 @@ class PLS(object):
 
         try:
             #numero de colunas da matriz
-            cursorColunas = db.execute(" select max(x.nrposicaocoluna) from matrizx x"
-                                       " inner join matrizy y on (x.idamostra = y.idamostra) "
-                                       "inner join amostra a on ( a.idamostra = x.idamostra ) "
-                                       "where a.tpamostra = '" + str(conjunto) + "' "
-                                       " and x.idModelo = " + str(idModelo) + "  ")
 
+            if conjunto == "TODOS":
+                sqlConsulta = (" inner join matrizy y on (x.idamostra = y.idamostra and y.idmodelo = x.idmodelo) "
+                              "inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) ")
+                whereConsulta = ("where x.idModelo = " + str(idModelo) + "  ")
+
+            elif conjunto == "CALIBRACAO":
+                sqlConsulta = (" inner join matrizy y on (x.idamostra = y.idamostra and y.idmodelo = x.idmodelo) "
+                              "inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) "
+                              "inner join amostra_calibracao ac on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
+                              "inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
+                whereConsulta = ("where x.idModelo = " + str(idModelo) + " and ac.tpconjunto = 'CALIBRACAO' ")
+
+            elif conjunto == "VALIDACAO":
+                sqlConsulta = (" inner join matrizy y on (x.idamostra = y.idamostra and y.idmodelo = x.idmodelo) "
+                              "inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) "
+                              "inner join amostra_calibracao ac on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
+                              "inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
+                whereConsulta = ("where x.idModelo = " + str(idModelo) + " and ac.tpconjunto = 'VALIDACAO' ")
+
+
+            sqlColunas = (" select max(x.nrposicaocoluna) from matrizx x " + str(sqlConsulta) + " " + str(whereConsulta) + " ")
+            cursorColunas = db.execute(sqlColunas)
 
             contadorColunas = 0
 
@@ -164,12 +181,14 @@ class PLS(object):
             #Preenchimento da MatrizX
             matrizX = []
 
-            cursorAmostras = db.execute("select x.idamostra from matrizx x  "
-                                        "inner join matrizy y on (y.idamostra = x.idamostra) "
-                                        "inner join amostra a on ( a.idamostra = x.idamostra ) "
-                                        "where a.tpamostra = '" + str(conjunto) + "' "
-                                        " and x.idModelo = " + str(idModelo) + "  "                                                                                  
-                                        "group by x.idamostra order by x.idamostra asc")
+            sqlListaAmostras = ("select x.idamostra from matrizx x  " + str(sqlConsulta) + str(whereConsulta) + "group by x.idamostra order by x.idamostra asc")
+            cursorAmostras = db.execute(sqlListaAmostras)
+
+            """cursorAmostras = db.execute("select x.idamostra from matrizx x  "
+                                        "inner join matrizy y on (y.idamostra = x.idamostra and y.idmodelo = x.idmodelo) "
+                                        "inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) "
+                                        "where x.idModelo = " + str(idModelo) + "  "                                                                                  
+                                        "group by x.idamostra order by x.idamostra asc")"""
 
             cont = 0
             listaAmostras = []
@@ -212,16 +231,36 @@ class PLS(object):
             print(Exception)
             return "Ocorreu um erro na busca dos dados"
 
-    def selectMatrizY(self, idmodelo, conjunto, tipo):
+    def selectMatrizY(self, idmodelo, tipo, conjunto):
 
         try:
+            if conjunto == "TODOS":
+                sqlConsulta = ("inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) ")
+                whereConsulta = (" where y.idmodelo = " + str(idmodelo) + " " )
+
+            elif conjunto == "CALIBRACAO":
+                sqlConsulta = (" inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) " 
+                              "inner join amostra_calibracao ac on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
+                              "inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
+                whereConsulta = (" where y.idModelo = " + str(idmodelo) + " and ac.tpconjunto = 'CALIBRACAO' ")
+
+            elif conjunto == "VALIDACAO":
+                sqlConsulta = (" inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) " 
+                              "inner join amostra_calibracao ac on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
+                              "inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
+                whereConsulta = (" where y.idModelo = " + str(idmodelo) + " and ac.tpconjunto = 'VALIDACAO' ")
+
+
 
             matrizY = []
 
-            cursorAmostras = db.execute("select y.idamostra from matrizy y "
-                                        "inner join amostra a on (a.idamostra = y.idamostra) where a.tpamostra = '" + str(conjunto) + "' "
-                                        " and y.idmodelo = " + str(idmodelo) + " "                                                                                              
-                                        "order by y.idamostra asc")
+            sqlListaAmostras= ("select y.idamostra from matrizy y " + str(sqlConsulta) + " " + str(whereConsulta) + " order by y.idamostra asc" )
+            cursorAmostras = db.execute(sqlListaAmostras)
+
+            """cursorAmostras = db.execute("select y.idamostra from matrizy y "
+                                        "inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) "
+                                        " where y.idmodelo = " + str(idmodelo) + " "                                                                                              
+                                        "order by y.idamostra asc")"""
 
             listaAmostras = []
             cont = 0
@@ -248,7 +287,7 @@ class PLS(object):
                         linhaMatriz.append('0')
                     else:
                         if tipo == "ID" :
-                            linhaMatriz.append(np.double(regDadosAmostra[0]))
+                            linhaMatriz.append(regDadosAmostra[0])
                         if tipo == "VALOR":
                             linhaMatriz.append(np.double(regDadosAmostra[1]))
 
@@ -277,7 +316,7 @@ class PLS(object):
              return "Ocorreu um erro na busca dos dados"
 
 
-    def calibracao(self, idmodelo):
+    def calibracao(self, idmodelo, nrcomponentes):
 
         #Inativa calibracoes anteriores
         db.execute("update calibracao set  inativo = 'F'" +
@@ -293,43 +332,43 @@ class PLS(object):
             idcalibracao = regCodigo[0]
 
 
-        db.execute("insert into calibracao (idcalibracao, idmodelo, dtcalibracao) "
-                   "values (" +str(idcalibracao) + ","+str(idmodelo)+" , '" + str(data_em_texto) +"' )")
+        db.execute("insert into calibracao (idcalibracao, idmodelo, dtcalibracao, inativo) "
+                   "values (" +str(idcalibracao) + ","+str(idmodelo)+" , '" + str(data_em_texto) +"', 'A' )")
         session.commit()
 
         idmodelo = idmodelo
 
         print(idmodelo)
 
-        conjunto = "CALIBRACAO"
-
-        X = self.selectMatrizX(idmodelo, conjunto)
+        Xtodos = self.selectMatrizX(idmodelo, "TODOS")
 
         #caso seja necessario PCA
         #pca = PCA()
         #pca.testePCA(X)
 
-        Y = self.selectMatrizY(idmodelo, conjunto, "VALOR")
-
-        YCodigo = self.selectMatrizY(idmodelo, conjunto, "ID")
 
         #***************************************************************************************************************
         #inicio kennard-stone
-        data = pd.DataFrame(X)
-        number_of_samples = 300
+        data = pd.DataFrame(Xtodos)
+        number_of_samples = Xtodos.__len__()
+        number_of_samples = number_of_samples * 0.75
         number_of_selected_samples = 20
+
         # generate samples 0f samples for demonstration
-        XX = np.random.rand(number_of_samples, 2)
+        #XX = np.random.rand(number_of_samples, 2)
+
         # standarize X
-        autoscaled_X = (XX - XX.mean(axis=0)) / XX.std(axis=0, ddof=1)
-        selected_sample_numbers, remaining_sample_numbers = kennardstonealgorithm(autoscaled_X, number_of_samples)
-        print("selected sample numbers")
-        print(selected_sample_numbers)
+        #autoscaled_X = (X - X.mean(axis=0)) / X.std(axis=0, ddof=1)
+
+        #selected_sample_numbers, remaining_sample_numbers = kennardstonealgorithm(X, number_of_samples)
+        amostras_Calibracao = kennardStone(Xtodos, number_of_samples)
+        print("amostras_Calibracao")
+        print(amostras_Calibracao)
         print("---")
         print("remaining sample numbers")
-        print(remaining_sample_numbers)
+        #print(remaining_sample_numbers)
 
-        # plot samples
+        """#plot samples
         plt.figure()
         plt.scatter(autoscaled_X[:, 0], autoscaled_X[:, 1], label="all samples")
         plt.scatter(autoscaled_X[selected_sample_numbers, 0], autoscaled_X[selected_sample_numbers, 1], marker="*",
@@ -338,48 +377,103 @@ class PLS(object):
         plt.ylabel("x2")
         plt.legend(loc='upper right')
         plt.show()
+        
+        
         #***************************************************************************************************************
-        #fim kennard-stone
+        #fim kennard-stone"""
 
-        pls = PLSRegression(copy=True, max_iter=500, n_components=12, scale=False, tol=1e-06)
-        pls.fit(X, Y)
+        # Insercao das amostras de Validacao
+        YCodigoTodos = self.selectMatrizY(idmodelo, "ID", "TODOS")
 
-        coeficiente = pls.score(X, Y, sample_weight=None)
-        print('R2 do modelo PLS')
-        print(coeficiente)
-        print(r2_score(pls.predict(X), Y))
-
-        #Ajustar Calculos do RMSEC e RMSEP para ficarem dinamicos
-        matYPred = []
-
-        for item in YCodigo:
-            #print(i)
-            linhaMatriz = []
-            amostra = str(item)
+        for amostraX in YCodigoTodos:
+            amostra = str(amostraX)
             amostra = amostra.replace("[", "")
             amostra = amostra.replace("]", "")
-            amostraPredicao = self.selectAmostra(int(float(amostra)), idmodelo)
-            Y_pred = pls.predict(amostraPredicao)
-            #print(Y_pred)
-            linhaMatriz.append(np.double(Y_pred))
-            matYPred += [linhaMatriz]
-            db.execute("insert into amostra_calibracao (idcalibracao, idmodelo, idamostra) "
-                       "values (" + str(idcalibracao) + "," + str(idmodelo) + " , '" + str(int(float(amostra))) + "' )")
+            db.execute("insert into amostra_calibracao (idcalibracao, idmodelo, idamostra, tpconjunto) "
+                       "values (" + str(idcalibracao) + "," + str(idmodelo) + " , '" + str(int(float(amostra))) + "','VALIDACAO' )")
 
         session.commit()
 
-        # print(mean_squared_error(Y,matYPred))
-        raizQ = mean_squared_error(Y, matYPred) ** (1 / 2)
+        #Insercao das amostras de Calibracao
+        for amostraCalibracao in amostras_Calibracao:
+            amostra = str(amostraCalibracao)
+            amostra = amostra.replace("[", "")
+            amostra = amostra.replace("]", "")
+            db.execute("update  amostra_calibracao set tpconjunto = 'CALIBRACAO'  "
+                       " where idcalibracao =" + str(idcalibracao) + " and idmodelo = " + str(idmodelo) +
+                       " and idamostra = " + str(int(float(amostra))))
+        session.commit()
 
-        rms = sqrt(mean_squared_error(Y, matYPred))
+
+        Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
+        Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
+
+        Ycal = self.selectMatrizY(idmodelo, "VALOR", "CALIBRACAO")
+        Yval = self.selectMatrizY(idmodelo, "VALOR", "VALIDACAO")
+
+        YCodigoCal = self.selectMatrizY(idmodelo, "ID", "CALIBRACAO")
+        YCodigoVal = self.selectMatrizY(idmodelo, "ID", "VALIDACAO")
+
+
+        #Dados do Conjunto de Calibracao
+        pls = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
+        pls.fit(Xcal, Ycal)
+        coeficiente = pls.score(Xcal, Ycal, sample_weight=None)
+        print('R2 do modelo PLS - Calibracao')
+        print(coeficiente)
+        print(r2_score(pls.predict(Xcal),Ycal))
+
+        # Dados do Conjunto de Validacao
+        pls = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
+        pls.fit(Xval, Yval)
+        coeficiente = pls.score(Xval, Yval, sample_weight=None)
+        print('R2 do modelo PLS - Validacao')
+        print(coeficiente)
+        print(r2_score(pls.predict(Xval), Yval))
+
+
+        #Ajustar Calculos do RMSEC
+        matYPredCalibracao = []
+
+        for itemMatrizY in YCodigoCal:
+            amostra = str(itemMatrizY)
+            amostra = amostra.replace("[", "")
+            amostra = amostra.replace("]", "")
+            # print(i)
+            linhaMatriz = []
+            amostraPredicao = self.selectAmostra(int(float(amostra)), idmodelo)
+            Y_pred = pls.predict(amostraPredicao)
+            # print(Y_pred)
+            linhaMatriz.append(np.double(Y_pred))
+            matYPredCalibracao += [linhaMatriz]
+
+        rmsec = sqrt(mean_squared_error(Ycal, matYPredCalibracao))
         print('RMSEC')
-        print(raizQ)
-        print(rms)
+        print(rmsec)
+
+        #Ajustar Calculos do RMSEP
+        matYPredValidacao = []
+
+        for itemMatrizY in YCodigoVal:
+            amostra = str(itemMatrizY)
+            amostra = amostra.replace("[", "")
+            amostra = amostra.replace("]", "")
+            # print(i)
+            linhaMatriz = []
+            amostraPredicao = self.selectAmostra(int(float(amostra)), idmodelo)
+            Y_pred = pls.predict(amostraPredicao)
+            # print(Y_pred)
+            linhaMatriz.append(np.double(Y_pred))
+            matYPredValidacao += [linhaMatriz]
+
+        rmsep = sqrt(mean_squared_error(Yval, matYPredValidacao))
+        print('RMSEP')
+        print(rmsep)
 
         #Atualiza valores da calibracao
-        db.execute("update calibracao set rmsec = " + str(rms) +
+        db.execute("update calibracao set rmsec = " + str(rmsec) +
                    " , inativo = 'A'" +
-                   " , rmsep = " + str(rms) +
+                   " , rmsep = " + str(rmsep) +
                    " , coeficiente = " + str(coeficiente) +
                    " , dtcalibracao = '" + str(data_em_texto) + "'"
                    " where idmodelo = " + str(idmodelo) +
@@ -389,36 +483,45 @@ class PLS(object):
 
         return idmodelo
 
-def kennardstonealgorithm(x_variables, k):
-    x_variables = np.array(x_variables)
-    original_x = x_variables
-    distance_to_average = ((x_variables - np.tile(x_variables.mean(axis=0), (x_variables.shape[0], 1))) ** 2).sum(axis=1)
-    max_distance_sample_number = np.where(distance_to_average == np.max(distance_to_average))
-    max_distance_sample_number = max_distance_sample_number[0][0]
-    selected_sample_numbers = list()
-    selected_sample_numbers.append(max_distance_sample_number)
-    remaining_sample_numbers = np.arange(0, x_variables.shape[0], 1)
-    x_variables = np.delete(x_variables, selected_sample_numbers, 0)
-    remaining_sample_numbers = np.delete(remaining_sample_numbers, selected_sample_numbers, 0)
-    for iteration in range(1, k):
-        selected_samples = original_x[selected_sample_numbers, :]
-        min_distance_to_selected_samples = list()
-        for min_distance_calculation_number in range(0, x_variables.shape[0]):
-            distance_to_selected_samples = ((selected_samples - np.tile(x_variables[min_distance_calculation_number, :],
-                                                                        (selected_samples.shape[0], 1))) ** 2).sum(axis=1)
-            min_distance_to_selected_samples.append(np.min(distance_to_selected_samples))
-        max_distance_sample_number = np.where(
-            min_distance_to_selected_samples == np.max(min_distance_to_selected_samples))
-        max_distance_sample_number = max_distance_sample_number[0][0]
-        selected_sample_numbers.append(remaining_sample_numbers[max_distance_sample_number])
-        x_variables = np.delete(x_variables, max_distance_sample_number, 0)
-        remaining_sample_numbers = np.delete(remaining_sample_numbers, max_distance_sample_number, 0)
+def kennardStone(X, k, precomputed=False):
+    n = len(X) # number of samples
+    print("Input Size:", n, "Desired Size:", k)
+    assert n >= 2 and n >= k and k >= 2, "Error: number of rows must >= 2, k must >= 2 and k must > number of rows"
 
-    return selected_sample_numbers, remaining_sample_numbers
+    # pair-wise distance matrix
+    dist = metrics.pairwise_distances(X, metric='euclidean', n_jobs=-1)
 
-#pls = PLS()
-#pls.predicao(1,348)
-#pls.calibracao(1)
+    # get the first two samples
+    i0, i1 = np.unravel_index(np.argmax(dist, axis=None), dist.shape)
+    selected = set([i0, i1])
+    k -= 2
+    # iterate find the rest
+    minj = i0
+    while k > 0 and len(selected) < n:
+        mindist = 0.0
+        for j in range(n):
+            if j not in selected:
+                mindistj = min([dist[j][i] for i in selected])
+                if mindistj > mindist:
+                    minj = j
+                    mindist = mindistj
+        print(selected, minj, [dist[minj][i] for i in selected])
+        selected.add(minj)
+        k -= 1
+    print("selected samples indices: ", selected)
+    # return selected samples
+
+
+    return selected
+    #if precomputed:
+    #    return list(selected)
+    #else:
+    #    return X[list(selected), :]
+
+
+pls = PLS()
+#pls.predicao(1,300)
+pls.calibracao(2, 20)
 
 
 class NumpyEncoder(json.JSONEncoder):
@@ -434,8 +537,6 @@ class NumpyEncoder(json.JSONEncoder):
         elif isinstance(obj,(np.ndarray,)): #### This is the fix
             return obj.tolist()
         return json.JSONEncoder.default(self, obj)
-
-
 
 
 
