@@ -5,7 +5,8 @@ import json
 from math import sqrt
 from flask import jsonify
 from datetime import datetime
-import pandas as pd
+from scipy import stats
+from pyod.models.knn import KNN
 
 sys.path.append("..\dao")
 
@@ -151,22 +152,22 @@ class PLS(object):
 
             if conjunto == "TODOS":
                 sqlConsulta = (" inner join matrizy y on (x.idamostra = y.idamostra and y.idmodelo = x.idmodelo) "
-                              "inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) ")
-                whereConsulta = ("where x.idModelo = " + str(idModelo) + "  ")
+                               " inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) ")
+                whereConsulta = ("where x.idModelo = " + str(idModelo) + "  and a.tpamostra <> 'OUTLIER' ")
 
             elif conjunto == "CALIBRACAO":
                 sqlConsulta = (" inner join matrizy y on (x.idamostra = y.idamostra and y.idmodelo = x.idmodelo) "
                               "inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) "
                               "inner join amostra_calibracao ac on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
                               "inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
-                whereConsulta = ("where x.idModelo = " + str(idModelo) + " and ac.tpconjunto = 'CALIBRACAO' ")
+                whereConsulta = ("where x.idModelo = " + str(idModelo) + " and ac.tpconjunto = 'CALIBRACAO'  and a.tpamostra <> 'OUTLIER' ")
 
             elif conjunto == "VALIDACAO":
                 sqlConsulta = (" inner join matrizy y on (x.idamostra = y.idamostra and y.idmodelo = x.idmodelo) "
                               "inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) "
                               "inner join amostra_calibracao ac on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
                               "inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
-                whereConsulta = ("where x.idModelo = " + str(idModelo) + " and ac.tpconjunto = 'VALIDACAO' ")
+                whereConsulta = ("where x.idModelo = " + str(idModelo) + " and ac.tpconjunto = 'VALIDACAO'  and a.tpamostra <> 'OUTLIER' ")
 
 
             sqlColunas = (" select max(x.nrposicaocoluna) from matrizx x " + str(sqlConsulta) + " " + str(whereConsulta) + " ")
@@ -235,26 +236,27 @@ class PLS(object):
 
         try:
             if conjunto == "TODOS":
-                sqlConsulta = ("inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) ")
-                whereConsulta = (" where y.idmodelo = " + str(idmodelo) + " " )
+                sqlConsulta = (" select y.idamostra from matrizy y "
+                               "inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) ")
+                whereConsulta = (" where y.idmodelo = " + str(idmodelo) + " and a.tpamostra <> 'OUTLIER' " )
 
             elif conjunto == "CALIBRACAO":
-                sqlConsulta = (" inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) " 
-                              "inner join amostra_calibracao ac on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
-                              "inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
-                whereConsulta = (" where y.idModelo = " + str(idmodelo) + " and ac.tpconjunto = 'CALIBRACAO' ")
+                sqlConsulta = (" select ac.idamostra from amostra_calibracao ac "
+                              " inner join amostra a on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
+                              " inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
+                whereConsulta = (" where ac.idModelo = " + str(idmodelo) + " and ac.tpconjunto = 'CALIBRACAO'  and a.tpamostra <> 'OUTLIER' ")
 
             elif conjunto == "VALIDACAO":
-                sqlConsulta = (" inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) " 
-                              "inner join amostra_calibracao ac on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
-                              "inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
-                whereConsulta = (" where y.idModelo = " + str(idmodelo) + " and ac.tpconjunto = 'VALIDACAO' ")
+                sqlConsulta = (" select ac.idamostra from amostra_calibracao ac "
+                              " inner join amostra a on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
+                              " inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
+                whereConsulta = (" where ac.idModelo = " + str(idmodelo) + " and ac.tpconjunto = 'VALIDACAO'  and a.tpamostra <> 'OUTLIER' ")
 
 
 
             matrizY = []
 
-            sqlListaAmostras= ("select y.idamostra from matrizy y " + str(sqlConsulta) + " " + str(whereConsulta) + " order by y.idamostra asc" )
+            sqlListaAmostras= (" " + str(sqlConsulta) + " " + str(whereConsulta) + " order by 1 asc" )
             cursorAmostras = db.execute(sqlListaAmostras)
 
             """cursorAmostras = db.execute("select y.idamostra from matrizy y "
@@ -315,12 +317,83 @@ class PLS(object):
         except Exception:
              return "Ocorreu um erro na busca dos dados"
 
+    def detectarOutlierKNN(self, idmodelo, Xtodos, corteOutlier):
+        # Detecao Outliers 1--------------------------------------------------------------
+        clf = KNN()
+        clf.fit(Xtodos)
 
-    def calibracao(self, idmodelo, nrcomponentes):
+        # get outlier scores
+        y_train_scores = clf.decision_scores_  # raw outlier scores
+        y_test_scores = clf.decision_function(Xtodos)  # outlier scores
+
+        YCodigoTodosComOutilier = self.selectMatrizY(idmodelo, "ID", "TODOS")
+
+        cont = 0
+        amostrasRemovidas = 0
+
+        for itemOutilier in y_train_scores:
+            if itemOutilier > corteOutlier:
+                contTodos = 0
+                for item in YCodigoTodosComOutilier:
+                    amostra = str(item)
+                    amostra = amostra.replace("[", "")
+                    amostra = amostra.replace("]", "")
+                    if contTodos == cont:
+                        db.execute(" update amostra set tpamostra = 'OUTLIER' where idamostra = " + str(amostra) + " and idmodelo = " + str(idmodelo) + "")
+                        print(itemOutilier)
+                        amostrasRemovidas = amostrasRemovidas + 1
+                        break
+                    contTodos = contTodos + 1
+            cont = cont + 1
+
+        session.commit()
+        print("Numero de Amostras Removidas: " + str(amostrasRemovidas))
+        return cont
+
+
+    # a number "a" from the vector "x" is an outlier if
+    # a > median(x)+1.5*iqr(x) or a < median-1.5*iqr(x)
+    # iqr: interquantile range = third interquantile - first interquantile
+    def outliersPandas(self, idmodelo, Xtodos, corteOutlier):
+        y_train_scores = np.abs(stats.zscore(Xtodos))
+
+        YCodigoTodosComOutilier = self.selectMatrizY(idmodelo, "ID", "TODOS")
+
+        amostrasRemovidas = 0
+
+        cont = 0
+        for itemOutilier in y_train_scores:
+            it = np.where(itemOutilier > corteOutlier)
+
+            print("DAODDD")
+            dado = it[28]
+            print(dado)
+
+            if dado == cont:
+                contTodos = 0
+                for item in YCodigoTodosComOutilier:
+                    amostra = str(item)
+                    amostra = amostra.replace("[", "")
+                    amostra = amostra.replace("]", "")
+                    if contTodos == cont:
+                        db.execute(" update amostra set tpamostra = 'OUTLIER' where idamostra = " + str(amostra) + " and idmodelo = " + str(idmodelo) + "")
+                        print(itemOutilier)
+                        amostrasRemovidas = amostrasRemovidas + 1
+                        break
+                    contTodos = contTodos + 1
+            cont = cont + 1
+
+
+        session.commit()
+
+        return 1
+
+    def calibracao(self, idmodelo, nrcomponentes, corteOutlier):
 
         #Inativa calibracoes anteriores
         db.execute("update calibracao set  inativo = 'F'" +
                    " where idmodelo = " + str(idmodelo) + " ")
+        db.execute(" update amostra set tpamostra = 'NORMAL' where idmodelo = " + str(idmodelo) + "")
         session.commit()
 
         #cria calibracao para o modelo
@@ -349,19 +422,14 @@ class PLS(object):
 
         #***************************************************************************************************************
         #inicio kennard-stone
-        data = pd.DataFrame(Xtodos)
+        #data = pd.DataFrame(Xtodos)
         number_of_samples = Xtodos.__len__()
-        number_of_samples = number_of_samples * 0.75
-        number_of_selected_samples = 20
-
-        # generate samples 0f samples for demonstration
-        #XX = np.random.rand(number_of_samples, 2)
-
-        # standarize X
-        #autoscaled_X = (X - X.mean(axis=0)) / X.std(axis=0, ddof=1)
+        number_of_samples = number_of_samples * 0.65
 
         #selected_sample_numbers, remaining_sample_numbers = kennardstonealgorithm(X, number_of_samples)
         amostras_Calibracao = kennardStone(Xtodos, number_of_samples)
+
+        #amostras_Calibracao = kennardStone(autoscaled_X, number_of_samples)
         print("amostras_Calibracao")
         print(amostras_Calibracao)
         print("---")
@@ -408,28 +476,35 @@ class PLS(object):
         Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
         Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
 
+        self.detectarOutlierKNN(idmodelo, Xval, corteOutlier)
+        self.detectarOutlierKNN(idmodelo, Xcal, corteOutlier)
+
+        Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
+        Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
+
         Ycal = self.selectMatrizY(idmodelo, "VALOR", "CALIBRACAO")
         Yval = self.selectMatrizY(idmodelo, "VALOR", "VALIDACAO")
 
         YCodigoCal = self.selectMatrizY(idmodelo, "ID", "CALIBRACAO")
         YCodigoVal = self.selectMatrizY(idmodelo, "ID", "VALIDACAO")
 
-
         #Dados do Conjunto de Calibracao
-        pls = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
-        pls.fit(Xcal, Ycal)
-        coeficiente = pls.score(Xcal, Ycal, sample_weight=None)
-        print('R2 do modelo PLS - Calibracao')
+        plsCal = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
+        plsCal.fit(Xcal, Ycal)
+        coeficiente = plsCal.score(Xcal, Ycal, sample_weight=None)
+        print('score do modelo PLS - Calibracao')
         print(coeficiente)
-        print(r2_score(pls.predict(Xcal),Ycal))
+        print('R2 do modelo PLS - Calibracao')
+        print(r2_score(plsCal.predict(Xcal),Ycal))
 
         # Dados do Conjunto de Validacao
-        pls = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
-        pls.fit(Xval, Yval)
-        coeficiente = pls.score(Xval, Yval, sample_weight=None)
-        print('R2 do modelo PLS - Validacao')
+        plsVal = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
+        plsVal.fit(Xval, Yval)
+        coeficiente = plsVal.score(Xval, Yval, sample_weight=None)
+        print('score do modelo PLS - Validacao')
         print(coeficiente)
-        print(r2_score(pls.predict(Xval), Yval))
+        print('R2 do modelo PLS - Validacao')
+        print(r2_score(plsVal.predict(Xval), Yval))
 
 
         #Ajustar Calculos do RMSEC
@@ -442,9 +517,9 @@ class PLS(object):
             # print(i)
             linhaMatriz = []
             amostraPredicao = self.selectAmostra(int(float(amostra)), idmodelo)
-            Y_pred = pls.predict(amostraPredicao)
+            Y_pred = plsCal.predict(amostraPredicao)
             # print(Y_pred)
-            linhaMatriz.append(np.double(Y_pred))
+            linhaMatriz.append(round(np.double(Y_pred),0))
             matYPredCalibracao += [linhaMatriz]
 
         rmsec = sqrt(mean_squared_error(Ycal, matYPredCalibracao))
@@ -461,9 +536,9 @@ class PLS(object):
             # print(i)
             linhaMatriz = []
             amostraPredicao = self.selectAmostra(int(float(amostra)), idmodelo)
-            Y_pred = pls.predict(amostraPredicao)
+            Y_pred = plsVal.predict(amostraPredicao)
             # print(Y_pred)
-            linhaMatriz.append(np.double(Y_pred))
+            linhaMatriz.append(round(np.double(Y_pred),0))
             matYPredValidacao += [linhaMatriz]
 
         rmsep = sqrt(mean_squared_error(Yval, matYPredValidacao))
@@ -519,10 +594,12 @@ def kennardStone(X, k, precomputed=False):
     #    return X[list(selected), :]
 
 
-pls = PLS()
-#pls.predicao(1,300)
-pls.calibracao(2, 20)
 
+pls = PLS()
+#pls.predicao(3,2)
+#PARAMETROS
+#IDMODELO, NR_COMPONENTES (VARIAVEIS LATENTES, VALOR DE CORTE OUTLIER
+pls.calibracao(3, 20, 3)
 
 class NumpyEncoder(json.JSONEncoder):
     """ Special json encoder for numpy types """
