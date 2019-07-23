@@ -62,24 +62,28 @@ class AmostraCalibracao(db.Model):
     idmodelo = db.Column(db.Integer, primary_key=True)
     idamostra = db.Column(db.Integer, primary_key=True)
     idcalibracao = db.Column(db.Integer, primary_key=True)
+    tpconjunto = db.Column(db.String, nullable=True)
 
-    def __init__(self, idmodelo, idamostra, idcalibracao):
+    def __init__(self, idmodelo, idamostra, idcalibracao, tpconjunto):
         self.idmodelo = idmodelo
         self.idamostra = idamostra
         self.idcalibracao = idcalibracao
+        self.tpconjunto = tpconjunto
 
     def __repr__(self):
         return {
             '<idmodelo {}>'.format(self.idmodelo),
             '<idamostra{}'.format(self.idamostra),
-            '<idcalibracao{}'.format(self.idcalibracao)
+            '<idcalibracao{}'.format(self.idcalibracao),
+            '<tpconjuto>{}'.format(self.tpconjunto)
         }
 
     def serialize(self):
         return {
             'idmodelo': self.idmodelo,
             'idamostra': self.idamostra,
-            'idcalibracao': self.idcalibracao
+            'idcalibracao': self.idcalibracao,
+            'tpconjunto': self.tpconjunto
         }
 
 
