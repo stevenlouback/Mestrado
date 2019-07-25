@@ -7,6 +7,7 @@ from flask import jsonify
 from datetime import datetime
 from scipy import stats
 from pyod.models.knn import KNN
+from sksos import SOS
 
 sys.path.append("..\dao")
 
@@ -38,8 +39,8 @@ class PLS(object):
         print(idmodelo)
         print(idamostra)
 
-        X = self.selectMatrizX(idmodelo, "CALIBRACAO")
-        Y = self.selectMatrizY(idmodelo, "VALOR", "CALIBRACAO")
+        X = self.selectMatrizX(idmodelo, "VALIDACAO")
+        Y = self.selectMatrizY(idmodelo, "VALOR", "VALIDACAO")
 
         amostraPredicao = self.selectAmostra(idamostra, idmodelo)
 
@@ -351,25 +352,17 @@ class PLS(object):
         return cont
 
 
-    # a number "a" from the vector "x" is an outlier if
-    # a > median(x)+1.5*iqr(x) or a < median-1.5*iqr(x)
-    # iqr: interquantile range = third interquantile - first interquantile
-    def outliersPandas(self, idmodelo, Xtodos, corteOutlier):
+    def outliersZScore(self, idmodelo, Xtodos, corteOutlier):
         y_train_scores = np.abs(stats.zscore(Xtodos))
 
         YCodigoTodosComOutilier = self.selectMatrizY(idmodelo, "ID", "TODOS")
 
+        cont = 0
         amostrasRemovidas = 0
 
-        cont = 0
         for itemOutilier in y_train_scores:
-            it = np.where(itemOutilier > corteOutlier)
-
-            print("DAODDD")
-            dado = it[28]
-            print(dado)
-
-            if dado == cont:
+            print(itemOutilier)
+            if itemOutilier > corteOutlier:
                 contTodos = 0
                 for item in YCodigoTodosComOutilier:
                     amostra = str(item)
@@ -383,12 +376,11 @@ class PLS(object):
                     contTodos = contTodos + 1
             cont = cont + 1
 
-
         session.commit()
+        print("Numero de Amostras Removidas: " + str(amostrasRemovidas))
+        return cont
 
-        return 1
-
-    def calibracao(self, idmodelo, nrcomponentes, corteOutlier):
+    def calibracao(self, idmodelo, nrcomponentes, corteOutlier, qtdeRemocoes):
 
         #Inativa calibracoes anteriores
         db.execute("update calibracao set  inativo = 'F'" +
@@ -476,11 +468,16 @@ class PLS(object):
         Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
         Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
 
-        self.detectarOutlierKNN(idmodelo, Xval, corteOutlier)
-        self.detectarOutlierKNN(idmodelo, Xcal, corteOutlier)
+        qtde = 0
+        if corteOutlier > 0 :
+            while qtde < qtdeRemocoes:
+                self.detectarOutlierKNN(idmodelo, Xval, corteOutlier)
+                self.detectarOutlierKNN(idmodelo, Xcal, corteOutlier)
 
-        Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
-        Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
+                Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
+                Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
+                qtde = qtde + 1
+
 
         Ycal = self.selectMatrizY(idmodelo, "VALOR", "CALIBRACAO")
         Yval = self.selectMatrizY(idmodelo, "VALOR", "VALIDACAO")
@@ -505,7 +502,8 @@ class PLS(object):
         print(coeficiente)
         print('R2 do modelo PLS - Validacao')
         print(r2_score(plsVal.predict(Xval), Yval))
-
+        #print('label_ranking_average_precision_score ')
+        #print(label_ranking_average_precision_score(np.array(Yval), np.array(plsVal.y_scores_)))
 
         #Ajustar Calculos do RMSEC
         matYPredCalibracao = []
@@ -555,6 +553,9 @@ class PLS(object):
                    " and idcalibracao = " + str(idcalibracao) + " ")
         session.commit()
 
+        print("VARIAVEIS LATENTES")
+        print(nrcomponentes)
+
 
         return idmodelo
 
@@ -596,10 +597,10 @@ def kennardStone(X, k, precomputed=False):
 
 
 pls = PLS()
-#pls.predicao(3,2)
+#pls.predicao(2,287)
 #PARAMETROS
 #IDMODELO, NR_COMPONENTES (VARIAVEIS LATENTES, VALOR DE CORTE OUTLIER
-pls.calibracao(3, 20, 3)
+pls.calibracao(3, 12, 1.0, 3)
 
 class NumpyEncoder(json.JSONEncoder):
     """ Special json encoder for numpy types """
