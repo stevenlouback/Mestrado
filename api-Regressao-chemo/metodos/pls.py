@@ -351,6 +351,20 @@ class PLS(object):
         return cont
 
 
+    def removeOutliers(x, outlierConstant):
+        a = np.array(x)
+        upper_quartile = np.percentile(a, 75)
+        lower_quartile = np.percentile(a, 25)
+        IQR = (upper_quartile -lower_quartile) * outlierConstant
+        quartileSet = (lower_quartile - IQR, upper_quartile + IQR)
+        resultList = []
+        for y in a.tolist():
+            if y >= quartileSet[0] and y <= quartileSet[1]:
+                resultList.append(y)
+            return resultList
+
+
+
     # a number "a" from the vector "x" is an outlier if
     # a > median(x)+1.5*iqr(x) or a < median-1.5*iqr(x)
     # iqr: interquantile range = third interquantile - first interquantile
@@ -389,7 +403,7 @@ class PLS(object):
         return 1
 
     def calibracao(self, idmodelo, nrcomponentes, corteOutlier):
-
+        print('ta aqui')
         #Inativa calibracoes anteriores
         db.execute("update calibracao set  inativo = 'F'" +
                    " where idmodelo = " + str(idmodelo) + " ")
@@ -399,7 +413,6 @@ class PLS(object):
         #cria calibracao para o modelo
         data_Atual = datetime.today()
         data_em_texto = data_Atual.strftime('%d/%m/%Y')
-
         cursorCodigo = db.execute("select coalesce(max(idcalibracao),0) + 1 as codigo from calibracao where idmodelo = " + str(idmodelo) + " ")
         for regCodigo in cursorCodigo:
             idcalibracao = regCodigo[0]
@@ -475,10 +488,10 @@ class PLS(object):
 
         Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
         Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
-
-        self.detectarOutlierKNN(idmodelo, Xval, corteOutlier)
-        self.detectarOutlierKNN(idmodelo, Xcal, corteOutlier)
-
+        #
+        # self.detectarOutlierKNN(idmodelo, Xval, corteOutlier)
+        # self.detectarOutlierKNN(idmodelo, Xcal, corteOutlier)
+        #
         Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
         Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
 
@@ -599,7 +612,7 @@ pls = PLS()
 #pls.predicao(3,2)
 #PARAMETROS
 #IDMODELO, NR_COMPONENTES (VARIAVEIS LATENTES, VALOR DE CORTE OUTLIER
-pls.calibracao(3, 20, 3)
+pls.calibracao(2, 20, 200)
 
 class NumpyEncoder(json.JSONEncoder):
     """ Special json encoder for numpy types """
