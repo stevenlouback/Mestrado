@@ -223,6 +223,61 @@ public class cargaIsoladaBean implements Serializable {
         }
     }
 
+    public void predicaoImagem() {
+        Mensagens msg = new Mensagens();
+        try {
+            amostraService = new amostraService();
+
+            if (modelo.getNmmodelo().equals("")) {
+                msg.addError("model.validation.name", amostra);
+                return;
+            }
+
+            if (amostra.getDataamostra() == null) {
+                msg.addError("amostra.validation.dataamostra", amostra);
+                return;
+            }
+
+            if (amostra.getNmidentifica().equals("")) {
+                msg.addError("amostra.validation.identifica", amostra);
+                return;
+            }
+
+            if (amostra.getDsobservacoes().equals("")) {
+                msg.addError("amostra.validation.obs", amostra);
+                return;
+            }
+
+            if (amostra.getImamostra() == null) {
+                msg.addError("amostra.valida.imagem", amostra);
+                return;
+            }
+            
+            if (amostra.getImamostra().equals("")) {
+                msg.addError("amostra.valida.imagem", amostra);
+                return;
+            }
+
+            if (modelo.getDsmodelo().equals("")) {
+                msg.addError("model.validation.descricao", modelo);
+                return;
+            }
+
+            amostra.setModelo(modelo);
+            amostra.setDtcoletaamostra(String.valueOf(amostra.getDataamostra().toString().replace("/", "-")));
+//            amostra.setListaParametro(list_ParametroResultado);
+            amostra.setListaMatrizX(list_MatrizX);
+
+            this.amostra = amostraService.predicao(amostra);
+            limpar();
+            msg.addInfo("saved", "");
+        } catch (Exception e) {
+
+            msg.addError(String.valueOf(e), amostra);
+            e.printStackTrace();
+        }
+    }
+
     public void converteImageRgb(FileUploadEvent event) {
         Raster raster;
         try {

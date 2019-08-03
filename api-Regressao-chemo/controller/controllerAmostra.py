@@ -16,7 +16,12 @@ def geraAmostra(db, objeto):
   dsobservacoes = objeto['dsobservacoes']
   dtcoletaamostra = objeto['dtcoletaamostra']
   imamostra = objeto['imamostra']
-  dsespectro= objeto['dsespectro']
+
+  if not objeto['dsespectro']:
+    print('passou')
+  else:
+    dsespectro= objeto['dsespectro']
+
   nmidentifica= objeto['nmidentifica']
 
   # Pega a ultima sequencia para gravar no banco

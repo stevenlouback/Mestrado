@@ -28,7 +28,7 @@
 
         <link rel="shortcut icon" type="image/x-icon" href="#{resource[':img/favicon.ico']}"/>
 
-        <h:outputStylesheet library="css" name="backgroundSteven.css"/>
+        <h:outputStylesheet library="css" name="backgroundMarlons.css"/>
         <h:outputStylesheet library="bootstrap" name="css/bootstrap.min.css"/>
         <h:outputStylesheet library="ionicons" name="css/ionicons.min.css"/>
         <h:outputStylesheet library="adminlte" name="css/adminlte.min.css"/>
@@ -101,8 +101,16 @@
                         <li class="#{activeMenu eq 'users' ? 'active' : ''}"
                             >
                             <p:link outcome="/predicao.xhtml">
-                                <i class="fa fa-home" aria-hidden="true"></i> 
+                                <i class="fa fa-check-square" aria-hidden="true"></i> 
                                 <span>#{menu['model.predicao']}</span>
+                            </p:link>
+                        </li> 
+                        
+                        <li class="#{activeMenu eq 'users' ? 'active' : ''}"
+                            >
+                            <p:link outcome="/uploadPredicao.xhtml">
+                                <i class="fa fa-check-square-o" aria-hidden="true"></i> 
+                                <span>#{menu['model.predicao.upload']}</span>
                             </p:link>
                         </li> 
 

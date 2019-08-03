@@ -18,6 +18,8 @@ public class Constants {
     public static final String predicaoGetId = "/predicao/get/"; 
     public static final String predicaoADD = "/predicao/adiciona"; 
     public static final String matrizyGetALL = "/matrizy/getallmodelo";
+    public static final String calibracaoGetAtivo = "/calibracao/getAtivo/";
     public static final String amostraADD = "/amostra/adiciona";
+    public static final String amostraPRED = "/amostra/predicao";
     
 }

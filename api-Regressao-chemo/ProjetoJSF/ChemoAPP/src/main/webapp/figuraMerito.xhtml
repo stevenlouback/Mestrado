@@ -1,0 +1,123 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                template="/template/mainTemplate.xhtml">
+
+    <f:metadata>
+        <f:event listener="#{calibracaoBean.listarTodos()}" type="preRenderView" />
+    </f:metadata>
+
+    <ui:define name="pageTitle">
+        #{messages['figura.page-title']}
+    </ui:define>
+
+    <ui:define name="pageDescription">
+        <o:outputFormat value="#{messages['figura.page-description']}">
+        </o:outputFormat>
+    </ui:define>
+
+    <ui:define name="breadcrumb">
+    </ui:define>
+
+    <ui:define name="content">
+
+        <pe:blockUI widgetVar="loadingBlock"
+                    target="boxBody" >
+            <p:graphicImage width="32" 
+                            height="32"
+                            library="uploading" 
+                            name="img/loading.gif" />
+        </pe:blockUI> 
+        <div jsf:id="boxBody">
+            <h:form id="resultadosForm" prependId="false">
+
+                <!--Aqui começa montar a CONSULTA-->
+                <div class="box">
+                    <div class="box-body row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <p:dataTable rows="25"
+                                                 lazy="true"
+                                                 rowHover="true"
+                                                 var="calibracao"
+                                                 paginator="true"
+                                                 sortOrder="ascending"
+                                                 selectionMode="single" 
+                                                 rowKey="#{calibracaoBean.calibracao}"
+                                                 paginatorPosition="bottom"
+                                                 paginatorAlwaysVisible="false"
+                                                 selection="#{calibracaoBean.calibracao}"
+                                                 value="#{calibracaoBean.list_Calibracao}"
+                                                 emptyMessage="#{messages['list.empty']}">
+
+
+                                        <p:columnGroup type="header">
+                                            <p:row>
+                                                <p:column rowspan="3" headerText="#{messages['model.name']}" />
+                                                <p:column colspan="6" headerText="#{messages['figura.page-title']}" />
+                                                <!--<p:column colspan="1" rowspan="3" headerText="#{messages['figura.pls']}" />-->
+                                            </p:row>
+
+                                            <p:row>
+                                                <p:column colspan="2" headerText="#{messages['figura.exatidao']}" />
+                                                <p:column colspan="1" rowspan="2" headerText="#{messages['figura.coeficiente']}" />
+                                                <p:column colspan="1" rowspan="2" headerText="#{messages['figura.sensibilida']}" />
+                                                <p:column colspan="1" rowspan="2" headerText="#{messages['figura.limite.deteccao']}" />
+                                                <p:column colspan="1" rowspan="2" headerText="#{messages['figura.limite.quantificacao']}" />
+                                            </p:row>
+
+                                            <p:row>
+                                                <p:column headerText="#{messages['figura.rmsec']}" />
+                                                <p:column headerText="#{messages['figura.rmsep']}" />
+                                            </p:row>
+                                        </p:columnGroup>
+
+                                        <p:column>
+                                            <h:outputText value="#{calibracao.modelo.nmmodelo}" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{calibracao.rmsec}" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{calibracao.rmsep}" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{calibracao.coeficiente}" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{calibracao.sensibilidade}" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{calibracao.limitedetecta}" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{calibracao.quantificacao}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </h:form>
+        </div>
+        <!--        <h:form prependId="false">
+                    <p:remoteCommand autoRun="true"
+                                     name="initializer"
+                                     update=":movimentationSummary"
+                                     onstart="block('loadingBlock')"
+                                     oncomplete="unblock('loadingBlock')"/>
+                                     actionListener="#{dashboardBean.initialize()}"
+                    />
+                </h:form>-->
+    </ui:define>
+</ui:composition>

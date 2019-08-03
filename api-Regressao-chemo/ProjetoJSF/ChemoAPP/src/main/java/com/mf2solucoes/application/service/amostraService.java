@@ -22,4 +22,10 @@ public class amostraService implements Serializable {
         amostras = new amostras();
         return amostras.guardar(amostra);
     }
+    
+    @Transactional
+    public amostra predicao(amostra amostra) {
+        amostras = new amostras();
+        return amostras.predicao(amostra);
+    }
 }

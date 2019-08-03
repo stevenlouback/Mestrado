@@ -1,25 +1,27 @@
 import sys
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import json
 from math import sqrt
 from flask import jsonify
 from datetime import datetime
 from scipy import stats
 from pyod.models.knn import KNN
-from sksos import SOS
+# from sksos import SOS
 
 sys.path.append("..\dao")
 
 from sklearn.cross_decomposition import PLSRegression
-from sklearn.metrics import r2_score, mean_squared_error,median_absolute_error, mean_absolute_error, mean_squared_log_error, coverage_error, label_ranking_loss, explained_variance_score, label_ranking_average_precision_score
+from sklearn.metrics import r2_score, mean_squared_error, median_absolute_error, mean_absolute_error, \
+  mean_squared_log_error, coverage_error, label_ranking_loss, explained_variance_score, \
+  label_ranking_average_precision_score
 from sqlalchemy.orm import relationship, backref, sessionmaker, joinedload
 from sklearn import metrics
 
 from sqlalchemy import create_engine
 
 db_string = "postgresql://postgres:postgres@localhost:5432/Quimiometria"
-#db_string = "postgresql://postgres:postgres@localhost:5432/bkpSteven"
+# db_string = "postgresql://postgres:postgres@localhost:5432/bkpSteven"
 
 db = create_engine(db_string)
 
@@ -29,427 +31,409 @@ session = Session()
 
 class PLS(object):
 
+  def predicao(self, idmodelo, idamostra):
 
-    def predicao(self, idmodelo, idamostra):
+    idmodelo = idmodelo
 
-        idmodelo = idmodelo
+    idamostra = idamostra
 
-        idamostra = idamostra
+    print(idmodelo)
+    print(idamostra)
 
-        print(idmodelo)
-        print(idamostra)
+    X = self.selectMatrizX(idmodelo, "VALIDACAO")
+    Y = self.selectMatrizY(idmodelo, "VALOR", "VALIDACAO")
 
-        X = self.selectMatrizX(idmodelo, "VALIDACAO")
-        Y = self.selectMatrizY(idmodelo, "VALOR", "VALIDACAO")
+    amostraPredicao = self.selectAmostra(idamostra, idmodelo)
 
-        amostraPredicao = self.selectAmostra(idamostra, idmodelo)
+    valorReferencia = self.selectDadosReferenciaAmostra(idamostra, idmodelo)
 
-        valorReferencia = self.selectDadosReferenciaAmostra(idamostra, idmodelo)
+    pls = PLSRegression(copy=True, max_iter=500, n_components=20, scale=False, tol=1e-06)
 
-        pls = PLSRegression(copy=True, max_iter=500, n_components=20, scale=False, tol=1e-06)
+    pls.fit(X, Y)
+    print(amostraPredicao)
+    valorPredito = pls.predict(amostraPredicao)
 
-        pls.fit(X, Y)
+    print('Amostra: ' + str(idamostra) + ' - Valor Predito :' + str(valorPredito) + ' - Valor Referencia :' + str(
+      valorReferencia))
 
-        valorPredito = pls.predict(amostraPredicao)
+    cursorDadosCalibracao = db.execute("select rmsec, rmsep, coeficiente, dtcalibracao "
+                                       "from calibracao where inativo = 'A' and idmodelo = " + str(idmodelo) + " ")
+    for regCodigo in cursorDadosCalibracao:
+      rmsec = regCodigo[0]
+      rmsep = regCodigo[1]
+      coeficiente = regCodigo[2]
+      dtcalibracao = regCodigo[3]
 
-        print('Amostra: ' + str(idamostra) + ' - Valor Predito :' + str(valorPredito)+ ' - Valor Referencia :' + str(valorReferencia))
+    print(rmsec)
+    print(rmsep)
+    print(coeficiente)
+    print(dtcalibracao)
 
-        cursorDadosCalibracao = db.execute("select rmsec, rmsep, coeficiente, dtcalibracao "
-                                           "from calibracao where inativo = 'A' and idmodelo = " + str(idmodelo) + " ")
-        for regCodigo in cursorDadosCalibracao:
-            rmsec = regCodigo[0]
-            rmsep = regCodigo[1]
-            coeficiente = regCodigo[2]
-            dtcalibracao = regCodigo[3]
+    dtcalibracao = dtcalibracao.strftime('%d/%m/%Y')
+    print(dtcalibracao)
 
-        print(rmsec)
-        print(rmsep)
-        print(coeficiente)
-        print(dtcalibracao)
+    # tratamento dos dados para o Json
+    coeficiente = round(coeficiente, 2)
+    rmsec = round(rmsec, 2)
+    rmsep = round(rmsep, 2)
+    valorReferencia = round(valorReferencia, 2)
 
-        dtcalibracao = dtcalibracao.strftime('%d/%m/%Y')
-        print(dtcalibracao)
+    valorPreditoString = str(valorPredito)
+    valorPreditoString = valorPreditoString.replace("[", "")
+    valorPreditoString = valorPreditoString.replace("]", "")
 
-        #tratamento dos dados para o Json
-        coeficiente = round(coeficiente, 2)
-        rmsec = round(rmsec, 2)
-        rmsep = round(rmsep, 2)
-        valorReferencia = round(valorReferencia, 2)
+    ##Contrucao do JSON
+    json_data = jsonify(idamostra=str(idamostra), valorpredito=str(valorPreditoString),
+                        rmsec=str(rmsec), rmsep=str(rmsep), idmodelo=str(idmodelo), dtcalibracao=str(dtcalibracao),
+                        valorreferencia=str(valorReferencia), coeficiente=str(coeficiente))
 
-        valorPreditoString = str(valorPredito)
-        valorPreditoString = valorPreditoString.replace("[","")
-        valorPreditoString = valorPreditoString.replace("]", "")
+    return json_data
 
+  def selectAmostra(self, idAmostra, idmodelo):
 
-        ##Contrucao do JSON
-        json_data = jsonify(idamostra=str(idamostra), valorpredito=str(valorPreditoString),
-                            rmsec=str(rmsec), rmsep=str(rmsep), idmodelo=str(idmodelo),  dtcalibracao=str(dtcalibracao),
-                            valorreferencia=str(valorReferencia), coeficiente=str(coeficiente))
+    try:
+      # numero de colunas da matriz
+      cursorColunas = db.execute("select max(x.nrposicaocoluna) from matrizx x where x.idamostra = " + str(
+        idAmostra) + "  and x.idmodelo = " + str(idmodelo) + "")
 
-        return json_data
+      contadorColunas = 0
 
-    def selectAmostra(self, idAmostra, idmodelo):
+      for linha in cursorColunas:
+        contadorColunas = linha[0]
 
-        try:
-            #numero de colunas da matriz
-            cursorColunas = db.execute("select max(x.nrposicaocoluna) from matrizx x where x.idamostra = " + str(idAmostra) + "  and x.idmodelo = " + str(idmodelo) + "")
+      # Preenchimento da MatrizX
+      matrizX = []
 
-            contadorColunas = 0
+      cursorAmostras = db.execute("select x.idamostra from matrizx x "
+                                  "where x.idamostra =  " + str(idAmostra) + ""
+                                                                             "  and x.idmodelo = " + str(idmodelo) + ""
+                                                                                                                     " group by x.idamostra order by x.idamostra asc")
 
-            for linha in cursorColunas:
-                contadorColunas = linha[0]
+      listaAmostras = []
+      for regAmostras in cursorAmostras:
+        listaAmostras.append(regAmostras[0])
 
-            #Preenchimento da MatrizX
-            matrizX = []
+      # print(listaAmostras)
 
-            cursorAmostras = db.execute("select x.idamostra from matrizx x "
-                                        "where x.idamostra =  " + str(idAmostra) + ""
-                                        "  and x.idmodelo = " + str(idmodelo) + ""
-                                        " group by x.idamostra order by x.idamostra asc")
+      for amostra in listaAmostras:
+        # print(amostra)
+        linhaMatriz = []
 
-            listaAmostras = []
-            for regAmostras in cursorAmostras:
-                listaAmostras.append(regAmostras[0])
+        cursorDadosAmostra = db.execute("SELECT x.idamostra, x.vllinhacoluna FROM matrizx x "
+                                        "where x.idamostra = " + str(amostra) + ""
+                                                                                "  and x.idmodelo = " + str(
+          idmodelo) + ""
+                      " order by x.idamostra, x.nrsequencia, x.nrposicaolinha, x.nrposicaocoluna asc")
 
-            #print(listaAmostras)
+        for regDadosAmostra in cursorDadosAmostra:
+          if regDadosAmostra[1] == 0E-8:
+            linhaMatriz.append('0')
+          else:
+            linhaMatriz.append(regDadosAmostra[1])
+            # x=Symbol('x')
+            # difx = diff(regDadosAmostra[1], x)
+            # linhaMatriz.append(difx)
 
-            for amostra in listaAmostras:
-                #print(amostra)
-                linhaMatriz = []
+        # print(amostra)
+        # print(linhaMatriz)
+        matrizX += [linhaMatriz]
 
+      # print('AMOSTRA SELECIONADA')
+      # print(matrizX)
 
+      return matrizX
+    except Exception:
+      # print(Exception)
+      return "Ocorreu um erro na busca dos dados"
 
-                cursorDadosAmostra = db.execute("SELECT x.idamostra, x.vllinhacoluna FROM matrizx x "
-                                                "where x.idamostra = " + str(amostra) + "" 
-                                                 "  and x.idmodelo = " + str(idmodelo) + ""
-                                                " order by x.idamostra, x.nrsequencia, x.nrposicaolinha, x.nrposicaocoluna asc")
+  def selectMatrizX(self, idModelo, conjunto):
 
-                for regDadosAmostra in cursorDadosAmostra:
-                    if  regDadosAmostra[1] == 0E-8 :
-                        linhaMatriz.append('0')
-                    else:
-                        linhaMatriz.append(regDadosAmostra[1])
-                        #x=Symbol('x')
-                        #difx = diff(regDadosAmostra[1], x)
-                        #linhaMatriz.append(difx)
+    try:
+      # numero de colunas da matriz
 
-                #print(amostra)
-                #print(linhaMatriz)
-                matrizX += [linhaMatriz]
+      if conjunto == "TODOS":
+        sqlConsulta = (" inner join matrizy y on (x.idamostra = y.idamostra and y.idmodelo = x.idmodelo) "
+                       " inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) ")
+        whereConsulta = ("where x.idModelo = " + str(idModelo) + "  and a.tpamostra <> 'OUTLIER' ")
 
-            #print('AMOSTRA SELECIONADA')
-            #print(matrizX)
+      elif conjunto == "CALIBRACAO":
+        sqlConsulta = (" inner join matrizy y on (x.idamostra = y.idamostra and y.idmodelo = x.idmodelo) "
+                       "inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) "
+                       "inner join amostra_calibracao ac on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
+                       "inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
+        whereConsulta = ("where x.idModelo = " + str(
+          idModelo) + " and ac.tpconjunto = 'CALIBRACAO'  and a.tpamostra <> 'OUTLIER' ")
 
+      elif conjunto == "VALIDACAO":
+        sqlConsulta = (" inner join matrizy y on (x.idamostra = y.idamostra and y.idmodelo = x.idmodelo) "
+                       "inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) "
+                       "inner join amostra_calibracao ac on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
+                       "inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
+        whereConsulta = (
+              "where x.idModelo = " + str(idModelo) + " and ac.tpconjunto = 'VALIDACAO'  and a.tpamostra <> 'OUTLIER' ")
 
-            return matrizX
-        except Exception:
-            #print(Exception)
-            return "Ocorreu um erro na busca dos dados"
+      sqlColunas = (
+            " select max(x.nrposicaocoluna) from matrizx x " + str(sqlConsulta) + " " + str(whereConsulta) + " ")
+      cursorColunas = db.execute(sqlColunas)
 
-    def selectMatrizX(self, idModelo, conjunto):
+      contadorColunas = 0
 
-        try:
-            #numero de colunas da matriz
+      for linha in cursorColunas:
+        contadorColunas = linha[0]
+        print(contadorColunas)
 
-            if conjunto == "TODOS":
-                sqlConsulta = (" inner join matrizy y on (x.idamostra = y.idamostra and y.idmodelo = x.idmodelo) "
-                               " inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) ")
-                whereConsulta = ("where x.idModelo = " + str(idModelo) + "  and a.tpamostra <> 'OUTLIER' ")
+      # Preenchimento da MatrizX
+      matrizX = []
 
-            elif conjunto == "CALIBRACAO":
-                sqlConsulta = (" inner join matrizy y on (x.idamostra = y.idamostra and y.idmodelo = x.idmodelo) "
-                              "inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) "
-                              "inner join amostra_calibracao ac on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
-                              "inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
-                whereConsulta = ("where x.idModelo = " + str(idModelo) + " and ac.tpconjunto = 'CALIBRACAO'  and a.tpamostra <> 'OUTLIER' ")
+      sqlListaAmostras = ("select x.idamostra from matrizx x  " + str(sqlConsulta) + str(
+        whereConsulta) + "group by x.idamostra order by x.idamostra asc")
+      cursorAmostras = db.execute(sqlListaAmostras)
 
-            elif conjunto == "VALIDACAO":
-                sqlConsulta = (" inner join matrizy y on (x.idamostra = y.idamostra and y.idmodelo = x.idmodelo) "
-                              "inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) "
-                              "inner join amostra_calibracao ac on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
-                              "inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
-                whereConsulta = ("where x.idModelo = " + str(idModelo) + " and ac.tpconjunto = 'VALIDACAO'  and a.tpamostra <> 'OUTLIER' ")
-
-
-            sqlColunas = (" select max(x.nrposicaocoluna) from matrizx x " + str(sqlConsulta) + " " + str(whereConsulta) + " ")
-            cursorColunas = db.execute(sqlColunas)
-
-            contadorColunas = 0
-
-            for linha in cursorColunas:
-                contadorColunas = linha[0]
-                print(contadorColunas)
-
-            #Preenchimento da MatrizX
-            matrizX = []
-
-            sqlListaAmostras = ("select x.idamostra from matrizx x  " + str(sqlConsulta) + str(whereConsulta) + "group by x.idamostra order by x.idamostra asc")
-            cursorAmostras = db.execute(sqlListaAmostras)
-
-            """cursorAmostras = db.execute("select x.idamostra from matrizx x  "
+      """cursorAmostras = db.execute("select x.idamostra from matrizx x  "
                                         "inner join matrizy y on (y.idamostra = x.idamostra and y.idmodelo = x.idmodelo) "
                                         "inner join amostra a on ( a.idamostra = x.idamostra and a.idmodelo = x.idmodelo ) "
                                         "where x.idModelo = " + str(idModelo) + "  "                                                                                  
                                         "group by x.idamostra order by x.idamostra asc")"""
 
-            cont = 0
-            listaAmostras = []
-            for regAmostras in cursorAmostras:
-                listaAmostras.append(regAmostras[0])
-                cont = cont + 1
+      cont = 0
+      listaAmostras = []
+      for regAmostras in cursorAmostras:
+        listaAmostras.append(regAmostras[0])
+        cont = cont + 1
 
-            print('Qtde de Amostras - Matriz X')
-            print(cont)
+      print('Qtde de Amostras - Matriz X')
+      print(cont)
 
-            for amostra in listaAmostras:
-                #print(amostra)
-                linhaMatriz = []
+      for amostra in listaAmostras:
+        # print(amostra)
+        linhaMatriz = []
 
-                cursorDadosAmostra = db.execute("SELECT idamostra, vllinhacoluna 	FROM matrizx x "
-                                                "where x.idamostra = " + str(amostra) + " and x.idModelo = " + str(idModelo) + ""
-                                                "order by x.idamostra, x.nrsequencia, x.nrposicaolinha, x.nrposicaocoluna asc")
+        cursorDadosAmostra = db.execute("SELECT idamostra, vllinhacoluna 	FROM matrizx x "
+                                        "where x.idamostra = " + str(amostra) + " and x.idModelo = " + str(
+          idModelo) + ""
+                      "order by x.idamostra, x.nrsequencia, x.nrposicaolinha, x.nrposicaocoluna asc")
 
-                for regDadosAmostra in cursorDadosAmostra:
-                    if  regDadosAmostra[1] == 0E-8 :
-                        linhaMatriz.append('0')
-                    else:
-                        linhaMatriz.append(regDadosAmostra[1])
-                        #x=Symbol('x')
-                        #difx = diff(regDadosAmostra[1], x)
-                        #linhaMatriz.append(difx)
+        for regDadosAmostra in cursorDadosAmostra:
+          if regDadosAmostra[1] == 0E-8:
+            linhaMatriz.append('0')
+          else:
+            linhaMatriz.append(regDadosAmostra[1])
+            # x=Symbol('x')
+            # difx = diff(regDadosAmostra[1], x)
+            # linhaMatriz.append(difx)
 
+        # print(amostra)
+        # print(linhaMatriz)
+        matrizX += [linhaMatriz]
 
+      # print('MATRIZ - X')
+      # print(matrizX)
 
+      return matrizX
+    except Exception:
+      print(Exception)
+      return "Ocorreu um erro na busca dos dados"
 
-                #print(amostra)
-                #print(linhaMatriz)
-                matrizX += [linhaMatriz]
+  def selectMatrizY(self, idmodelo, tipo, conjunto):
 
-            #print('MATRIZ - X')
-            #print(matrizX)
+    try:
+      if conjunto == "TODOS":
+        sqlConsulta = (" select y.idamostra from matrizy y "
+                       "inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) ")
+        whereConsulta = (" where y.idmodelo = " + str(idmodelo) + " and a.tpamostra <> 'OUTLIER' ")
 
-            return matrizX
-        except Exception:
-            print(Exception)
-            return "Ocorreu um erro na busca dos dados"
+      elif conjunto == "CALIBRACAO":
+        sqlConsulta = (" select ac.idamostra from amostra_calibracao ac "
+                       " inner join amostra a on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
+                       " inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
+        whereConsulta = (" where ac.idModelo = " + str(
+          idmodelo) + " and ac.tpconjunto = 'CALIBRACAO'  and a.tpamostra <> 'OUTLIER' ")
 
-    def selectMatrizY(self, idmodelo, tipo, conjunto):
+      elif conjunto == "VALIDACAO":
+        sqlConsulta = (" select ac.idamostra from amostra_calibracao ac "
+                       " inner join amostra a on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
+                       " inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
+        whereConsulta = (" where ac.idModelo = " + str(
+          idmodelo) + " and ac.tpconjunto = 'VALIDACAO'  and a.tpamostra <> 'OUTLIER' ")
 
-        try:
-            if conjunto == "TODOS":
-                sqlConsulta = (" select y.idamostra from matrizy y "
-                               "inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) ")
-                whereConsulta = (" where y.idmodelo = " + str(idmodelo) + " and a.tpamostra <> 'OUTLIER' " )
+      matrizY = []
 
-            elif conjunto == "CALIBRACAO":
-                sqlConsulta = (" select ac.idamostra from amostra_calibracao ac "
-                              " inner join amostra a on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
-                              " inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
-                whereConsulta = (" where ac.idModelo = " + str(idmodelo) + " and ac.tpconjunto = 'CALIBRACAO'  and a.tpamostra <> 'OUTLIER' ")
+      sqlListaAmostras = (" " + str(sqlConsulta) + " " + str(whereConsulta) + " order by 1 asc")
+      cursorAmostras = db.execute(sqlListaAmostras)
 
-            elif conjunto == "VALIDACAO":
-                sqlConsulta = (" select ac.idamostra from amostra_calibracao ac "
-                              " inner join amostra a on ( a.idamostra = ac.idamostra and a.idmodelo = ac.idmodelo ) "
-                              " inner join calibracao c on ( c.idcalibracao = ac.idcalibracao and c.inativo = 'A' ) ")
-                whereConsulta = (" where ac.idModelo = " + str(idmodelo) + " and ac.tpconjunto = 'VALIDACAO'  and a.tpamostra <> 'OUTLIER' ")
-
-
-
-            matrizY = []
-
-            sqlListaAmostras= (" " + str(sqlConsulta) + " " + str(whereConsulta) + " order by 1 asc" )
-            cursorAmostras = db.execute(sqlListaAmostras)
-
-            """cursorAmostras = db.execute("select y.idamostra from matrizy y "
+      """cursorAmostras = db.execute("select y.idamostra from matrizy y "
                                         "inner join amostra a on (a.idamostra = y.idamostra and a.idmodelo = y.idmodelo) "
                                         " where y.idmodelo = " + str(idmodelo) + " "                                                                                              
                                         "order by y.idamostra asc")"""
 
-            listaAmostras = []
-            cont = 0
-            for regAmostras in cursorAmostras:
-                listaAmostras.append(regAmostras[0])
-                cont = cont + 1
+      listaAmostras = []
+      cont = 0
+      for regAmostras in cursorAmostras:
+        listaAmostras.append(regAmostras[0])
+        cont = cont + 1
 
+      # print(listaAmostras)
+      print('Qtde de Amostras - Matriz Y')
+      print(cont)
 
-            #print(listaAmostras)
-            print('Qtde de Amostras - Matriz Y')
-            print(cont)
+      for amostra in listaAmostras:
+        # print(amostra)
+        linhaMatriz = []
 
-            for amostra in listaAmostras:
-                #print(amostra)
-                linhaMatriz = []
+        cursorDadosAmostra = db.execute("select y.idamostra, y.vlreferencia from matrizy y "
+                                        " where y.idamostra = " + str(amostra) + " "
+                                                                                 " and y.idmodelo = " + str(
+          idmodelo) + " "
+                      " order by y.idamostra asc")
 
-                cursorDadosAmostra = db.execute("select y.idamostra, y.vlreferencia from matrizy y "
-                                                " where y.idamostra = " + str(amostra)  + " "
-                                                " and y.idmodelo = " + str(idmodelo) + " "
-                                                " order by y.idamostra asc")
+        for regDadosAmostra in cursorDadosAmostra:
+          if regDadosAmostra[1] == 0E-8:
+            linhaMatriz.append('0')
+          else:
+            if tipo == "ID":
+              linhaMatriz.append(regDadosAmostra[0])
+            if tipo == "VALOR":
+              linhaMatriz.append(np.double(regDadosAmostra[1]))
 
-                for regDadosAmostra in cursorDadosAmostra:
-                    if  regDadosAmostra[1] == 0E-8 :
-                        linhaMatriz.append('0')
-                    else:
-                        if tipo == "ID" :
-                            linhaMatriz.append(regDadosAmostra[0])
-                        if tipo == "VALOR":
-                            linhaMatriz.append(np.double(regDadosAmostra[1]))
+        # print(amostra)
+        # print(linhaMatriz)
+        matrizY += [linhaMatriz]
 
-                #print(amostra)
-                #print(linhaMatriz)
-                matrizY += [linhaMatriz]
+      # print('MATRIZ - Y')
+      # print(matrizY)
 
-            #print('MATRIZ - Y')
-            #print(matrizY)
+      return matrizY
+    except Exception:
+      print(Exception)
+      return "Ocorreu um erro na busca dos dados"
 
-            return matrizY
-        except Exception:
-            print(Exception)
-            return "Ocorreu um erro na busca dos dados"
+  def selectDadosReferenciaAmostra(self, idAmostra, idmodelo):
 
-    def selectDadosReferenciaAmostra(self, idAmostra, idmodelo):
+    try:
+      cursorDadosAmostra = db.execute(
+        "SELECT y.vlreferencia FROM matrizy y where y.idamostra = " + str(idAmostra) + "  and y.idmodelo =  " + str(
+          idmodelo) + "")
 
-        try:
-             cursorDadosAmostra = db.execute("SELECT y.vlreferencia FROM matrizy y where y.idamostra = " + str(idAmostra) + "  and y.idmodelo =  "+ str(idmodelo) + "")
+      for regDadosAmostra in cursorDadosAmostra:
+        valorReferencia = regDadosAmostra[0]
 
-             for regDadosAmostra in cursorDadosAmostra:
-                valorReferencia = regDadosAmostra[0]
+      return valorReferencia
+    except Exception:
+      return "Ocorreu um erro na busca dos dados"
 
-             return valorReferencia
-        except Exception:
-             return "Ocorreu um erro na busca dos dados"
+  def detectarOutlierKNN(self, idmodelo, Xtodos, corteOutlier):
+    # Detecao Outliers 1--------------------------------------------------------------
+    clf = KNN()
+    clf.fit(Xtodos)
 
-    def detectarOutlierKNN(self, idmodelo, Xtodos, corteOutlier):
-        # Detecao Outliers 1--------------------------------------------------------------
-        clf = KNN()
-        clf.fit(Xtodos)
+    # get outlier scores
+    y_train_scores = clf.decision_scores_  # raw outlier scores
+    y_test_scores = clf.decision_function(Xtodos)  # outlier scores
 
-        # get outlier scores
-        y_train_scores = clf.decision_scores_  # raw outlier scores
-        y_test_scores = clf.decision_function(Xtodos)  # outlier scores
+    YCodigoTodosComOutilier = self.selectMatrizY(idmodelo, "ID", "TODOS")
 
-        YCodigoTodosComOutilier = self.selectMatrizY(idmodelo, "ID", "TODOS")
+    cont = 0
+    amostrasRemovidas = 0
 
-        cont = 0
-        amostrasRemovidas = 0
-
-        for itemOutilier in y_train_scores:
-            if itemOutilier > corteOutlier:
-                contTodos = 0
-                for item in YCodigoTodosComOutilier:
-                    amostra = str(item)
-                    amostra = amostra.replace("[", "")
-                    amostra = amostra.replace("]", "")
-                    if contTodos == cont:
-                        db.execute(" update amostra set tpamostra = 'OUTLIER' where idamostra = " + str(amostra) + " and idmodelo = " + str(idmodelo) + "")
-                        print(itemOutilier)
-                        amostrasRemovidas = amostrasRemovidas + 1
-                        break
-                    contTodos = contTodos + 1
-            cont = cont + 1
-
-        session.commit()
-        print("Numero de Amostras Removidas: " + str(amostrasRemovidas))
-        return cont
-
-
-    def removeOutliers(x, outlierConstant):
-        a = np.array(x)
-        upper_quartile = np.percentile(a, 75)
-        lower_quartile = np.percentile(a, 25)
-        IQR = (upper_quartile -lower_quartile) * outlierConstant
-        quartileSet = (lower_quartile - IQR, upper_quartile + IQR)
-        resultList = []
-        for y in a.tolist():
-            if y >= quartileSet[0] and y <= quartileSet[1]:
-                resultList.append(y)
-            return resultList
-
-
-
-    # a number "a" from the vector "x" is an outlier if
-    # a > median(x)+1.5*iqr(x) or a < median-1.5*iqr(x)
-    # iqr: interquantile range = third interquantile - first interquantile
-    def outliersPandas(self, idmodelo, Xtodos, corteOutlier):
-    def outliersZScore(self, idmodelo, Xtodos, corteOutlier):
-        y_train_scores = np.abs(stats.zscore(Xtodos))
-
-        YCodigoTodosComOutilier = self.selectMatrizY(idmodelo, "ID", "TODOS")
-
-        cont = 0
-        amostrasRemovidas = 0
-
-        for itemOutilier in y_train_scores:
+    for itemOutilier in y_train_scores:
+      if itemOutilier > corteOutlier:
+        contTodos = 0
+        for item in YCodigoTodosComOutilier:
+          amostra = str(item)
+          amostra = amostra.replace("[", "")
+          amostra = amostra.replace("]", "")
+          if contTodos == cont:
+            db.execute(
+              " update amostra set tpamostra = 'OUTLIER' where idamostra = " + str(amostra) + " and idmodelo = " + str(
+                idmodelo) + "")
             print(itemOutilier)
-            if itemOutilier > corteOutlier:
-                contTodos = 0
-                for item in YCodigoTodosComOutilier:
-                    amostra = str(item)
-                    amostra = amostra.replace("[", "")
-                    amostra = amostra.replace("]", "")
-                    if contTodos == cont:
-                        db.execute(" update amostra set tpamostra = 'OUTLIER' where idamostra = " + str(amostra) + " and idmodelo = " + str(idmodelo) + "")
-                        print(itemOutilier)
-                        amostrasRemovidas = amostrasRemovidas + 1
-                        break
-                    contTodos = contTodos + 1
-            cont = cont + 1
+            amostrasRemovidas = amostrasRemovidas + 1
+            break
+          contTodos = contTodos + 1
+      cont = cont + 1
 
-        session.commit()
-        print("Numero de Amostras Removidas: " + str(amostrasRemovidas))
-        return cont
+    session.commit()
+    print("Numero de Amostras Removidas: " + str(amostrasRemovidas))
+    return cont
 
-        return 1
+  def outliersZScore(self, idmodelo, Xtodos, corteOutlier):
+    y_train_scores = np.abs(stats.zscore(Xtodos))
 
-    def calibracao(self, idmodelo, nrcomponentes, corteOutlier):
-        print('ta aqui')
-    def calibracao(self, idmodelo, nrcomponentes, corteOutlier, qtdeRemocoes):
+    YCodigoTodosComOutilier = self.selectMatrizY(idmodelo, "ID", "TODOS")
 
-        #Inativa calibracoes anteriores
-        db.execute("update calibracao set  inativo = 'F'" +
-                   " where idmodelo = " + str(idmodelo) + " ")
-        db.execute(" update amostra set tpamostra = 'NORMAL' where idmodelo = " + str(idmodelo) + "")
-        session.commit()
+    cont = 0
+    amostrasRemovidas = 0
 
-        #cria calibracao para o modelo
-        data_Atual = datetime.today()
-        data_em_texto = data_Atual.strftime('%d/%m/%Y')
-        cursorCodigo = db.execute("select coalesce(max(idcalibracao),0) + 1 as codigo from calibracao where idmodelo = " + str(idmodelo) + " ")
-        for regCodigo in cursorCodigo:
-            idcalibracao = regCodigo[0]
+    for itemOutilier in y_train_scores:
+      print(itemOutilier)
+      if itemOutilier > corteOutlier:
+        contTodos = 0
+        for item in YCodigoTodosComOutilier:
+          amostra = str(item)
+          amostra = amostra.replace("[", "")
+          amostra = amostra.replace("]", "")
+          if contTodos == cont:
+            db.execute(
+              " update amostra set tpamostra = 'OUTLIER' where idamostra = " + str(amostra) + " and idmodelo = " + str(
+                idmodelo) + "")
+            print(itemOutilier)
+            amostrasRemovidas = amostrasRemovidas + 1
+            break
+          contTodos = contTodos + 1
+      cont = cont + 1
 
+    session.commit()
+    print("Numero de Amostras Removidas: " + str(amostrasRemovidas))
+    return cont
 
-        db.execute("insert into calibracao (idcalibracao, idmodelo, dtcalibracao, inativo) "
-                   "values (" +str(idcalibracao) + ","+str(idmodelo)+" , '" + str(data_em_texto) +"', 'A' )")
-        session.commit()
+  def calibracao(self, idmodelo, nrcomponentes, corteOutlier, qtdeRemocoes):
 
-        idmodelo = idmodelo
+    # Inativa calibracoes anteriores
+    db.execute("update calibracao set  inativo = 'F'" +
+               " where idmodelo = " + str(idmodelo) + " ")
+    db.execute(" update amostra set tpamostra = 'NORMAL' where idmodelo = " + str(idmodelo) + "")
+    session.commit()
 
-        print(idmodelo)
+    # cria calibracao para o modelo
+    data_Atual = datetime.today()
+    data_em_texto = data_Atual.strftime('%d/%m/%Y')
 
-        Xtodos = self.selectMatrizX(idmodelo, "TODOS")
+    cursorCodigo = db.execute(
+      "select coalesce(max(idcalibracao),0) + 1 as codigo from calibracao where idmodelo = " + str(idmodelo) + " ")
+    for regCodigo in cursorCodigo:
+      idcalibracao = regCodigo[0]
 
-        #caso seja necessario PCA
-        #pca = PCA()
-        #pca.testePCA(X)
+    db.execute("insert into calibracao (idcalibracao, idmodelo, dtcalibracao, inativo) "
+               "values (" + str(idcalibracao) + "," + str(idmodelo) + " , '" + str(data_em_texto) + "', 'A' )")
+    session.commit()
 
+    idmodelo = idmodelo
 
-        #***************************************************************************************************************
-        #inicio kennard-stone
-        #data = pd.DataFrame(Xtodos)
-        number_of_samples = Xtodos.__len__()
-        number_of_samples = number_of_samples * 0.65
+    print(idmodelo)
 
-        #selected_sample_numbers, remaining_sample_numbers = kennardstonealgorithm(X, number_of_samples)
-        amostras_Calibracao = kennardStone(Xtodos, number_of_samples)
+    Xtodos = self.selectMatrizX(idmodelo, "TODOS")
 
-        #amostras_Calibracao = kennardStone(autoscaled_X, number_of_samples)
-        print("amostras_Calibracao")
-        print(amostras_Calibracao)
-        print("---")
-        print("remaining sample numbers")
-        #print(remaining_sample_numbers)
+    # caso seja necessario PCA
+    # pca = PCA()
+    # pca.testePCA(X)
 
-        """#plot samples
+    # ***************************************************************************************************************
+    # inicio kennard-stone
+    # data = pd.DataFrame(Xtodos)
+    number_of_samples = Xtodos.__len__()
+    number_of_samples = number_of_samples * 0.65
+
+    # selected_sample_numbers, remaining_sample_numbers = kennardstonealgorithm(X, number_of_samples)
+    amostras_Calibracao = kennardStone(Xtodos, number_of_samples)
+
+    # amostras_Calibracao = kennardStone(autoscaled_X, number_of_samples)
+    print("amostras_Calibracao")
+    print(amostras_Calibracao)
+    print("---")
+    print("remaining sample numbers")
+    # print(remaining_sample_numbers)
+
+    """#plot samples
         plt.figure()
         plt.scatter(autoscaled_X[:, 0], autoscaled_X[:, 1], label="all samples")
         plt.scatter(autoscaled_X[selected_sample_numbers, 0], autoscaled_X[selected_sample_numbers, 1], marker="*",
@@ -458,193 +442,183 @@ class PLS(object):
         plt.ylabel("x2")
         plt.legend(loc='upper right')
         plt.show()
-        
-        
+
+
         #***************************************************************************************************************
         #fim kennard-stone"""
 
-        # Insercao das amostras de Validacao
-        YCodigoTodos = self.selectMatrizY(idmodelo, "ID", "TODOS")
+    # Insercao das amostras de Validacao
+    YCodigoTodos = self.selectMatrizY(idmodelo, "ID", "TODOS")
 
-        for amostraX in YCodigoTodos:
-            amostra = str(amostraX)
-            amostra = amostra.replace("[", "")
-            amostra = amostra.replace("]", "")
-            db.execute("insert into amostra_calibracao (idcalibracao, idmodelo, idamostra, tpconjunto) "
-                       "values (" + str(idcalibracao) + "," + str(idmodelo) + " , '" + str(int(float(amostra))) + "','VALIDACAO' )")
+    for amostraX in YCodigoTodos:
+      amostra = str(amostraX)
+      amostra = amostra.replace("[", "")
+      amostra = amostra.replace("]", "")
+      db.execute("insert into amostra_calibracao (idcalibracao, idmodelo, idamostra, tpconjunto) "
+                 "values (" + str(idcalibracao) + "," + str(idmodelo) + " , '" + str(
+        int(float(amostra))) + "','VALIDACAO' )")
 
-        session.commit()
+    session.commit()
 
-        #Insercao das amostras de Calibracao
-        for amostraCalibracao in amostras_Calibracao:
-            amostra = str(amostraCalibracao)
-            amostra = amostra.replace("[", "")
-            amostra = amostra.replace("]", "")
-            db.execute("update  amostra_calibracao set tpconjunto = 'CALIBRACAO'  "
-                       " where idcalibracao =" + str(idcalibracao) + " and idmodelo = " + str(idmodelo) +
-                       " and idamostra = " + str(int(float(amostra))))
-        session.commit()
+    # Insercao das amostras de Calibracao
+    for amostraCalibracao in amostras_Calibracao:
+      amostra = str(amostraCalibracao)
+      amostra = amostra.replace("[", "")
+      amostra = amostra.replace("]", "")
+      db.execute("update  amostra_calibracao set tpconjunto = 'CALIBRACAO'  "
+                 " where idcalibracao =" + str(idcalibracao) + " and idmodelo = " + str(idmodelo) +
+                 " and idamostra = " + str(int(float(amostra))))
+    session.commit()
 
+    Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
+    Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
 
-        Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
+    qtde = 0
+    if corteOutlier > 0:
+      while qtde < qtdeRemocoes:
+        self.detectarOutlierKNN(idmodelo, Xval, corteOutlier)
+        self.detectarOutlierKNN(idmodelo, Xcal, corteOutlier)
+
         Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
-        #
-        # self.detectarOutlierKNN(idmodelo, Xval, corteOutlier)
-        # self.detectarOutlierKNN(idmodelo, Xcal, corteOutlier)
-        #
-        Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
         Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
+        qtde = qtde + 1
 
-        qtde = 0
-        if corteOutlier > 0 :
-            while qtde < qtdeRemocoes:
-                self.detectarOutlierKNN(idmodelo, Xval, corteOutlier)
-                self.detectarOutlierKNN(idmodelo, Xcal, corteOutlier)
+    Ycal = self.selectMatrizY(idmodelo, "VALOR", "CALIBRACAO")
+    Yval = self.selectMatrizY(idmodelo, "VALOR", "VALIDACAO")
 
-                Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
-                Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
-                qtde = qtde + 1
+    YCodigoCal = self.selectMatrizY(idmodelo, "ID", "CALIBRACAO")
+    YCodigoVal = self.selectMatrizY(idmodelo, "ID", "VALIDACAO")
 
+    # Dados do Conjunto de Calibracao
+    plsCal = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
+    plsCal.fit(Xcal, Ycal)
+    coeficiente = plsCal.score(Xcal, Ycal, sample_weight=None)
+    print('score do modelo PLS - Calibracao')
+    print(coeficiente)
+    print('R2 do modelo PLS - Calibracao')
+    print(r2_score(plsCal.predict(Xcal), Ycal))
 
-        Ycal = self.selectMatrizY(idmodelo, "VALOR", "CALIBRACAO")
-        Yval = self.selectMatrizY(idmodelo, "VALOR", "VALIDACAO")
+    # Dados do Conjunto de Validacao
+    plsVal = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
+    plsVal.fit(Xval, Yval)
+    coeficiente = plsVal.score(Xval, Yval, sample_weight=None)
+    print('score do modelo PLS - Validacao')
+    print(coeficiente)
+    print('R2 do modelo PLS - Validacao')
+    print(r2_score(plsVal.predict(Xval), Yval))
+    # print('label_ranking_average_precision_score ')
+    # print(label_ranking_average_precision_score(np.array(Yval), np.array(plsVal.y_scores_)))
 
-        YCodigoCal = self.selectMatrizY(idmodelo, "ID", "CALIBRACAO")
-        YCodigoVal = self.selectMatrizY(idmodelo, "ID", "VALIDACAO")
+    # Ajustar Calculos do RMSEC
+    matYPredCalibracao = []
 
-        #Dados do Conjunto de Calibracao
-        plsCal = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
-        plsCal.fit(Xcal, Ycal)
-        coeficiente = plsCal.score(Xcal, Ycal, sample_weight=None)
-        print('score do modelo PLS - Calibracao')
-        print(coeficiente)
-        print('R2 do modelo PLS - Calibracao')
-        print(r2_score(plsCal.predict(Xcal),Ycal))
+    for itemMatrizY in YCodigoCal:
+      amostra = str(itemMatrizY)
+      amostra = amostra.replace("[", "")
+      amostra = amostra.replace("]", "")
+      # print(i)
+      linhaMatriz = []
+      amostraPredicao = self.selectAmostra(int(float(amostra)), idmodelo)
+      Y_pred = plsCal.predict(amostraPredicao)
+      # print(Y_pred)
+      linhaMatriz.append(round(np.double(Y_pred), 0))
+      matYPredCalibracao += [linhaMatriz]
 
-        # Dados do Conjunto de Validacao
-        plsVal = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
-        plsVal.fit(Xval, Yval)
-        coeficiente = plsVal.score(Xval, Yval, sample_weight=None)
-        print('score do modelo PLS - Validacao')
-        print(coeficiente)
-        print('R2 do modelo PLS - Validacao')
-        print(r2_score(plsVal.predict(Xval), Yval))
-        #print('label_ranking_average_precision_score ')
-        #print(label_ranking_average_precision_score(np.array(Yval), np.array(plsVal.y_scores_)))
+    rmsec = sqrt(mean_squared_error(Ycal, matYPredCalibracao))
+    print('RMSEC')
+    print(rmsec)
 
-        #Ajustar Calculos do RMSEC
-        matYPredCalibracao = []
+    # Ajustar Calculos do RMSEP
+    matYPredValidacao = []
 
-        for itemMatrizY in YCodigoCal:
-            amostra = str(itemMatrizY)
-            amostra = amostra.replace("[", "")
-            amostra = amostra.replace("]", "")
-            # print(i)
-            linhaMatriz = []
-            amostraPredicao = self.selectAmostra(int(float(amostra)), idmodelo)
-            Y_pred = plsCal.predict(amostraPredicao)
-            # print(Y_pred)
-            linhaMatriz.append(round(np.double(Y_pred),0))
-            matYPredCalibracao += [linhaMatriz]
+    for itemMatrizY in YCodigoVal:
+      amostra = str(itemMatrizY)
+      amostra = amostra.replace("[", "")
+      amostra = amostra.replace("]", "")
+      # print(i)
+      linhaMatriz = []
+      amostraPredicao = self.selectAmostra(int(float(amostra)), idmodelo)
+      Y_pred = plsVal.predict(amostraPredicao)
+      # print(Y_pred)
+      linhaMatriz.append(round(np.double(Y_pred), 0))
+      matYPredValidacao += [linhaMatriz]
 
-        rmsec = sqrt(mean_squared_error(Ycal, matYPredCalibracao))
-        print('RMSEC')
-        print(rmsec)
+    rmsep = sqrt(mean_squared_error(Yval, matYPredValidacao))
+    print('RMSEP')
+    print(rmsep)
 
-        #Ajustar Calculos do RMSEP
-        matYPredValidacao = []
+    # Atualiza valores da calibracao
+    db.execute("update calibracao set rmsec = " + str(rmsec) +
+               " , inativo = 'A'" +
+               " , rmsep = " + str(rmsep) +
+               " , coeficiente = " + str(coeficiente) +
+               " , dtcalibracao = '" + str(data_em_texto) + "'"
+                                                            " where idmodelo = " + str(idmodelo) +
+               " and idcalibracao = " + str(idcalibracao) + " ")
+    session.commit()
 
-        for itemMatrizY in YCodigoVal:
-            amostra = str(itemMatrizY)
-            amostra = amostra.replace("[", "")
-            amostra = amostra.replace("]", "")
-            # print(i)
-            linhaMatriz = []
-            amostraPredicao = self.selectAmostra(int(float(amostra)), idmodelo)
-            Y_pred = plsVal.predict(amostraPredicao)
-            # print(Y_pred)
-            linhaMatriz.append(round(np.double(Y_pred),0))
-            matYPredValidacao += [linhaMatriz]
+    print("VARIAVEIS LATENTES")
+    print(nrcomponentes)
 
-        rmsep = sqrt(mean_squared_error(Yval, matYPredValidacao))
-        print('RMSEP')
-        print(rmsep)
+    return idmodelo
 
-        #Atualiza valores da calibracao
-        db.execute("update calibracao set rmsec = " + str(rmsec) +
-                   " , inativo = 'A'" +
-                   " , rmsep = " + str(rmsep) +
-                   " , coeficiente = " + str(coeficiente) +
-                   " , dtcalibracao = '" + str(data_em_texto) + "'"
-                   " where idmodelo = " + str(idmodelo) +
-                   " and idcalibracao = " + str(idcalibracao) + " ")
-        session.commit()
-
-        print("VARIAVEIS LATENTES")
-        print(nrcomponentes)
-
-
-        return idmodelo
 
 def kennardStone(X, k, precomputed=False):
-    n = len(X) # number of samples
-    print("Input Size:", n, "Desired Size:", k)
-    assert n >= 2 and n >= k and k >= 2, "Error: number of rows must >= 2, k must >= 2 and k must > number of rows"
+  n = len(X)  # number of samples
+  print("Input Size:", n, "Desired Size:", k)
+  assert n >= 2 and n >= k and k >= 2, "Error: number of rows must >= 2, k must >= 2 and k must > number of rows"
 
-    # pair-wise distance matrix
-    dist = metrics.pairwise_distances(X, metric='euclidean', n_jobs=-1)
+  # pair-wise distance matrix
+  dist = metrics.pairwise_distances(X, metric='euclidean', n_jobs=-1)
 
-    # get the first two samples
-    i0, i1 = np.unravel_index(np.argmax(dist, axis=None), dist.shape)
-    selected = set([i0, i1])
-    k -= 2
-    # iterate find the rest
-    minj = i0
-    while k > 0 and len(selected) < n:
-        mindist = 0.0
-        for j in range(n):
-            if j not in selected:
-                mindistj = min([dist[j][i] for i in selected])
-                if mindistj > mindist:
-                    minj = j
-                    mindist = mindistj
-        print(selected, minj, [dist[minj][i] for i in selected])
-        selected.add(minj)
-        k -= 1
-    print("selected samples indices: ", selected)
-    # return selected samples
+  # get the first two samples
+  i0, i1 = np.unravel_index(np.argmax(dist, axis=None), dist.shape)
+  selected = set([i0, i1])
+  k -= 2
+  # iterate find the rest
+  minj = i0
+  while k > 0 and len(selected) < n:
+    mindist = 0.0
+    for j in range(n):
+      if j not in selected:
+        mindistj = min([dist[j][i] for i in selected])
+        if mindistj > mindist:
+          minj = j
+          mindist = mindistj
+    print(selected, minj, [dist[minj][i] for i in selected])
+    selected.add(minj)
+    k -= 1
+  print("selected samples indices: ", selected)
+  # return selected samples
 
-
-    return selected
-    #if precomputed:
-    #    return list(selected)
-    #else:
-    #    return X[list(selected), :]
-
+  return selected
+  # if precomputed:
+  #    return list(selected)
+  # else:
+  #    return X[list(selected), :]
 
 
-pls = PLS()
-#pls.predicao(2,287)
-#PARAMETROS
-#IDMODELO, NR_COMPONENTES (VARIAVEIS LATENTES, VALOR DE CORTE OUTLIER
-pls.calibracao(2, 20, 200)
-pls.calibracao(3, 12, 1.0, 3)
+# pls = PLS()
+# pls.predicao(2,291)
+# # PARAMETROS
+# # IDMODELO, NR_COMPONENTES (VARIAVEIS LATENTES, VALOR DE CORTE OUTLIER
+# pls.calibracao(2, 20, 200, 0)
+
 
 class NumpyEncoder(json.JSONEncoder):
-    """ Special json encoder for numpy types """
-    def default(self, obj):
-        if isinstance(obj, (np.int_, np.intc, np.intp, np.int8,
-            np.int16, np.int32, np.int64, np.uint8,
-            np.uint16, np.uint32, np.uint64)):
-            return int(obj)
-        elif isinstance(obj, (np.float_, np.float16, np.float32,
-            np.float64)):
-            return float(obj)
-        elif isinstance(obj,(np.ndarray,)): #### This is the fix
-            return obj.tolist()
-        return json.JSONEncoder.default(self, obj)
+  """ Special json encoder for numpy types """
 
-
+  def default(self, obj):
+    if isinstance(obj, (np.int_, np.intc, np.intp, np.int8,
+                        np.int16, np.int32, np.int64, np.uint8,
+                        np.uint16, np.uint32, np.uint64)):
+      return int(obj)
+    elif isinstance(obj, (np.float_, np.float16, np.float32,
+                          np.float64)):
+      return float(obj)
+    elif isinstance(obj, (np.ndarray,)):  #### This is the fix
+      return obj.tolist()
+    return json.JSONEncoder.default(self, obj)
 
 
 '''

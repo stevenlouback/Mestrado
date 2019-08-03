@@ -1,0 +1,173 @@
+<!--
+  Copyright (C) 2017-2018 Marlons dos Santos, MF² Soluções
+-->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                template="/template/mainTemplate.xhtml">
+
+    <f:metadata>
+        <f:event listener="#{cargaBean.initialize()}" type="preRenderView" />
+        <f:viewParam name="dummy" />
+    </f:metadata>
+
+    <ui:define name="pageTitle">
+        #{messages['predicao.page-title']}
+    </ui:define>
+
+    <ui:define name="pageDescription">
+        <o:outputFormat value="#{messages['predicao.page-description']}">
+            <!--<f:param value="#{userBean.user.login}"/>-->
+        </o:outputFormat>
+    </ui:define>
+
+    <ui:define name="breadcrumb">
+    </ui:define>
+
+    <ui:define name="content">
+
+        <pe:blockUI widgetVar="loadingBlock"
+                    target="movimentationSummary" >
+            <p:graphicImage width="32" 
+                            height="32"
+                            library="uploading" 
+                            name="img/loading.gif" />
+        </pe:blockUI> 
+        <div jsf:id="movimentationSummary">
+            <h:form id="profileForm" prependId="false">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <p:messages id="messages" closable="true" />
+                    </div>
+                </div>
+
+                <div class="box">
+                    <div class="box-body row">
+
+                        <div class="col-md-12">
+                            <div class="row">
+                                
+
+                                <div class="form-group col-md-5">
+                                    <p:outputLabel for="modelos" value="#{messages['model.name']}/#{messages['model.form.instrumento']}" />
+                                    <p:selectOneMenu id="modelos"
+                                                     value="#{cargaBean.modelo}"
+                                                     converter="omnifaces.SelectItemsConverter"
+                                                     filter="true" 
+                                                     filterMatchMode="contains"
+                                                     effect="fade">
+                                        <f:selectItem itemValue="#{null}"
+                                                      noSelectionOption="true"
+                                                      itemLabel="#{menu['select-one']}"/>
+                                        <f:selectItems var="models"
+                                                       itemValue="#{models}"
+                                                       itemLabel="#{models.nmmodelo} / #{models.tpinstrumento}"
+                                                       value="#{cargaBean.list_Modelo}"/>
+                                        <p:ajax event="change" 
+                                                listener="#{cargaBean.buscaParametrosModelo()}" 
+                                                process="@this"
+                                                update="paineluploadImg" />
+                                        <!--update="resultados,painelespectro,paineluploadImg"-->
+
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <div class="form-group col-md-2">
+                                    <p:outputLabel for="dataAmostra" 
+                                                   value="#{messages['arquivo.unico.data']}" />
+                                    <p:calendar id="dataAmostra"  
+                                                pattern="dd-MM-yyyy" 
+                                                maxdate="#{cargaBean.maxDate}" 
+                                                value="#{cargaBean.amostra.dataamostra}"/>
+                                </div>
+
+                                <div class="form-group col-md-5">
+                                    <p:outputLabel for="identificaAmostra" 
+                                                   value="#{messages['amostra.identifica']}" />
+                                    <p:inputText id="identificaAmostra"
+                                                 maxlength="45"
+                                                 styleClass="form-control"
+                                                 value="#{cargaBean.amostra.nmidentifica}"
+                                                 onkeydown="this.value = this.value.toUpperCase();" 
+                                                 onkeyup="this.value = this.value.toUpperCase()"/>
+                                </div>
+
+                                <div class="form-group col-md-12">
+                                    <p:outputLabel for="descricao"
+                                                   value="#{messages['amostra.form.descricao']}: "/>
+                                    <p:inputTextarea rows="2" cols="30" 
+                                                     id="descricao"
+                                                     value="#{cargaBean.amostra.dsobservacoes}"
+                                                     styleClass="form-control"
+                                                     counter="display" maxlength="1000" 
+                                                     counterTemplate="{0} caracteres restantes." 
+                                                     autoResize="true" 
+                                                     />
+                                    <h:outputText id="display" />                                                 
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <p:panel id="paineluploadImg">
+                                             <!--rendered="#{cargaBean.IMAGEM}">-->
+                                        <p:outputLabel 
+                                            for="uploadImg"
+                                            value="#{messages['amostra.form.imagem']}: "/>
+                                        <p:fileUpload id="uploadImg"
+                                                      fileUploadListener="#{cargaBean.converteImageRgb}"  
+                                                      label="#{messages['upload.choose']}" 
+                                                      invalidFileMessage="#{messages['arquivo.img']}" 
+                                                      fileLimit="1"
+                                                      fileLimitMessage="#{messages['arquivo.unico']}"
+                                                      auto="true"
+                                                      update="@this"
+                                                      mode="advanced"  
+                                                      multiple="false"  
+                                                      sizeLimit="10000000"   
+                                                      allowTypes="/(\.|\/)(gif|jpe?g|png)$/"/>
+<!--                                        uploadLabel="#{messages['upload.upload']}" 
+                                                      cancelLabel="#{messages['upload.cancel']}"-->
+
+                                    </p:panel>
+
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <!--process="@this,modelos, dataAmostra, identificaAmostra, descricao, uploadImg, espectro, resultados"-->
+                    <div class="box-footer text-right">
+                        <p:commandButton id="botaoSalvar"
+                                         update="@form"
+                                         partialSubmit="true"
+                                         process="@this,modelos, dataAmostra, identificaAmostra, descricao, uploadImg"
+                                         value="#{menu['analise']}"
+                                         action="#{cargaBean.predicaoImagem()}"
+                                         styleClass="btn btn-flat btn-success"/>
+                        <p:spacer width="5"/>
+                        <p:button value="#{menu['clear']}"
+                                  styleClass="btn btn-flat btn-danger"
+                                  outcome="cargaIsolada.xhtml"/>       
+                    </div>
+
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

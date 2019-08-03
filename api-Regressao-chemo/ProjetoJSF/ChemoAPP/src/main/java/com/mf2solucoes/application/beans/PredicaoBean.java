@@ -8,6 +8,7 @@ import com.mf2solucoes.application.service.parametroService;
 import com.mf2solucoes.application.service.predicaoService;
 import com.mf2solucoes.tools.Mensagens;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -102,7 +103,20 @@ public class PredicaoBean implements Serializable {
             predicaoService = new predicaoService();
             this.predicao = predicaoService.salvar(predicao);
             //limpar();
-            msg.addInfo("saved", "");
+//            msg.addInfo("saved", "");
+            
+            if (predicao.getValorreferencia() != null) {
+                BigDecimal referencia = new BigDecimal(predicao.getValorreferencia());
+                BigDecimal predito = new BigDecimal(predicao.getValorpredito());
+                BigDecimal diferenca = referencia.subtract(predito);
+                diferenca = diferenca.abs();
+                BigDecimal rmsec = new BigDecimal(predicao.getRmsec());
+                rmsec = rmsec.add(new BigDecimal(10));
+
+                if (diferenca.compareTo(rmsec) == 1) {
+                    msg.addInfo("amostra.outlier", "");
+                }
+            }
         } catch (Exception e) {
             msg.addError(String.valueOf(e), predicao);
             e.printStackTrace();

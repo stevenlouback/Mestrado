@@ -96,27 +96,32 @@ class Calibracao(db.Model):
     idcalibracao = db.Column(db.Integer, primary_key=True)
     inativo = db.Column(db.String(), nullable=True)
     dtcalibracao = db.Column(db.DateTime, nullable=False)
+    rmsec = db.Column(db.Numeric, nullable=True)
+    rmsep = db.Column(db.Numeric, nullable=True)
+    coeficiente = db.Column(db.Numeric, nullable=True)
 
     # amostra_calibracao = db.relationship(AmostraCalibracao, backref=Calibracao, lazy=True)
 
-    def __init__(self, idmodelo, inativo, dtcalibracao):
+    def __init__(self, idmodelo, inativo, dtcalibracao, rmsec, rmsep, coeficiente):
         self.idmodelo = idmodelo
         self.inativo = inativo
         self.dtcalibracao = dtcalibracao
+        self.rmsec = rmsec
+        self.rmsep = rmsep
+        self.coeficiente = coeficiente
 
     def __repr__(self):
-        return {
-            '<idmodelo {}>'.format(self.idmodelo),
-            '<idamostra{}'.format(self.idamostra)
-        }
+        return '<calibracao{}'.format(self.idmodelo, self.idcalibracao)
 
     def serialize(self):
         return {
             'idmodelo': self.idmodelo,
-            'idamostra': self.idamostra,
-            'tpamostra': self.tpamostra,
-            'dsobservacoes': self.dsobservacoes,
-            'dtcoletaamostra': self.dtcoletaamostra.strftime("%d/%m/%Y")
+            'idcalibracao': self.idcalibracao,
+            'inativo': self.inativo,
+            'dtcalibracao': self.dtcalibracao.strftime("%d/%m/%Y"),
+            'rmsec': str(self.rmsec),
+            'rmsep': str(self.rmsep),
+            'coeficiente': str(self.coeficiente)
         }
 
 

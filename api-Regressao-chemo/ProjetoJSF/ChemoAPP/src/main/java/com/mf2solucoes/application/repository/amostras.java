@@ -4,11 +4,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.mf2solucoes.application.modelDb.amostra;
 import com.mf2solucoes.application.modelDb.modelo;
+import com.mf2solucoes.tools.Constants;
 import static com.mf2solucoes.tools.Constants.BASE_URI;
 import static com.mf2solucoes.tools.Constants.amostraADD;
+import static com.mf2solucoes.tools.Constants.amostraPRED;
 import static com.mf2solucoes.tools.Constants.modeloGetALL;
 import static com.mf2solucoes.tools.Constants.modeloGetId;
 import static com.mf2solucoes.tools.Constants.modeloGetTpAmostra;
+import static com.mf2solucoes.tools.Constants.predicaoGetId;
 import com.mf2solucoes.tools.DateDeserializer;
 import com.mf2solucoes.tools.genericoWS;
 import com.sun.jersey.api.client.Client;
@@ -44,6 +47,35 @@ public class amostras implements Serializable {
         genericoWS ws = new genericoWS();
         String resultado = ws.insertObject(amostra, BASE_URI, amostraADD, "POST");
         System.out.println(resultado);
+        
+        return null;
+    }
+    
+    public amostra predicao(amostra amostra) {
+
+        if (amostra.getIdamostra()== null) {
+            Long x = Long.parseLong("0");
+            amostra.setIdamostra(x);
+        }
+        
+        if (amostra.getTpamostra() == null){
+            amostra.setTpamostra("1");
+        }
+        
+        
+        genericoWS ws = new genericoWS();
+        String resultado = ws.insertObject(amostra, BASE_URI, amostraPRED, "POST");
+        System.out.println("RETORNO WS ======== " +resultado);
+        
+//        Client c = Client.create();
+//        WebResource wr = c.resource(BASE_URI).path(predicaoGetId).path(String.valueOf(predicao.getModelo().getIdmodelo())).path(String.valueOf(predicao.getIdamostra()));
+//        String json = wr.get(String.class);
+//        ObjectMapper mapper = new ObjectMapper();
+//        try {
+//            predicao = mapper.readValue(json, predicao.class);
+//        } catch (IOException ex) {
+//            Logger.getLogger(modelos.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         
         return null;
     }

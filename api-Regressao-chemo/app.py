@@ -38,7 +38,7 @@ def calibraModelo(id_):
             abort(400)
 
         pls = PLS()
-        pls.calibracao(id_)
+        pls.calibracao(id_, 20, 200, 0)
         return jsonify({'success': 'OK'}), 201
     except Exception as e:
 	      return(str(e))
@@ -95,16 +95,86 @@ def get_by_id(id_):
 from models.model import Amostra
 from controller.controllerAmostra import geraAmostra
 
+@app.route('/amostra/predicao', methods=['POST'])
+def predicao_amostra_nova():
+    # print(request.json)
+    if not request.json or not 'nmidentifica' in request.json:
+        abort(400)
+
+    objeto = request.json
+
+    if not 'dsespectro' in request.json:
+        objeto['dsespectro'] = None
+
+    modelo = objeto['modelo']
+    idmodelo = modelo['idmodelo']
+
+    msg = geraAmostra(db, objeto)
+    idamostra= msg
+
+    print('amostra gravada ',idamostra)
+    # RECUPERA O JSON DENTRO DE JSON
+    # MONTA A MATRIZ Y
+    try:
+        modelo = MatrizY(
+            idmodelo=idmodelo,
+            idamostra=idamostra,
+            idparametroref=1,
+            idcalibracao=None,
+            vlresultado=None,
+            vlreferencia=None,
+            dtpredicao=None
+        )
+        db.session.add(modelo)
+    except Exception as e:
+        return (str(e))
+
+
+    # Access data
+    # MONTA A MATRIZ X
+    for y in objeto['listaMatrizX']:
+        nrsequencia= y['nrsequencia']
+        nrposicaolinha = y['nrposicaolinha']
+        nrposicaocoluna = y['nrposicaocoluna']
+        vllinhacoluna = y['vllinhacoluna']
+
+        if not 'idpixel' in y:
+            idpixel=1
+        else:
+            idpixel=y['idpixel']
+
+        try:
+            modelo = MatrizX(
+                idmodelo=idmodelo,
+                idamostra=idamostra,
+                nrsequencia=nrsequencia,
+                nrposicaolinha=nrposicaolinha,
+                nrposicaocoluna=nrposicaocoluna,
+                vllinhacoluna=vllinhacoluna,
+                idpixel=idpixel
+            )
+            db.session.add(modelo)
+        except Exception as e:
+            return (str(e))
+
+    print('pls')
+    pls = PLS()
+    pls.predicao(idmodelo,idamostra)
+    print('previu')
+    db.session.commit()
+
+    return jsonify({'success': msg}), 201
+
+
 @app.route('/amostra/adiciona', methods=['POST'])
 def create_toda_amostra():
-    # print(request.json)
+    print(request.json)
     if not request.json or not 'nmidentifica' in request.json:
         abort(400)
 
     objeto = request.json
     modelo = objeto['modelo']
     idmodelo = modelo['idmodelo']
-
 
     msg = geraAmostra(db, objeto)
     idamostra= msg
@@ -260,6 +330,17 @@ def get_by_idCalibracao(idmodelo_,idcalibracao_):
         modelo=AmostraCalibracao.query.filter_by(idmodelo=idmodelo_,idcalibracao=idcalibracao_).first()
         return jsonify(modelo.serialize())
     except Exception as e:
+        return (str(e))
+
+
+@app.route("/calibracao/getAtivo/<idmodelo_>")
+def get_by_CalibracaoAtiva(idmodelo_):
+    try:
+        inativo='A'
+        modelo=Calibracao.query.filter_by(idmodelo=idmodelo_,inativo=inativo).first()
+        return jsonify(modelo.serialize())
+    except Exception as e:
+        # print(e)
 	      return(str(e))
 
 
