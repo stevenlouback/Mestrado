@@ -56,24 +56,27 @@ class PLS(object):
     print('Amostra: ' + str(idamostra) + ' - Valor Predito :' + str(valorPredito) + ' - Valor Referencia :' + str(
       valorReferencia))
 
-    cursorDadosCalibracao = db.execute("select rmsec, rmsep, coeficiente, dtcalibracao "
+    cursorDadosCalibracao = db.execute("select rmsec, rmsep, coeficientecal, coeficienteval, dtcalibracao "
                                        "from calibracao where inativo = 'A' and idmodelo = " + str(idmodelo) + " ")
     for regCodigo in cursorDadosCalibracao:
       rmsec = regCodigo[0]
       rmsep = regCodigo[1]
-      coeficiente = regCodigo[2]
-      dtcalibracao = regCodigo[3]
+      coeficienteCal = regCodigo[2]
+      coeficienteVal = regCodigo[3]
+      dtcalibracao = regCodigo[4]
 
     print(rmsec)
     print(rmsep)
-    print(coeficiente)
+    print(coeficienteCal)
+    print(coeficienteVal)
     print(dtcalibracao)
 
     dtcalibracao = dtcalibracao.strftime('%d/%m/%Y')
     print(dtcalibracao)
 
     # tratamento dos dados para o Json
-    coeficiente = round(coeficiente, 2)
+    coeficienteCal = round(coeficienteCal, 2)
+    coeficienteVal = round(coeficienteVal, 2)
     rmsec = round(rmsec, 2)
     rmsep = round(rmsep, 2)
     valorReferencia = round(valorReferencia, 2)
@@ -85,7 +88,7 @@ class PLS(object):
     ##Contrucao do JSON
     json_data = jsonify(idamostra=str(idamostra), valorpredito=str(valorPreditoString),
                         rmsec=str(rmsec), rmsep=str(rmsep), idmodelo=str(idmodelo), dtcalibracao=str(dtcalibracao),
-                        valorreferencia=str(valorReferencia), coeficiente=str(coeficiente))
+                        valorreferencia=str(valorReferencia), coeficientecal=str(coeficienteCal), coeficienteval=str(coeficienteVal))
 
     return json_data
 
@@ -496,7 +499,8 @@ class PLS(object):
     print('score do modelo PLS - Calibracao')
     print(coeficiente)
     print('R2 do modelo PLS - Calibracao')
-    print(r2_score(plsCal.predict(Xcal), Ycal))
+    coeficienteCal = r2_score(plsCal.predict(Xcal), Ycal)
+    print(coeficienteCal)
 
     # Dados do Conjunto de Validacao
     plsVal = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
@@ -505,7 +509,8 @@ class PLS(object):
     print('score do modelo PLS - Validacao')
     print(coeficiente)
     print('R2 do modelo PLS - Validacao')
-    print(r2_score(plsVal.predict(Xval), Yval))
+    coeficienteVal = r2_score(plsVal.predict(Xval), Yval)
+    print(coeficienteVal)
     # print('label_ranking_average_precision_score ')
     # print(label_ranking_average_precision_score(np.array(Yval), np.array(plsVal.y_scores_)))
 
@@ -551,7 +556,8 @@ class PLS(object):
     db.execute("update calibracao set rmsec = " + str(rmsec) +
                " , inativo = 'A'" +
                " , rmsep = " + str(rmsep) +
-               " , coeficiente = " + str(coeficiente) +
+               " , coeficientecal = " + str(coeficienteCal) +
+               " , coeficienteval = " + str(coeficienteVal) +
                " , dtcalibracao = '" + str(data_em_texto) + "'"
                                                             " where idmodelo = " + str(idmodelo) +
                " and idcalibracao = " + str(idcalibracao) + " ")
@@ -598,12 +604,15 @@ def kennardStone(X, k, precomputed=False):
   #    return X[list(selected), :]
 
 
-# pls = PLS()
-# pls.predicao(2,291)
+#pls = PLS()
+#pls.predicao(3,1)
 # # PARAMETROS
-# # IDMODELO, NR_COMPONENTES (VARIAVEIS LATENTES, VALOR DE CORTE OUTLIER
-# pls.calibracao(2, 20, 200, 0)
+# # IDMODELO, NR_COMPONENTES (VARIAVEIS LATENTES), VALOR DE CORTE OUTLIER, QTDE DE REMOCOES
+#pls.calibracao(3, 12, 0.9, 3)
 
+
+#Valor Utilizado Para a Qualificacao
+#pls.calibracao(3, 12, 0.9, 3)
 
 class NumpyEncoder(json.JSONEncoder):
   """ Special json encoder for numpy types """
