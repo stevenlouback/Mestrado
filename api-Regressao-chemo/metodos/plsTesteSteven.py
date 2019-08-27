@@ -406,7 +406,7 @@ class PLS(object):
   def calibracao(self, idmodelo, nrcomponentes, corteOutlier, qtdeRemocoes):
 
     # Inativa calibracoes anteriores
-    db.execute(" update calibracao set  inativo = 'F'" +
+    db.execute("update calibracao set  inativo = 'F'" +
                " where idmodelo = " + str(idmodelo) + " ")
     db.execute(" update amostra set tpamostra = 'NORMAL' where idmodelo = " + str(idmodelo) + "")
     session.commit()
@@ -430,24 +430,39 @@ class PLS(object):
 
     Xtodos = self.selectMatrizX(idmodelo, "TODOS")
 
-    # caso seja necessario PCA
-    # pca = PCA()
-    # pca.testePCA(X)
+    # Insercao das amostras de Validacao
+    YCodigoTodos = self.selectMatrizY(idmodelo, "ID", "TODOS")
 
-    # ***************************************************************************************************************
-    # inicio kennard-stone
-    # data = pd.DataFrame(Xtodos)
+    for amostraX in YCodigoTodos:
+      amostra = str(amostraX)
+      amostra = amostra.replace("[", "")
+      amostra = amostra.replace("]", "")
+      db.execute("insert into amostra_calibracao (idcalibracao, idmodelo, idamostra, tpconjunto) "
+                 "values (" + str(idcalibracao) + "," + str(idmodelo) + " , '" + str(
+        int(float(amostra))) + "','VALIDACAO' )")
+
+    session.commit()
+
+    qtde = 0
+    if corteOutlier > 0:
+      while qtde < qtdeRemocoes:
+        self.detectarOutlierKNN(idmodelo, Xtodos, corteOutlier)
+        Xtodos = self.selectMatrizX(idmodelo, "TODOS")
+        qtde = qtde + 1
+
+    session.commit()
+
+    Xtodos=self.selectMatrizX(idmodelo, "TODOS")
 
     #Xtodos = self.selectMatrizX(idmodelo, "TODOS")
     number_of_samples = Xtodos.__len__()
     number_of_samples = number_of_samples * 0.65
 
     # selected_sample_numbers, remaining_sample_numbers = kennardstonealgorithm(X, number_of_samples)
-    amostras_Calibracao = kennardStone(Xtodos, number_of_samples)
+    """amostras_Calibracao = kennardStone(Xtodos, number_of_samples)"""
 
     # amostras_Calibracao = kennardStone(autoscaled_X, number_of_samples)
-    print("amostras_Calibracao")
-    print(amostras_Calibracao)
+    """print(amostras_Calibracao)"""
     print("---")
     print("remaining sample numbers")
     # print(remaining_sample_numbers)
@@ -466,21 +481,8 @@ class PLS(object):
         #***************************************************************************************************************
         #fim kennard-stone"""
 
-    # Insercao das amostras de Validacao
-    YCodigoTodos = self.selectMatrizY(idmodelo, "ID", "TODOS")
-
-    for amostraX in YCodigoTodos:
-      amostra = str(amostraX)
-      amostra = amostra.replace("[", "")
-      amostra = amostra.replace("]", "")
-      db.execute("insert into amostra_calibracao (idcalibracao, idmodelo, idamostra, tpconjunto) "
-                 "values (" + str(idcalibracao) + "," + str(idmodelo) + " , '" + str(
-        int(float(amostra))) + "','VALIDACAO' )")
-
-    session.commit()
-
     # Insercao das amostras de Calibracao
-    cont = 0
+    """cont = 0
     for amostraCalibracao in amostras_Calibracao:
       amostra = str(amostraCalibracao)
       amostra = amostra.replace("[", "")
@@ -492,11 +494,12 @@ class PLS(object):
 
       print(cont)
       cont = cont + 1
-    session.commit()
+    session.commit()"""
 
     Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
     Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
 
+    """
     qtde = 0
     if corteOutlier > 0:
       while qtde < qtdeRemocoes:
@@ -506,14 +509,16 @@ class PLS(object):
         Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
         Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
         qtde = qtde + 1
+    """
 
-    Ycal = self.selectMatrizY(idmodelo, "VALOR", "CALIBRACAO")
+    #Ycal = self.selectMatrizY(idmodelo, "VALOR", "CALIBRACAO")
     Yval = self.selectMatrizY(idmodelo, "VALOR", "VALIDACAO")
 
-    YCodigoCal = self.selectMatrizY(idmodelo, "ID", "CALIBRACAO")
+    #YCodigoCal = self.selectMatrizY(idmodelo, "ID", "CALIBRACAO")
     YCodigoVal = self.selectMatrizY(idmodelo, "ID", "VALIDACAO")
 
     # Dados do Conjunto de Calibracao
+    """
     plsCal = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
     plsCal.fit(Xcal, Ycal)
     coeficiente = plsCal.score(Xcal, Ycal, sample_weight=None)
@@ -522,6 +527,7 @@ class PLS(object):
     print('R2 do modelo PLS - Calibracao')
     coeficienteCal = r2_score(plsCal.predict(Xcal), Ycal)
     print(coeficienteCal)
+    """
 
     # Dados do Conjunto de Validacao
     plsVal = PLSRegression(copy=True, max_iter=500, n_components=nrcomponentes, scale=False, tol=1e-06)
@@ -535,7 +541,7 @@ class PLS(object):
     # print('label_ranking_average_precision_score ')
     # print(label_ranking_average_precision_score(np.array(Yval), np.array(plsVal.y_scores_)))
 
-    # Ajustar Calculos do RMSEC
+    """# Ajustar Calculos do RMSEC
     matYPredCalibracao = []
 
     for itemMatrizY in YCodigoCal:
@@ -553,8 +559,9 @@ class PLS(object):
     rmsec = sqrt(mean_squared_error(Ycal, matYPredCalibracao))
     print('RMSEC')
     print(rmsec)
+    """
 
-    # Ajustar Calculos do RMSEP
+    #Ajustar Calculos do RMSEP
     matYPredValidacao = []
 
     for itemMatrizY in YCodigoVal:
@@ -629,7 +636,7 @@ pls = PLS()
 #pls.predicao(4,101)
 # # PARAMETROS
 # # IDMODELO, NR_COMPONENTES (VARIAVEIS LATENTES), VALOR DE CORTE OUTLIER, QTDE DE REMOCOES
-pls.calibracao(4, 12, 0.5, 3)
+pls.calibracao(4, 20, 0.6, 3)
 
 
 #Valor Utilizado Para a Qualificacao

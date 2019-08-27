@@ -113,7 +113,7 @@ public class ExemploJXL {
 
                 String insert = "INSERT INTO public.amostra(idmodelo, idamostra, "
                         + "tpamostra, dsobservacoes, dtcoletaamostra)"
-                        + "VALUES (3, " + contaLinhaY + ", "
+                        + "VALUES (4, " + contaLinhaY + ", "
                         + "'" + tipoAmostra + "', '" + tipoAmostra + "_CARGA', now())";
 
                 System.out.println(insert);
@@ -136,7 +136,7 @@ public class ExemploJXL {
 //                                    + "'" + tipoAmostra + "')";
                             insert = "INSERT INTO public.matrizY(idmodelo, idamostra, "
                                     + "idparametroref, idcalibracao, vlresultado, vlreferencia, dtpredicao)"
-                                    + "VALUES (3, " + contaLinhaY + ", "
+                                    + "VALUES (4, " + contaLinhaY + ", "
                                     + "1, null, null, " + valorY + ", now())";
 
                             System.out.println(insert);
@@ -186,7 +186,7 @@ public class ExemploJXL {
                     String sql = "INSERT INTO public.matrizX("
                             + "idmodelo, idamostra, nrsequencia, nrposicaolinha, nrposicaocoluna,"
                             + "vllinhacoluna)"
-                            + " VALUES (3, "+contaLinhaX+", "+contador+", "+contaLinhaX+", "+contador+","
+                            + " VALUES (4, "+contaLinhaX+", "+contador+", "+contaLinhaX+", "+contador+","
                             + " "+valorX+")";
                     System.out.println(sql);
                     incluir.executaInclusao(sql);
