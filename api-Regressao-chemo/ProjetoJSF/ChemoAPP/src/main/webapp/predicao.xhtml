@@ -134,11 +134,17 @@
                                             <h:outputText value="#{predicao.valorpredito}" style="display: block; width:100%; text-align:center;"/>
                                         </p:column> 
 
-                                        <p:column headerText="#{messages['predicao.form.coeficiente']} " 
+                                        <p:column headerText="#{messages['predicao.form.coeficientecal']} " 
                                                   style="text-center" 
                                                   width="10%">
-                                            <h:outputText value="#{predicao.coeficiente}" style="display: block; width:100%; text-align:center;"/>
+                                            <h:outputText value="#{predicao.coeficientecal}" style="display: block; width:100%; text-align:center;"/>
                                         </p:column>  
+                                        
+                                        <p:column headerText="#{messages['predicao.form.coeficienteval']} " 
+                                                  style="text-center" 
+                                                  width="10%">
+                                            <h:outputText value="#{predicao.coeficienteval}" style="display: block; width:100%; text-align:center;"/>
+                                        </p:column>                                          
 
                                         <p:column headerText="#{messages['predicao.form.rmsec']}" 
                                                   style="text-center" 

@@ -49,7 +49,10 @@ public class predicao implements Serializable {
     private String valorreferencia;
     @Setter
     @Getter
-    private String coeficiente;
+    private String coeficientecal;
+    @Setter
+    @Getter
+    private String coeficienteval;
     @Setter
     @Getter
     private modelo modelo;    
@@ -62,8 +65,9 @@ public class predicao implements Serializable {
 
     @Override
     public String toString() {
-        return "predicao{" + "idamostra=" + idamostra + ", valorpredito=" + valorpredito + ", rmsec=" + rmsec + ", idmodelo=" + idmodelo + ", valorreferencia=" + valorreferencia + ", coeficiente=" + coeficiente + '}';
+        return "predicao{" + "idamostra=" + idamostra + ", valorpredito=" + valorpredito + ", rmsec=" + rmsec + ", rmsep=" + rmsep + ", dtcalibracao=" + dtcalibracao + ", idmodelo=" + idmodelo + ", valorreferencia=" + valorreferencia + ", coeficientecal=" + coeficientecal + ", coeficienteval=" + coeficienteval + ", modelo=" + modelo + '}';
     }
+
     
     
 }
