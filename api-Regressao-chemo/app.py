@@ -31,14 +31,14 @@ from controller.controllerModelo import geraModelo
 from controller.controllerPredicao import geraPredicao
 from metodos.pls import PLS
 
-@app.route("/modelo/calibra/<id_>", methods=['POST'])
-def calibraModelo(id_):
+@app.route("/modelo/calibra/<id_>/<latente_>/<corte_>/<qtde_>", methods=['POST'])
+def calibraModelo(id_, latente_, corte_, qtde_):
     try:
         if (not id_):
             abort(400)
 
         pls = PLS()
-        pls.calibracao(id_, 20, 200, 0)
+        pls.calibracao(id_, latente_, corte_, qtde_)
         return jsonify({'success': 'OK'}), 201
     except Exception as e:
 	      return(str(e))

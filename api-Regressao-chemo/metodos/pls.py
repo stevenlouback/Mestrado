@@ -629,7 +629,7 @@ pls = PLS()
 #pls.predicao(4,101)
 # # PARAMETROS
 # # IDMODELO, NR_COMPONENTES (VARIAVEIS LATENTES), VALOR DE CORTE OUTLIER, QTDE DE REMOCOES
-pls.calibracao(4, 12, 0.5, 3)
+# pls.calibracao(4, 12, 0.5, 3)
 
 
 #Valor Utilizado Para a Qualificacao

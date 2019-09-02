@@ -192,12 +192,18 @@
                                                     target="#{modeloB.modelo}" value="#{modelo}"/>
                                             </p:commandButton>
                                             <p:spacer width="5"/>
-                                            <p:commandButton update="modeloForm" 
-                                                             icon="ui-icon-clock" 
-                                                             title="#{menu['calibra']}"
-                                                             styleClass="btn btn-flat btn-default"
-                                                             ajax="false"
-                                                             action="#{modeloB.calibrarModelo(modelo.idmodelo)}"/>
+<!--                                            <p:commandButton 
+                                                icon="ui-icon-clock" 
+                                                title="#{menu['calibra']}"
+                                                styleClass="btn btn-flat btn-default"
+                                                update="@form"
+                                                onclick="PF('dlg').show();">
+                                                <f:setPropertyActionListener 
+                                                    target="#{modeloB.modelo}" value="#{modelo}"/>
+                                            </p:commandButton>-->
+                                            <!--ajax="false"-->
+                                            <!--update="modeloForm"--> 
+<!--                                                             action="#{modeloB.calibrarModelo(modelo.idmodelo)}"/>-->
                                         </p:column>
                                     </p:dataTable>
                                 </div>
@@ -208,6 +214,36 @@
                     </div>
 
                 </div>
+
+<!--
+                <p:dialog header="#{messages['model.calibracao.title']}" widgetVar="dlg" focus="latente"
+                          modal="true" height="130" closable="true" resizable="false" closeOnEscape="true">
+                    <h:panelGrid columns="2" cellpadding="8">
+                    
+                    <p:outputLabel  value="#{modeloB.modelo.nmmodelo}" />
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <p:outputLabel for="latente" value="#{messages['model.calibracao.latente']}:" />
+                            <p:inputText id="latente" label="latente" />
+                            <p:spinner id="latente" min="1" />
+                value="#{spinnerView.number1}"
+                        </div></div>
+                        <div class="col-md-12 form-group">
+                            <p:outputLabel for="outlier" value="#{messages['model.calibracao.outlier']}:" />
+                            <p:inputText id="outlier" label="outlier" />
+                            <p:spinner id="outlier" min="0" />
+                        </div>
+                    
+                        <div class="col-md-12 form-group">
+                            <p:outputLabel for="corte" value="#{messages['model.calibracao.corte']}:" />
+                            <p:inputText id="corte" label="corte" />
+                        </div>
+                    </h:panelGrid>
+                    <f:facet name="footer">
+                        <p:commandButton value="#{menu['calibra']}"  />
+                    </f:facet>
+
+                </p:dialog>-->
             </h:form>
         </div>
 
