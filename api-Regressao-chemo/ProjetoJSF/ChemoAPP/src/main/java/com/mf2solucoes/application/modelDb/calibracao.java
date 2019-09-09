@@ -30,7 +30,7 @@ public class calibracao implements Serializable {
     private modelo modelo;
     @Setter
     @Getter
-    private String inativo; 
+    private String inativo;
     @Setter
     @Getter
     private String dtcalibracao;
@@ -52,7 +52,15 @@ public class calibracao implements Serializable {
     @Setter
     @Getter
     private BigDecimal quantificacao;
-
+    @Setter
+    @Getter
+    private Long latente;
+    @Setter
+    @Getter
+    private Long outlier;
+    @Setter
+    @Getter
+    private BigDecimal corteOutlier;
 
     /**
      * Constructor

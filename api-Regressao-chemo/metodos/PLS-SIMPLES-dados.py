@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 
 sys.path.append("..\dao")
+sys.path.append("..\dao")
 
 from sklearn.cross_decomposition import PLSRegression
 from sklearn.metrics import r2_score, mean_squared_error, median_absolute_error, mean_absolute_error, mean_squared_log_error, coverage_error, label_ranking_loss, explained_variance_score, label_ranking_average_precision_score

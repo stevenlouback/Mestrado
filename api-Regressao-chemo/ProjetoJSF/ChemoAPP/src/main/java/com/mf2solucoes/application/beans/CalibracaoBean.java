@@ -35,6 +35,10 @@ public class CalibracaoBean implements Serializable {
 
     @Setter
     @Getter
+    private modelo modelo;
+
+    @Setter
+    @Getter
     private List<calibracao> list_Calibracao = new ArrayList<>();
 
     @Inject
@@ -49,14 +53,23 @@ public class CalibracaoBean implements Serializable {
     }
 
     public boolean isEditando() {
-        return this.calibracao.getIdcalibracao()!= null;
+        return this.calibracao.getIdcalibracao() != null;
     }
 
-    
+    public boolean isOutlier() {
+        if (calibracao.getOutlier() == null) {
+            return false;
+        }
+
+        System.out.println(calibracao.getOutlier() > 0);
+
+        return calibracao.getOutlier() > 0;
+    }
+
     @SuppressWarnings("unchecked")
     public void listarTodos() {
         calibracaos = new calibracaos();
-        
+
         List<calibracao> list_AuxParam = new ArrayList<>();
 //        list_Parametro = parametros.findAll();
         calibracao calibracao = new calibracao();
@@ -77,19 +90,46 @@ public class CalibracaoBean implements Serializable {
             novoParametro.setSensibilidade(list_AuxParam.get(i).getSensibilidade());
             novoParametro.setLimitedetecta(list_AuxParam.get(i).getLimitedetecta());
             novoParametro.setQuantificacao(list_AuxParam.get(i).getQuantificacao());
-            
+
             modelo modelo = new modelo();
             modelo.setIdmodelo(novoParametro.getIdmodelo());
-            
+
             modelos modelos = new modelos();
             modelo = modelos.modeloPorId(modelo);
-            
+
             novoParametro.setModelo(modelo);
-            
+
             list_Calibracao.add(novoParametro);
         }
-        
-        
+
+    }
+
+    public void calibracaoModelo() {
+        Mensagens msg = new Mensagens();
+        modeloService modeloService = new modeloService();
+
+        if (calibracao.getModelo().getIdmodelo() == null) {
+            msg.addError("idmodeloinfo", "");
+            return;
+        }
+
+        if (calibracao.getLatente() == null) {
+            msg.addError("latenteinfo", "");
+            return;
+        }
+
+        if (calibracao.getOutlier() == null) {
+            msg.addError("outlierinfo", "");
+            return;
+        }
+
+        this.modelo = modeloService.calibrarModelo(
+                calibracao.getModelo().getIdmodelo(),
+                calibracao.getLatente(),
+                calibracao.getOutlier(),
+                calibracao.getCorteOutlier());
+        limpar();
+        msg.addInfo("calibrado", "");
     }
 
 }

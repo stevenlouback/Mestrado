@@ -1,6 +1,4 @@
-<!--
-  Copyright (C) 2017-2018 Marlons dos Santos, MF² Soluções
--->
+
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:o="http://omnifaces.org/ui"
@@ -23,7 +21,6 @@
 
     <ui:define name="pageDescription">
         <o:outputFormat value="#{messages['calibracao.page-description']}">
-            <!--<f:param value="#{userBean.user.login}"/>-->
         </o:outputFormat>
     </ui:define>
 
@@ -33,14 +30,14 @@
     <ui:define name="content">
 
         <pe:blockUI widgetVar="loadingBlock"
-                    target="movimentationSummary" >
+                    target="boxBody" >
             <p:graphicImage width="32" 
                             height="32"
                             library="uploading" 
                             name="img/loading.gif" />
         </pe:blockUI> 
-        <div jsf:id="movimentationSummary">
-            <h:form id="profileForm" prependId="false">
+        <div jsf:id="boxBody">
+            <h:form id="predicaoForm" prependId="false">
 
                 <div class="row">
                     <div class="col-sm-12">
@@ -50,10 +47,9 @@
 
                 <div class="box">
                     <div class="box-body row">
-
                         <div class="col-md-12">
                             <div class="row">
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-5">
                                     <p:outputLabel for="modelos" value="#{messages['model.name']}/#{messages['model.form.instrumento']}" />
                                     <p:selectOneMenu id="modelos"
                                                      value="#{calibracaoBean.calibracao.modelo}"
@@ -68,66 +64,68 @@
                                                        itemValue="#{models}"
                                                        itemLabel="#{models.nmmodelo} / #{models.tpinstrumento}"
                                                        value="#{cargaBean.list_Modelo}"/>
-                                        <p:ajax event="change" 
-                                                listener="#{cargaBean.buscaParametrosModelo()}" 
-                                                process="@this"
-                                                />
-                                        <!--update="resultados,painelespectro,paineluploadImg"-->
-
+                                        <!--                                        <p:ajax event="change" 
+                                                                                        listener="#{cargaBean.buscaParametrosModelo()}" 
+                                                                                        process="@this"/>-->
                                     </p:selectOneMenu>
                                 </div>
-                                <div class="form-group col-md-8">
-                                    <p:outputLabel/>
-                                    <p:outputLabel/>
-                                </div>
 
+                            </div>
+                            <div class="row">
                                 <div class="form-group col-md-4">
                                     <p:outputLabel for="latente" value="#{messages['model.calibracao.latente']}:" />
-                                    <!--<p:inputText id="latente" label="latente" />-->
-                                    <p:spinner id="latente" min="1" />
+                                    <p:spinner id="latente" min="1" value="#{calibracaoBean.calibracao.latente}"/>
                                 </div>
 
                                 <div class="form-group col-md-4">
                                     <p:outputLabel for="outlier" value="#{messages['model.calibracao.outlier']}:" />
-                                    <!--<p:inputText id="outlier" label="outlier" />-->
-                                    <p:spinner id="outlier" min="0" />
+                                    <p:spinner id="outlier" min="0"  value="#{calibracaoBean.calibracao.outlier}">
+                                        <p:ajax partialSubmit="true" update="corte" process="@this, outlier" />
+                                    </p:spinner>
                                 </div>
 
                                 <div class="form-group col-md-4">
-                                    <p:outputLabel for="corte" value="#{messages['model.calibracao.corte']}:" />
-                                    <!--<p:inputText id="corte" label="corte" />-->
+                                    <p:outputLabel for="corte" 
+                                                   rendered="#{calibracaoBean.outlier}"
+                                                   value="#{messages['model.calibracao.corte']}:" />
                                     <p:inputNumber id="corte"
+                                                   rendered="#{calibracaoBean.outlier}"
                                                    decimalPlaces="2"
                                                    decimalSeparator=","
                                                    thousandSeparator="."
-                                                   >
-                                                    <!--value="#{walletBean.value.actualBalance}"-->
+                                                   value="#{calibracaoBean.calibracao.corteOutlier}">
                                         <p:keyFilter regEx="/[0-9_,]/i"/>
                                         <f:converter converterId="javax.faces.BigDecimal"/>
                                     </p:inputNumber>
                                 </div>
-
                             </div>
                         </div>
-
-                        <!--process="@this,modelos, dataAmostra, identificaAmostra, descricao, uploadImg, espectro, resultados"-->
-                        <div class="box-footer text-right">
-                            <p:commandButton id="botaoSalvar"
-                                             update="@form"
-                                             partialSubmit="true"
-                                             process="@this,modelos"
-                                             value="#{menu['calibra']}"
-                                             action="#{cargaBean.gerarAmostra()}"
-                                             styleClass="btn btn-flat btn-success"/>
-                            <p:spacer width="5"/>
-                            <p:button value="#{menu['clear']}"
-                                      styleClass="btn btn-flat btn-danger"
-                                      outcome="calibrarModelo.xhtml"/>       
-                        </div>
                     </div>
+
+
+                    <div class="box-footer text-right">
+                        <p:commandButton id="botaoSalvar"
+                                         update="@form"
+                                         partialSubmit="true"
+                                         process="@this,modelos,latente,outlier,corte"
+                                         value="#{menu['calibra']}"
+                                         action="#{calibracaoBean.calibracaoModelo()}"
+                                         styleClass="btn btn-flat btn-success"/>
+                        <p:spacer width="5"/>
+                        <p:button value="#{menu['clear']}"
+                                  styleClass="btn btn-flat btn-danger"
+                                  outcome="calibrarModelo.xhtml"/>       
+                    </div>
+
                 </div>
+
+
+
+
+
 
             </h:form>
         </div>
+
     </ui:define>
 </ui:composition>
