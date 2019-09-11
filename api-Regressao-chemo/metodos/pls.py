@@ -192,7 +192,7 @@ class PLS(object):
 
       for linha in cursorColunas:
         contadorColunas = linha[0]
-        print(contadorColunas)
+        # print(contadorColunas)
 
       # Preenchimento da MatrizX
       matrizX = []
@@ -213,11 +213,11 @@ class PLS(object):
         listaAmostras.append(regAmostras[0])
         cont = cont + 1
 
-      print('...............................')
-      print('Qtde de Amostras - Matriz X')
-      print(conjunto)
-      print(cont)
-      print('...............................')
+      # print('...............................')
+      # print('Qtde de Amostras - Matriz X')
+      # print(conjunto)
+      # print(cont)
+      # print('...............................')
 
       for amostra in listaAmostras:
         # print(amostra)
@@ -288,21 +288,19 @@ class PLS(object):
         cont = cont + 1
 
       # print(listaAmostras)
-      print('............................................')
-      print('Qtde de Amostras - Matriz Y')
-      print(conjunto)
-      print(cont)
-      print('............................................')
+      # print('............................................')
+      # print('Qtde de Amostras - Matriz Y')
+      # print(conjunto)
+      # print(cont)
+      # print('............................................')
 
       for amostra in listaAmostras:
         # print(amostra)
         linhaMatriz = []
 
-        cursorDadosAmostra = db.execute("select y.idamostra, y.vlreferencia from matrizy y "
-                                        " where y.idamostra = " + str(amostra) + " "
-                                                                                 " and y.idmodelo = " + str(
-          idmodelo) + " "
-                      " order by y.idamostra asc")
+        cursorDadosAmostra = db.execute("select y.idamostra, case y.vlreferencia when 0 then '0.1' else y.vlreferencia end as vlreferencia "
+                                        "from matrizy y where y.idamostra = " + str(amostra) + " "
+                                        "and y.idmodelo = " + str(idmodelo) + " order by y.idamostra asc")
 
         for regDadosAmostra in cursorDadosAmostra:
           if regDadosAmostra[1] == 0E-8:
@@ -449,19 +447,22 @@ class PLS(object):
     amostras_Calibracao = kennardStone(Xtodos, number_of_samples)
 
     # amostras_Calibracao = kennardStone(autoscaled_X, number_of_samples)
-    print("amostras_Calibracao")
-    print(amostras_Calibracao)
-    print("---")
-    print("remaining sample numbers")
+    # print("amostras_Calibracao")
+    # print(amostras_Calibracao)
+    # print("---")
+    # print("remaining sample numbers")
     # print(remaining_sample_numbers)
 
     # Insercao das amostras de Validacao
     YCodigoTodos = self.selectMatrizY(idmodelo, "ID", "TODOS")
 
     for amostraX in YCodigoTodos:
+
       amostra = str(amostraX)
       amostra = amostra.replace("[", "")
       amostra = amostra.replace("]", "")
+
+      # print(amostra)
       db.execute("insert into amostra_calibracao (idcalibracao, idmodelo, idamostra, tpconjunto) "
                  "values (" + str(idcalibracao) + "," + str(idmodelo) + " , '" + str(
         int(float(amostra))) + "','VALIDACAO' )")
@@ -479,7 +480,7 @@ class PLS(object):
                  " and idamostra = " + str(int(float(amostra))))
       session.commit()
 
-      print(cont)
+      # print(cont)
       cont = cont + 1
     session.commit()
 
@@ -598,7 +599,10 @@ class PLS(object):
 
 def kennardStone(X, k, precomputed=False):
   n = len(X)  # number of samples
-  print("Input Size:", n, "Desired Size:", k)
+  # print("Input Size:", n, "Desired Size:", k)
+  now = datetime.now()
+  print("Executando KennStonne")
+  print(now)
   assert n >= 2 and n >= k and k >= 2, "Error: number of rows must >= 2, k must >= 2 and k must > number of rows"
 
   # pair-wise distance matrix
@@ -618,19 +622,21 @@ def kennardStone(X, k, precomputed=False):
         if mindistj > mindist:
           minj = j
           mindist = mindistj
-    print(selected, minj, [dist[minj][i] for i in selected])
+    # print(selected, minj, [dist[minj][i] for i in selected])
     selected.add(np.int(minj))
     k -= 1
-  print("selected samples indices: ", selected)
+  # print("selected samples indices: ", selected)
   # return selected samples
-
+  print("Terminou KennStonne")
+  now = datetime.now()
+  print(now)
   return selected
   # if precomputed:
   #    return list(selected)
   # else:
   #    return X[list(selected), :]
 
-
+###EXECUTAVEL REMOVER SEMPRE
 pls = PLS()
 #pls.predicao(4,101)
 # # PARAMETROS

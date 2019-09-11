@@ -3,6 +3,7 @@ package com.mf2solucoes.application.service;
 import com.mf2solucoes.application.modelDb.modelo;
 import com.mf2solucoes.application.repository.modelos;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
@@ -24,8 +25,8 @@ public class modeloService implements Serializable {
     }
     
     @Transactional
-    public modelo calibrarModelo(Long idmodelo) {
+    public modelo calibrarModelo(Long idmodelo, Long latente, Long outlier, BigDecimal corte) {
         modelos = new modelos();
-        return modelos.calibrarModelo(idmodelo);
+        return modelos.calibrarModelo(idmodelo, latente, outlier, corte);
     }
 }

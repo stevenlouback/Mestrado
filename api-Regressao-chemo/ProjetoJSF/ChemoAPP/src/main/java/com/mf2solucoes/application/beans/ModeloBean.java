@@ -79,7 +79,8 @@ public class ModeloBean implements Serializable {
                 return;
             }
 
-            if (modelo.getTpinstrumento().equals("")) {
+            modelo.setTpinstrumento("img");
+            if (modelo.getTpinstrumento().equals("")) {;
                 msg.addError("model.validation.instrumento", modelo);
                 return;
             }
@@ -93,8 +94,7 @@ public class ModeloBean implements Serializable {
                 msg.addError("model.validation.descricao", modelo);
                 return;
             }
-
-            this.modelo = modeloService.salvar(modelo);
+//            this.modelo = modeloService.salvar(modelo);
             limpar();
             msg.addInfo("saved", "");
         } catch (Exception e) {
@@ -165,12 +165,12 @@ public class ModeloBean implements Serializable {
         return modelos.modeloPorId(modelo);
     }
 
-    public void calibrarModelo(Long idmodelo) {
-        Mensagens msg = new Mensagens();
-        modeloService = new modeloService();
-        this.modelo = modeloService.calibrarModelo(idmodelo);
-        limpar();
-        msg.addInfo("calibrado", "");
-    }
+//    public void calibrarModelo(Long idmodelo) {
+//        Mensagens msg = new Mensagens();
+//        modeloService = new modeloService();
+//        this.modelo = modeloService.calibrarModelo(idmodelo);
+//        limpar();
+//        msg.addInfo("calibrado", "");
+//    }
 
 }

@@ -97,6 +97,14 @@
                                 <span>#{menu['model.amostra']}</span>
                             </p:link>
                         </li> 
+                        
+                        <li class="#{activeMenu eq 'users' ? 'active' : ''}"
+                            >
+                            <p:link outcome="/calibrarModelo.xhtml">
+                                <i class="fa fa-balance-scale" aria-hidden="true"></i> 
+                                <span>#{menu['model.calibrar']}</span>
+                            </p:link>
+                        </li> 
 
                         <li class="#{activeMenu eq 'users' ? 'active' : ''}"
                             >

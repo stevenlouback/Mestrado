@@ -1,0 +1,131 @@
+
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                template="/template/mainTemplate.xhtml">
+
+    <f:metadata>
+        <f:event listener="#{cargaBean.initialize()}" type="preRenderView" />
+        <f:viewParam name="dummy" />
+    </f:metadata>
+
+    <ui:define name="pageTitle">
+        #{messages['calibracao.page-tile']}
+    </ui:define>
+
+    <ui:define name="pageDescription">
+        <o:outputFormat value="#{messages['calibracao.page-description']}">
+        </o:outputFormat>
+    </ui:define>
+
+    <ui:define name="breadcrumb">
+    </ui:define>
+
+    <ui:define name="content">
+
+        <pe:blockUI widgetVar="loadingBlock"
+                    target="boxBody" >
+            <p:graphicImage width="32" 
+                            height="32"
+                            library="uploading" 
+                            name="img/loading.gif" />
+        </pe:blockUI> 
+        <div jsf:id="boxBody">
+            <h:form id="predicaoForm" prependId="false">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <p:messages id="messages" closable="true" />
+                    </div>
+                </div>
+
+                <div class="box">
+                    <div class="box-body row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="form-group col-md-5">
+                                    <p:outputLabel for="modelos" value="#{messages['model.name']}/#{messages['model.form.instrumento']}" />
+                                    <p:selectOneMenu id="modelos"
+                                                     value="#{calibracaoBean.calibracao.modelo}"
+                                                     converter="omnifaces.SelectItemsConverter"
+                                                     filter="true" 
+                                                     filterMatchMode="contains"
+                                                     effect="fade">
+                                        <f:selectItem itemValue="#{null}"
+                                                      noSelectionOption="true"
+                                                      itemLabel="#{menu['select-one']}"/>
+                                        <f:selectItems var="models"
+                                                       itemValue="#{models}"
+                                                       itemLabel="#{models.nmmodelo} / #{models.tpinstrumento}"
+                                                       value="#{cargaBean.list_Modelo}"/>
+                                        <!--                                        <p:ajax event="change" 
+                                                                                        listener="#{cargaBean.buscaParametrosModelo()}" 
+                                                                                        process="@this"/>-->
+                                    </p:selectOneMenu>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <p:outputLabel for="latente" value="#{messages['model.calibracao.latente']}:" />
+                                    <p:spinner id="latente" min="1" value="#{calibracaoBean.calibracao.latente}"/>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <p:outputLabel for="outlier" value="#{messages['model.calibracao.outlier']}:" />
+                                    <p:spinner id="outlier" min="0"  value="#{calibracaoBean.calibracao.outlier}">
+                                        <p:ajax partialSubmit="true" update="corte" process="@this, outlier" />
+                                    </p:spinner>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <p:outputLabel for="corte" 
+                                                   rendered="#{calibracaoBean.outlier}"
+                                                   value="#{messages['model.calibracao.corte']}:" />
+                                    <p:inputNumber id="corte"
+                                                   rendered="#{calibracaoBean.outlier}"
+                                                   decimalPlaces="2"
+                                                   decimalSeparator=","
+                                                   thousandSeparator="."
+                                                   value="#{calibracaoBean.calibracao.corteOutlier}">
+                                        <p:keyFilter regEx="/[0-9_,]/i"/>
+                                        <f:converter converterId="javax.faces.BigDecimal"/>
+                                    </p:inputNumber>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="box-footer text-right">
+                        <p:commandButton id="botaoSalvar"
+                                         update="@form"
+                                         partialSubmit="true"
+                                         process="@this,modelos,latente,outlier,corte"
+                                         value="#{menu['calibra']}"
+                                         action="#{calibracaoBean.calibracaoModelo()}"
+                                         styleClass="btn btn-flat btn-success"/>
+                        <p:spacer width="5"/>
+                        <p:button value="#{menu['clear']}"
+                                  styleClass="btn btn-flat btn-danger"
+                                  outcome="calibrarModelo.xhtml"/>       
+                    </div>
+
+                </div>
+
+
+
+
+
+
+            </h:form>
+        </div>
+
+    </ui:define>
+</ui:composition>

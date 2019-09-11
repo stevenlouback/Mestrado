@@ -18,6 +18,8 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,15 +66,28 @@ public class modelos implements Serializable {
         return null;
     }
 
-    public modelo calibrarModelo(Long idmodelo) {
+    public modelo calibrarModelo(Long idmodelo, Long latente, Long outlier, BigDecimal corte) {
         Mensagens msg = new Mensagens();
         if (idmodelo == null || idmodelo == 0) {
             msg.addError("idmodeloinfo", "");
             return null;
         }
         
+        if (latente == null) {
+            msg.addError("latenteinfo", "");
+            return null;
+        }
+        
+        if (outlier == null) {
+            msg.addError("outlierinfo", "");
+            return null;
+        }
+        
+        if (corte == null) {
+            corte = new BigDecimal(BigInteger.ZERO);
+        }
 
-        String url = modeloCalibrar+idmodelo;
+        String url = modeloCalibrar+idmodelo+"/"+latente+"/"+corte+"/"+outlier;
         
         genericoWS ws = new genericoWS();
         ws.insertObject("", BASE_URI, url, "POST");
