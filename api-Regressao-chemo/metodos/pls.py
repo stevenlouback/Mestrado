@@ -637,11 +637,11 @@ def kennardStone(X, k, precomputed=False):
   #    return X[list(selected), :]
 
 ###EXECUTAVEL REMOVER SEMPRE
-pls = PLS()
+#pls = PLS()
 #pls.predicao(4,101)
 # # PARAMETROS
 # # IDMODELO, NR_COMPONENTES (VARIAVEIS LATENTES), VALOR DE CORTE OUTLIER, QTDE DE REMOCOES, FAZ PCA S ou N, qtde PC
-pls.calibracao(4, 20, 0.4, 4, 'N', 3)
+#pls.calibracao(4, 20, 0.4, 4, 'N', 3)
 
 
 #Valor Utilizado Para a Qualificacao
