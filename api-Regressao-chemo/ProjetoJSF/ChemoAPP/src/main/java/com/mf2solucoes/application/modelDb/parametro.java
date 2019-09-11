@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
@@ -22,10 +23,10 @@ import lombok.Setter;
  */
 @EqualsAndHashCode
 @Entity
-public class parametro  implements Serializable {
+public class parametro implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @Setter
     @Getter
@@ -36,7 +37,7 @@ public class parametro  implements Serializable {
     private modelo modelo;
     @Setter
     @Getter
-    @NotBlank(message="{parametro.name}")
+    @NotBlank(message = "{parametro.name}")
     private String nmparametroref;
     @Setter
     @Getter
@@ -50,5 +51,10 @@ public class parametro  implements Serializable {
      * Constructor
      */
     public parametro() {
+    }
+
+    @Transient
+    public boolean isParametroAssociado() {
+        return this.getNmparametroref()!= null;
     }
 }

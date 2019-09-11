@@ -80,7 +80,7 @@
                                 <div class="form-group col-md-4">
                                     <p:outputLabel for="outlier" value="#{messages['model.calibracao.outlier']}:" />
                                     <p:spinner id="outlier" min="0"  value="#{calibracaoBean.calibracao.outlier}">
-                                        <p:ajax partialSubmit="true" update="corte" process="@this, outlier" />
+                                        <p:ajax partialSubmit="true" update=":predicaoForm:corte" process="@this" />
                                     </p:spinner>
                                 </div>
 

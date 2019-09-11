@@ -11,18 +11,24 @@
         <div class="box-body row">
             <div class="col-md-12">
                 <div class="row">
+                    <div class="col-sm-12">
+                        <p:messages id="messages1" closable="true" />
+                    </div>
                     <div class="form-group col-md-12">
                         <p:dataTable value="#{modeloB.modelo.listaParametro}" var="item" id="tabelaItens"
                                      emptyMessage="#{messages['list.parametro.empty']}">
 
-                            <p:column headerText="#{messages['parametro.form.name']}" style="text-align: center; width: 100px">
-                                <h:outputText value="#{item.nmparametroref}" />
-                                <!--value="#{item.produto.sku}"-->
+                            <p:column headerText="#{messages['parametro.form.id']}" style="text-align: center; width: 5px">
+                                <h:outputText value="#{item.idparametroref}" rendered="#{item.parametroAssociado}"/>
+                            </p:column>
+                            <p:column headerText="#{messages['parametro.form.name']}" style="text-align: center; width: 97px">
+                                <h:outputText value="#{item.nmparametroref}" rendered="#{item.parametroAssociado}"/>
 
                                 <p:inputText id="nome"
                                              maxlength="45"
                                              styleClass="form-control"
                                              value="#{modeloB.nmparametroref}"
+                                             rendered="#{not item.parametroAssociado}"
                                              onkeydown="this.value = this.value.toUpperCase();" 
                                              onkeyup="this.value = this.value.toUpperCase()">
                                     <p:ajax event="change" process="@this" 
@@ -30,7 +36,29 @@
                                             listener="#{modeloB.carregarParametroLinhaEditavel()}" />
                                 </p:inputText>
                             </p:column>
+
+                            <p:column headerText="" style="text-align: center; width: 3px">
+                                <p:commandButton  
+                                    icon="ui-icon-scissors" 
+                                    rendered="#{item.parametroAssociado}"
+                                    oncomplete="PF('confirmacaoExclusao').show()"
+                                    styleClass="btn btn-flat btn-default"
+                                    process="@this" update=":tabelaItens"
+                                    title="#{menu['delete']}">
+                                    <f:setPropertyActionListener target="#{modeloB.parametroSelecionado}" 
+                                                                 value="#{item}" />
+                                </p:commandButton>
+                            </p:column>
                         </p:dataTable>
+
+                        <p:confirmDialog header="Remover Parâmetro" 
+                                         message="Tem certeza que deseja remover o parâmetro #{modeloB.parametroSelecionado.nmparametroref}?"
+                                         widgetVar="confirmacaoExclusao"	id="confirmacaoExclusaoDialog">
+                            <p:button value="Não" onclick="PF('confirmacaoExclusao').hide(); return false;" />
+                            <p:commandButton value="Sim" oncomplete="PF('confirmacaoExclusao').hide();"
+                                             action="#{modeloB.excluirParametro}" process="@this"
+                                             update=":tabelaItens" id="yesButton" />
+                        </p:confirmDialog>
                     </div>
                 </div>
             </div>

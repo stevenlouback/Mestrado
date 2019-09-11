@@ -52,6 +52,10 @@ public class ModeloBean implements Serializable {
 
     @Setter
     @Getter
+    private parametro parametroSelecionado;
+
+    @Setter
+    @Getter
     private parametro parametroLinhaEditavel;
 
     public ModeloBean() {
@@ -117,7 +121,7 @@ public class ModeloBean implements Serializable {
         if (this.parametroLinhaEditavel != null) {
             if (this.existeItemComParametro(this.parametroLinhaEditavel)) {
                 msg.addError("errorParametro", "");
-                return;
+//                return;
             } else {
                 item.setIdparametroref(sequenciaParametro());
                 item.setNmparametroref(this.nmparametroref);
@@ -147,8 +151,10 @@ public class ModeloBean implements Serializable {
     private Long sequenciaParametro() {
         Long nrsequencia = 0L;
         for (parametro item : this.getModelo().getListaParametro()) {
-            if (nrsequencia < item.getIdparametroref()) {
-                nrsequencia = item.getIdparametroref();
+            if (item.getIdparametroref() != null) {
+                if (nrsequencia < item.getIdparametroref()) {
+                    nrsequencia = item.getIdparametroref();
+                }
             }
         }
 
@@ -172,5 +178,22 @@ public class ModeloBean implements Serializable {
 //        limpar();
 //        msg.addInfo("calibrado", "");
 //    }
+    public void excluirParametro() {
+        List<parametro> nova = new ArrayList<parametro>();
 
+        Long contador = 0L;
+        for (parametro item : this.getModelo().getListaParametro()) {
+            if (item.getIdparametroref() != null) {
+                if (item.getIdparametroref() != parametroSelecionado.getIdparametroref()) {
+                    contador += 1L;
+                    item.setIdparametroref(contador);
+                    nova.add(item);
+                }
+            }
+        }
+
+        this.modelo.setListaParametro(nova);
+
+        this.modelo.adicionarItemVazio();
+    }
 }
