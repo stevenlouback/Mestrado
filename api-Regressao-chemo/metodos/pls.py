@@ -8,6 +8,7 @@ from datetime import datetime
 from scipy import stats
 from pyod.models.knn import KNN
 # from sksos import SOS
+from metodos.pca import PCA
 
 sys.path.append("..\dao")
 
@@ -401,7 +402,7 @@ class PLS(object):
     print("Numero de Amostras Removidas: " + str(amostrasRemovidas))
     return cont
 
-  def calibracao(self, idmodelo, nrcomponentes, corteOutlier, qtdeRemocoes):
+  def calibracao(self, idmodelo, nrcomponentes, corteOutlier, qtdeRemocoes, executaPCA, qtdePC):
 
     # Inativa calibracoes anteriores
     db.execute(" update calibracao set  inativo = 'F'" +
@@ -429,8 +430,10 @@ class PLS(object):
     Xtodos = self.selectMatrizX(idmodelo, "TODOS")
 
     # caso seja necessario PCA
-    # pca = PCA()
-    # pca.testePCA(X)
+    pca = PCA()
+    if executaPCA == 'S':
+      Xtodos = pca.testePCA(Xtodos,qtdePC)
+
 
     # ***************************************************************************************************************
     # inicio kennard-stone
@@ -449,20 +452,6 @@ class PLS(object):
     # print("---")
     # print("remaining sample numbers")
     # print(remaining_sample_numbers)
-
-    """#plot samples
-        plt.figure()
-        plt.scatter(autoscaled_X[:, 0], autoscaled_X[:, 1], label="all samples")
-        plt.scatter(autoscaled_X[selected_sample_numbers, 0], autoscaled_X[selected_sample_numbers, 1], marker="*",
-                    label="all samples")
-        plt.xlabel("x1")
-        plt.ylabel("x2")
-        plt.legend(loc='upper right')
-        plt.show()
-
-
-        #***************************************************************************************************************
-        #fim kennard-stone"""
 
     # Insercao das amostras de Validacao
     YCodigoTodos = self.selectMatrizY(idmodelo, "ID", "TODOS")
@@ -498,6 +487,10 @@ class PLS(object):
     Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
     Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
 
+    if executaPCA == 'S':
+      Xcal = pca.testePCA(Xcal,qtdePC)
+      Xval = pca.testePCA(Xval, qtdePC)
+
     qtde = 0
     if corteOutlier > 0:
       while qtde < qtdeRemocoes:
@@ -506,6 +499,11 @@ class PLS(object):
 
         Xval = self.selectMatrizX(idmodelo, "VALIDACAO")
         Xcal = self.selectMatrizX(idmodelo, "CALIBRACAO")
+
+        if executaPCA == 'S':
+          Xcal = pca.testePCA(Xcal, qtdePC)
+          Xval = pca.testePCA(Xval, qtdePC)
+
         qtde = qtde + 1
 
     Ycal = self.selectMatrizY(idmodelo, "VALOR", "CALIBRACAO")
@@ -546,6 +544,10 @@ class PLS(object):
       # print(i)
       linhaMatriz = []
       amostraPredicao = self.selectAmostra(int(float(amostra)), idmodelo)
+
+      if executaPCA == 'S':
+        amostraPredicao = pca.testePCA(amostraPredicao, qtdePC)
+
       Y_pred = plsCal.predict(amostraPredicao)
       # print(Y_pred)
       linhaMatriz.append(round(np.double(Y_pred), 0))
@@ -565,6 +567,10 @@ class PLS(object):
       # print(i)
       linhaMatriz = []
       amostraPredicao = self.selectAmostra(int(float(amostra)), idmodelo)
+
+      if executaPCA == 'S':
+        amostraPredicao = pca.testePCA(amostraPredicao, qtdePC)
+
       Y_pred = plsVal.predict(amostraPredicao)
       # print(Y_pred)
       linhaMatriz.append(round(np.double(Y_pred), 0))
@@ -631,11 +637,11 @@ def kennardStone(X, k, precomputed=False):
   #    return X[list(selected), :]
 
 ###EXECUTAVEL REMOVER SEMPRE
-pls = PLS()
+#pls = PLS()
 #pls.predicao(4,101)
 # # PARAMETROS
-# # IDMODELO, NR_COMPONENTES (VARIAVEIS LATENTES), VALOR DE CORTE OUTLIER, QTDE DE REMOCOES
-# pls.calibracao(2, 20, 0, 0)
+# # IDMODELO, NR_COMPONENTES (VARIAVEIS LATENTES), VALOR DE CORTE OUTLIER, QTDE DE REMOCOES, FAZ PCA S ou N, qtde PC
+#pls.calibracao(4, 20, 0.4, 4, 'N', 3)
 
 
 #Valor Utilizado Para a Qualificacao

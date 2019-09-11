@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA as testePCA
 from sklearn import preprocessing
 import matplotlib.pyplot as plt # NOTE: This was tested with matplotlib v. 2.1.0'''
 
 class PCA(object):
-    def testePCA(self, mat):
+    def testePCA(self, mat, nr_components):
 
        data = pd.DataFrame(mat)
 
@@ -17,18 +17,35 @@ class PCA(object):
 
        # Perform PCA on the data
        # First center and scale the data
-       scaled_data = preprocessing.scale(data)
+       #scaled_data = preprocessing.scale(data)
 
        """
        pca = PCA()
        principalComponents = pca.fit_transform(data)
        principalDf = pd.DataFrame(data=principalComponents , columns=['principal component 1', 'principal component 2'])
        """
-
-       pca = PCA() # create a PCA object
-       principalComponents = pca.fit(data) # do the math - Aqui [e feito o PCA, SCORE e LOADINGS e VARIACAO
+       pca = testePCA(n_components=nr_components) # create a PCA object
+       principalComponents = pca.fit_transform(data) # do the math - Aqui [e feito o PCA, SCORE e LOADINGS e VARIACAO
        pca_data = pca.transform(data) # get PCA coordinates for scaled_data
+       print("Principal Componentes")
        print(principalComponents)
+       print("PCA DATA")
+       print(pca_data)
+
+
+       if (nr_components == 1):
+         principalDf = pd.DataFrame(data=principalComponents , columns=['principal component 1'])
+       elif (nr_components == 2):
+          principalDf = pd.DataFrame(data=principalComponents, columns=['principal component 1', 'principal component 2'])
+       elif (nr_components == 3):
+          principalDf = pd.DataFrame(data=principalComponents, columns=['principal component 1', 'principal component 2', 'principal component 3'])
+
+       print("Principal Component")
+       print(principalDf)
+
+
+       return principalDf
+
 
        #The following code constructs the Scree plot
        #calculamos o percentual de variancia para cada componente principal
