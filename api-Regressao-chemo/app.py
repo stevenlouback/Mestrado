@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask, request, jsonify, make_response, aborcalt
+from flask import Flask, request, jsonify, make_response, abort
 from flask_sqlalchemy import SQLAlchemy
 from numpy import long
 from sqlalchemy import engine, func
@@ -36,9 +36,11 @@ def calibraModelo(id_, latente_, corte_, qtde_):
     try:
         if (not id_):
             abort(400)
+        print("ENTROU NO WS")
 
         pls = PLS()
-        pls.calibracao(id_, latente_, corte_, qtde_)
+        pls.calibracao(id_, latente_, corte_, qtde_, 'N', 0)
+        print("DEPOIS DO WS")
         return jsonify({'success': 'OK'}), 201
     except Exception as e:
 	      return(str(e))
